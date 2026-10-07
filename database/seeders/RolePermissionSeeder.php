@@ -55,7 +55,20 @@ class RolePermissionSeeder extends Seeder
         // User: kelola sarana + lihat/ubah data user.
         // Izin update-* TIDAK diberikan lewat role; diatur admin per user (halaman Kelola Izin).
         $roleUser->syncPermissions([
-           
+            'view-siswa',
+            'create-siswa',
+            'show-siswa',
+            'edit-siswa',
+
+            'view-guru',
+            'create-guru',
+            'show-guru',
+            'edit-guru',
+
+            'view-tenaga-kependidikan',
+            'create-tenaga-kependidikan',
+            'show-tenaga-kependidikan',
+            'edit-tenaga-kependidikan',
         ]);
     }
 }

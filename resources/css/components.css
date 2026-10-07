@@ -1,0 +1,410 @@
+/**
+ * components.css
+ * ============================================================================
+ * SATU-SATUNYA file utility class untuk UI Kit ini (digabung dari
+ * components.css + ui-kit-classes.css + layout.css lama — ketiganya
+ * saling tumpang tindih, sekarang jadi 1 file supaya tidak membingungkan).
+ *
+ * Dipakai untuk DUA cara pemakaian sekaligus:
+ * 1. Lewat <x-komponen> Blade (mis. <x-card>, <x-sidebar>) — beberapa
+ *    komponen ini butuh kamu menambahkan class manual pada elemen yang
+ *    kamu tulis sendiri DI DALAM slot-nya (mis. <a class="sidebar-link">
+ *    di dalam <x-sidebar>, <a class="dropdown-item"> di dalam <x-dropdown>).
+ * 2. Class saja tanpa <x-komponen>, langsung di HTML/Blade biasa (mirip
+ *    cara pakai Bootstrap) — mis. <div class="card">, <button class="btn
+ *    btn-primary">.
+ *
+ * Cara pasang, di resources/css/app.css:
+ *
+ *   @import "tailwindcss";
+ *   @import "./components.css";
+ *
+ * PENTING — dua jenis "kode" yang perlu ditempel di elemen:
+ * 1. CLASS (di sini)   → mengatur TAMPILAN saja (warna, ukuran, dst).
+ * 2. ATRIBUT data-*    → mengatur PERILAKU/interaksi (buka modal, dropdown,
+ *                         dst). Atribut ini TIDAK ada di file CSS ini karena
+ *                         CSS tidak bisa membuat interaksi — jalankan lewat
+ *                         resources/js/components.js (JS yang sama dipakai
+ *                         baik oleh versi <x-komponen> maupun versi class).
+ *
+ * Lihat CLASS-USAGE.md untuk contoh HTML lengkap per komponen (class + data-*
+ * sekaligus, siap tempel).
+ * ============================================================================
+ */
+
+
+/* ============================================================
+   1. BUTTON
+   ============================================================ */
+.btn {
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg shadow-sm;
+    @apply text-sm px-4 py-2 transition-colors duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-70;
+}
+
+.btn-primary   { @apply bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 hover:border-blue-700 focus:ring-blue-500; }
+.btn-secondary { @apply bg-gray-600 text-white border border-gray-600 hover:bg-gray-700 hover:border-gray-700 focus:ring-gray-500; }
+.btn-success   { @apply bg-emerald-600 text-white border border-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 focus:ring-emerald-500; }
+.btn-danger    { @apply bg-red-600 text-white border border-red-600 hover:bg-red-700 hover:border-red-700 focus:ring-red-500; }
+.btn-warning   { @apply bg-yellow-500 text-white border border-yellow-500 hover:bg-yellow-600 hover:border-yellow-600 focus:ring-yellow-400; }
+.btn-info      { @apply bg-indigo-500 text-white border border-indigo-500 hover:bg-indigo-600 hover:border-indigo-600 focus:ring-indigo-400; }
+.btn-dark      { @apply bg-gray-900 text-white border border-gray-900 hover:bg-gray-800 hover:border-gray-800 focus:ring-gray-700; }
+.btn-light     { @apply bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200 focus:ring-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-600; }
+
+.btn-outline-primary   { @apply bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500 dark:text-blue-400 dark:border-blue-400; }
+.btn-outline-secondary { @apply bg-transparent text-gray-600 border border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 dark:text-gray-300 dark:border-gray-400; }
+.btn-outline-danger    { @apply bg-transparent text-red-600 border border-red-600 hover:bg-red-600 hover:text-white focus:ring-red-500 dark:text-red-400 dark:border-red-400; }
+.btn-link { @apply bg-transparent text-blue-600 border border-transparent shadow-none underline-offset-4 hover:underline focus:ring-blue-500 dark:text-blue-400; }
+
+.btn-xs { @apply text-xs px-2.5 py-1.5 gap-1.5; }
+.btn-sm { @apply text-sm px-3 py-1.5 gap-1.5; }
+.btn-lg { @apply text-base px-5 py-2.5 gap-2; }
+.btn-xl { @apply text-base px-6 py-3 gap-2.5; }
+.btn-block { @apply w-full; }
+
+/* Spinner kecil untuk state loading — tempel manual <svg class="btn-spinner animate-spin" ...> di dalam .btn */
+.btn-spinner { @apply -ml-0.5 h-4 w-4; }
+
+
+/* ============================================================
+   2. ALERT
+   ============================================================ */
+.alert {
+    @apply flex items-start gap-3 rounded-lg border p-4 text-sm;
+}
+.alert-primary { @apply bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-200 dark:border-blue-800; }
+.alert-success { @apply bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:border-emerald-800; }
+.alert-warning { @apply bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-950/40 dark:text-yellow-200 dark:border-yellow-800; }
+.alert-danger  { @apply bg-red-50 text-red-800 border-red-200 dark:bg-red-950/40 dark:text-red-200 dark:border-red-800; }
+.alert-info    { @apply bg-indigo-50 text-indigo-800 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-200 dark:border-indigo-800; }
+
+.alert-dismissible { @apply pr-3; }
+
+/* Tombol X penutup — dipakai di alert & toast. Perilaku dismiss butuh atribut data-dismiss="alert" / data-dismiss="toast" */
+.btn-close {
+    @apply shrink-0 rounded-md p-1 text-current opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors;
+}
+
+
+/* ============================================================
+   3. BADGE
+   ============================================================ */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-md;
+}
+.badge-primary   { @apply bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300; }
+.badge-secondary { @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300; }
+.badge-success   { @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300; }
+.badge-danger    { @apply bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300; }
+.badge-warning   { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300; }
+.badge-info      { @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300; }
+.badge-dark      { @apply bg-gray-800 text-white dark:bg-gray-950 dark:text-gray-200; }
+.badge-light     { @apply bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400; }
+
+.badge-outline-primary { @apply bg-transparent border border-blue-500 text-blue-600 dark:text-blue-400; }
+.badge-outline-danger  { @apply bg-transparent border border-red-500 text-red-600 dark:text-red-400; }
+.badge-pill { @apply rounded-full; }
+
+
+/* ============================================================
+   4. CARD
+   ============================================================ */
+.card {
+    @apply w-full rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:bg-gray-800 dark:border-gray-700;
+}
+.card-header {
+    @apply border-b border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-5 font-semibold text-gray-800 dark:text-gray-100;
+}
+.card-body {
+    @apply px-4 py-4 sm:px-5 text-gray-700 dark:text-gray-300;
+}
+.card-footer {
+    @apply border-t border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-5 bg-gray-50 dark:bg-gray-900/40;
+}
+
+
+/* ============================================================
+   5. TABLE
+   ============================================================ */
+/* Bungkus <table> dengan <div class="table-responsive"> agar bisa di-scroll horizontal di mobile */
+.table-responsive {
+    @apply w-full overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700;
+}
+.table {
+    @apply w-full text-sm text-left;
+}
+.table thead {
+    @apply bg-gray-50 dark:bg-gray-800;
+}
+.table th {
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400;
+}
+.table td {
+    @apply px-4 py-3 text-sm text-gray-700 dark:text-gray-300;
+}
+.table tbody {
+    @apply divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800;
+}
+.table-striped tbody tr:nth-child(even) { @apply bg-gray-50 dark:bg-gray-900/40; }
+.table-hover tbody tr:hover { @apply bg-gray-100 dark:bg-gray-700/50; }
+.table-bordered { @apply border-collapse; }
+.table-bordered th,
+.table-bordered td { @apply border border-gray-200 dark:border-gray-700; }
+.table-sm th, .table-sm td { @apply px-2 py-1.5 text-xs; }
+
+/* Warna baris/header khusus, mirip Bootstrap table-dark/table-secondary/table-light */
+.table-dark      { @apply bg-gray-800 text-white; }
+.table-dark th   { @apply text-white; }
+.table-secondary { @apply bg-gray-100 dark:bg-gray-700; }
+.table-light     { @apply bg-gray-50 dark:bg-gray-800; }
+
+
+/* ============================================================
+   6. FORM
+   ============================================================ */
+.form-label {
+    @apply mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+.form-control,
+.form-select {
+    @apply w-full rounded-lg border px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm transition-colors;
+    @apply border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100;
+    @apply disabled:bg-gray-100 disabled:cursor-not-allowed;
+    @apply dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-blue-900/40 dark:disabled:bg-gray-900;
+}
+.form-control.is-invalid,
+.form-select.is-invalid {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-200 dark:border-red-500;
+}
+.form-text {
+    @apply mt-1.5 text-sm text-gray-500 dark:text-gray-400;
+}
+.invalid-feedback {
+    @apply mt-1.5 text-sm text-red-600 dark:text-red-400;
+}
+
+/* Checkbox & Radio */
+.form-check {
+    @apply inline-flex items-start gap-2;
+}
+.form-check-input {
+    @apply mt-0.5 h-4 w-4 border-gray-300 text-blue-600 shadow-sm transition-colors;
+    @apply focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900/40 dark:border-gray-600 dark:bg-gray-700;
+}
+.form-check-input[type="checkbox"] { @apply rounded; }
+.form-check-input[type="radio"] { @apply rounded-full; }
+.form-check-label {
+    @apply text-sm text-gray-700 dark:text-gray-300;
+}
+
+/* Switch — butuh markup: <label class="form-switch"><input type="checkbox" class="form-switch-input peer">
+   <span class="form-switch-track"></span><span class="form-switch-thumb"></span></label> */
+.form-switch { @apply inline-flex items-center gap-3 cursor-pointer; }
+.form-switch-input { @apply sr-only; }
+.form-switch-track {
+    @apply h-6 w-11 rounded-full bg-gray-300 transition-colors duration-200 dark:bg-gray-600;
+}
+.form-switch-input:checked ~ .form-switch-track { @apply bg-blue-600; }
+.form-switch-thumb {
+    @apply absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200;
+}
+.form-switch-input:checked ~ .form-switch-thumb { @apply translate-x-5; }
+.form-switch-wrapper { @apply relative inline-flex items-center; }
+
+
+/* ============================================================
+   7. LIST GROUP
+   ============================================================ */
+.list-group {
+    @apply flex flex-col divide-y divide-gray-200 dark:divide-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800;
+}
+.list-group-item {
+    @apply block px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/50;
+}
+.list-group-item.active {
+    @apply bg-blue-50 font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300;
+}
+
+/* ============================================================
+   8. MODAL — JS baca atribut data-modal / data-modal-backdrop / data-modal-panel
+   dari resources/js/modal.js, class di bawah cuma untuk tampilan.
+   ============================================================ */
+.modal {
+    @apply fixed inset-0 z-50 hidden overflow-y-auto;
+}
+.modal-backdrop {
+    @apply fixed inset-0 bg-gray-900/60 transition-opacity;
+}
+.modal-dialog {
+    @apply flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4;
+}
+.modal-content {
+    @apply relative w-full sm:w-[95%] sm:max-w-lg bg-white dark:bg-gray-800 rounded-t-2xl sm:rounded-xl shadow-xl max-h-[90vh] flex flex-col;
+}
+.modal-sm { @apply sm:max-w-sm; }
+.modal-lg { @apply sm:max-w-2xl; }
+.modal-xl { @apply sm:max-w-4xl; }
+.modal-header {
+    @apply flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-5;
+}
+.modal-title { @apply text-lg font-semibold text-gray-800 dark:text-gray-100; }
+.modal-body {
+    @apply px-4 py-4 sm:px-5 text-gray-700 dark:text-gray-300 overflow-y-auto flex-1;
+}
+.modal-footer {
+    @apply flex flex-wrap justify-end gap-2 border-t border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-5;
+}
+
+
+/* ============================================================
+   9. DROPDOWN — JS baca data-dropdown / data-dropdown-trigger / data-dropdown-menu
+   ============================================================ */
+.dropdown { @apply relative inline-block text-left; }
+.dropdown-menu {
+    @apply absolute z-30 mt-2 hidden min-w-48 w-max max-w-xs rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:bg-gray-800 dark:border-gray-700;
+}
+.dropdown-menu-end { @apply right-0 left-auto; }
+.dropdown-item {
+    @apply flex w-full items-center gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700;
+}
+.dropdown-item-danger {
+    @apply text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30;
+}
+.dropdown-divider {
+    @apply my-1 border-t border-gray-200 dark:border-gray-700;
+}
+
+
+/* ============================================================
+   10. ACCORDION — JS baca data-accordion / data-accordion-item / data-accordion-trigger
+   ============================================================ */
+.accordion {
+    @apply divide-y divide-gray-200 dark:divide-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden;
+}
+.accordion-button {
+    @apply flex w-full items-center justify-between gap-3 px-4 py-3 text-left font-medium text-gray-800 hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-gray-700/50 transition-colors;
+}
+.accordion-icon {
+    @apply h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200;
+}
+.accordion-body {
+    @apply px-4 pb-4 pt-0 text-sm text-gray-600 dark:text-gray-300;
+}
+
+
+/* ============================================================
+   11. TABS — JS baca data-tabs / data-tabs-link / data-tabs-pane
+   ============================================================ */
+.nav-tabs {
+    @apply flex gap-1 border-b border-gray-200 dark:border-gray-700 overflow-x-auto;
+}
+.nav-tabs-vertical {
+    @apply sm:flex-col sm:border-b-0 sm:border-r sm:pr-2 sm:min-w-40;
+}
+.nav-link-tab {
+    @apply whitespace-nowrap px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200;
+}
+.nav-link-tab.active {
+    @apply border-blue-600 text-blue-600 dark:text-blue-400;
+}
+.tab-content { @apply flex-1 min-w-0; }
+.tab-pane { @apply text-sm text-gray-600 dark:text-gray-300; }
+
+
+/* ============================================================
+   12. NAVBAR — JS baca data-navbar / data-navbar-toggle / data-navbar-menu
+   ============================================================ */
+.navbar {
+    @apply bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700;
+}
+.navbar-container { @apply mx-auto max-w-7xl px-4 sm:px-6; }
+.navbar-inner { @apply flex h-16 items-center justify-between; }
+.navbar-brand { @apply shrink-0 font-bold text-lg text-gray-800 dark:text-gray-100; }
+.navbar-nav-desktop { @apply hidden md:flex md:items-center md:gap-6; }
+.navbar-actions-desktop { @apply hidden md:flex md:items-center md:gap-3; }
+.navbar-toggle {
+    @apply md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700;
+}
+.navbar-menu-mobile { @apply hidden md:hidden pb-4; }
+.nav-link {
+    @apply block rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white;
+}
+.nav-link.active { @apply bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400; }
+
+
+/* ============================================================
+   13. SIDEBAR — JS baca data-sidebar / data-sidebar-open / data-sidebar-collapse-toggle
+   ============================================================ */
+.sidebar {
+    @apply fixed sm:sticky top-0 z-50 sm:z-0 h-screen sm:h-[calc(100vh)] w-64 -translate-x-full sm:translate-x-0;
+    @apply transition-all duration-200 ease-in-out bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700;
+}
+.sidebar-backdrop { @apply fixed inset-0 z-40 hidden bg-gray-900/60 sm:hidden; }
+.sidebar-link {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium;
+}
+.sidebar-link.active { @apply bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400; }
+
+
+/* ============================================================
+   14. OFFCANVAS — JS baca data-offcanvas / data-offcanvas-open / data-offcanvas-panel
+   ============================================================ */
+.offcanvas { @apply fixed inset-0 z-50 hidden; }
+.offcanvas-backdrop { @apply fixed inset-0 bg-gray-900/60; }
+.offcanvas-panel {
+    @apply fixed top-0 h-full w-[85%] sm:w-96 bg-white dark:bg-gray-800 shadow-xl flex flex-col transition-transform duration-300;
+}
+.offcanvas-start { @apply left-0 -translate-x-full; }
+.offcanvas-end { @apply right-0 translate-x-full; }
+.offcanvas-header { @apply flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-3; }
+.offcanvas-body { @apply flex-1 overflow-y-auto px-4 py-4 text-gray-700 dark:text-gray-300; }
+
+
+/* ============================================================
+   15. TOAST — JS baca data-toast / data-toast-autoclose / data-dismiss="toast"
+   ============================================================ */
+.toast {
+    @apply flex items-center gap-3 rounded-lg border-l-4 bg-white dark:bg-gray-800 px-4 py-3 shadow-lg w-full sm:w-80;
+}
+.toast-success { @apply border-emerald-500 text-emerald-700 dark:text-emerald-300; }
+.toast-danger  { @apply border-red-500 text-red-700 dark:text-red-300; }
+.toast-warning { @apply border-yellow-500 text-yellow-700 dark:text-yellow-300; }
+.toast-info    { @apply border-indigo-500 text-indigo-700 dark:text-indigo-300; }
+.toast-container {
+    @apply fixed z-50 top-4 right-4 flex flex-col gap-2 w-full sm:w-auto px-4 sm:px-0;
+}
+
+.link{
+    @apply text-blue-600 underline hover:text-blue-600/90 active:text-blue-600/50;
+}
+
+
+/* ============================================================
+   16. KHUSUS UNTUK <x-table> & <x-progress animated> (bukan class-only)
+   Dua ini beda dari section lain: dibaca lewat atribut data-* yang
+   di-render OTOMATIS oleh komponen Blade-nya sendiri (bukan class yang
+   kamu tempel manual), jadi cuma relevan kalau kamu pakai <x-table> /
+   <x-progress animated>, bukan versi class-only.
+   ============================================================ */
+
+/* Animasi garis berjalan untuk <x-progress animated /> */
+@keyframes progress-stripes {
+    from { background-position: 1rem 0; }
+    to { background-position: 0 0; }
+}
+
+/* Efek striped & hover untuk <x-table striped hover> — dibaca dari atribut
+   data-table-striped/data-table-hover yang otomatis di-render di <tbody> */
+tbody[data-table-striped="true"] > tr:nth-child(even) {
+    @apply bg-gray-50 dark:bg-gray-900/40;
+}
+tbody[data-table-hover="true"] > tr:hover {
+    @apply bg-gray-100 dark:bg-gray-700/50;
+}
+
+/* Garis antar sel untuk <x-table bordered> */
+table.border-collapse th,
+table.border-collapse td {
+    @apply border border-gray-200 dark:border-gray-700;
+}

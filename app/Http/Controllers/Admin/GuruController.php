@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\TenagaKependidikan;
+use App\Http\Controllers\Controller;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 
-class TenagaKependidikanController extends Controller
+class GuruController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +35,7 @@ class TenagaKependidikanController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TenagaKependidikan $tenagaKependidikan)
+    public function show(Guru $guru)
     {
         //
     }
@@ -42,7 +43,7 @@ class TenagaKependidikanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TenagaKependidikan $tenagaKependidikan)
+    public function edit(Guru $guru)
     {
         //
     }
@@ -50,7 +51,7 @@ class TenagaKependidikanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TenagaKependidikan $tenagaKependidikan)
+    public function update(Request $request, Guru $guru)
     {
         //
     }
@@ -58,7 +59,7 @@ class TenagaKependidikanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TenagaKependidikan $tenagaKependidikan)
+    public function destroy(Guru $guru)
     {
         //
     }
