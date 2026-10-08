@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="mt-6 flex flex-wrap justify-between gap-2">
-                    <x-button href="{{ asset('template/Template_Data_Siswa_web.xlsx') }}" variant="light" download>
+                    <x-button href="{{ route('admin.files.download') }}" variant="light">
                         <i class="bi bi-download me-1"></i> Download Template
                     </x-button>
                     <div class="flex gap-2">

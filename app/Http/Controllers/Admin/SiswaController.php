@@ -17,10 +17,11 @@ class SiswaController extends Controller
      */
     public function index()
     {
-        // Pola kelas: VII, VIII, IX (boleh diikuti huruf rombel, mis. "VII A")
-        $vii = "siswas.kelas regexp '^VII([^I]|$)'";
-        $viii = "siswas.kelas regexp '^VIII'";
-        $ix = "siswas.kelas regexp '^IX'";
+        // Kelas disimpan sebagai angka: 7, 8, 9 (boleh diikuti rombel, mis. "7A" atau "7 A").
+        // Angka romawi (VII, VIII, IX) tetap dikenali supaya data lama tidak hilang.
+        $vii = "siswas.kelas regexp '^(7|VII([^I]|$))'";
+        $viii = "siswas.kelas regexp '^(8|VIII)'";
+        $ix = "siswas.kelas regexp '^(9|IX)'";
 
         $sekolahs = Sekolah::leftJoin('siswas', 'siswas.sekolah_id', '=', 'sekolahs.id')
             ->selectRaw("
@@ -109,8 +110,10 @@ class SiswaController extends Controller
     public function show(Siswa $siswa)
     {
         $siswa->load('sekolah');
+        $sekolahs = Sekolah::orderBy('nama_sekolah')->pluck('nama_sekolah', 'id')->toArray();
+        $opsi = $this->opsi();
 
-        return view('admin.siswa.show', compact('siswa'));
+        return view('admin.siswa.show', compact('siswa', 'sekolahs', 'opsi'));
     }
 
     /**
@@ -151,6 +154,18 @@ class SiswaController extends Controller
 
         return redirect()->route('admin.siswa.sekolah', $sekolahId)
             ->with('success', 'Data siswa berhasil dihapus.');
+    }
+
+    public function download()
+    {
+        // Sesuaikan path jika file berada di storage/app/public/files
+        $path = storage_path('app/public/template/template.xlsx');
+
+        if (file_exists($path)) {
+            return response()->download($path);
+        }
+
+        abort(404, 'File tidak ditemukan.');
     }
 
     /**

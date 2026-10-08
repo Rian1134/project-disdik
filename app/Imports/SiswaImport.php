@@ -8,7 +8,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -16,10 +18,24 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
  * Import Template_Data_Siswa_web.xlsx (sheet "Data Siswa", data mulai baris ke-3).
  * Semua baris divalidasi dulu; kalau ada yang salah, tidak ada data yang tersimpan.
  */
-class SiswaImport implements ToCollection, WithStartRow
+class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets, SkipsUnknownSheets
 {
     public function __construct(private int $sekolahId)
     {
+    }
+
+    /**
+     * Hanya baca sheet "Data Siswa". Tanpa ini, Laravel Excel ikut membaca
+     * sheet "Petunjuk" dan teks petunjuknya dianggap data siswa.
+     */
+    public function sheets(): array
+    {
+        return ['Data Siswa' => $this];
+    }
+
+    public function onUnknownSheet($sheetName): void
+    {
+        // Sheet lain (mis. "Petunjuk") diabaikan.
     }
 
     public function startRow(): int
@@ -27,7 +43,7 @@ class SiswaImport implements ToCollection, WithStartRow
         return 3;
     }
 
-    public function collection(Collection $rows)
+    public function collection(Collection $rows): void
     {
         $simpan = [];
         $error = [];
