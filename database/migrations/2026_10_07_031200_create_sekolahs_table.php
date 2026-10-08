@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('nama_kepala_sekolah');
             $table->char('akreditasi');
             $table->string('status_sekolah');
-            $table->string('tangga_sk_pendirian');
-            $table->string('tangga_sk_izin_oprasional');
+            $table->string('tanggal_sk_pendirian');
+            $table->string('tanggal_sk_izin_oprasional');
             $table->string('implementasi_kurikulum');
 
             $table->string('alamat');

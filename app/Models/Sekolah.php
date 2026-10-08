@@ -35,5 +35,9 @@ class Sekolah extends Model
         'daya_listrik',
         'sumber_air',
     ];
-    
+
+    public function siswas()
+    {
+        return $this->hasMany(Siswa::class);
+    }
 }
