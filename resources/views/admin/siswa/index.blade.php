@@ -15,6 +15,7 @@
                 <x-table.heading colspan="2" class="text-center align-middle">Nomor</x-table.heading>
                 <x-table.heading rowspan="3" class="min-w-56 text-center align-middle">Nama Sekolah</x-table.heading>
                 <x-table.heading colspan="16" class="text-center align-middle">Jumlah Siswa</x-table.heading>
+                <x-table.heading rowspan="3" class="text-center align-middle">Aksi</x-table.heading>
             </tr>
             <tr class="bg-gray-100 dark:bg-gray-700">
                 <x-table.heading rowspan="2" class="text-center align-middle">Statistik Sekolah (NSS)</x-table.heading>
@@ -66,9 +67,15 @@
                 <x-table.cell class="text-center">{{ $sekolah->total_l }}</x-table.cell>
                 <x-table.cell class="text-center">{{ $sekolah->total_p }}</x-table.cell>
                 <x-table.cell class="text-center font-semibold">{{ $sekolah->total_l + $sekolah->total_p }}</x-table.cell>
+                <x-table.cell class="text-center whitespace-nowrap">
+                    <a href="{{ route('admin.siswa.sekolah', $sekolah->id) }}"
+                       class="inline-flex items-center rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700">
+                        Lihat Siswa
+                    </a>
+                </x-table.cell>
             </x-table.row>
         @empty
-            <x-table.empty colspan="20" />
+            <x-table.empty colspan="21" />
         @endforelse
     </x-table>
 

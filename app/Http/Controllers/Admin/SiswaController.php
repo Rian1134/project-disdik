@@ -159,7 +159,7 @@ class SiswaController extends Controller
     public function download()
     {
         // Sesuaikan path jika file berada di storage/app/public/files
-        $path = storage_path('app/public/template/template.xlsx');
+        $path = storage_path('app/public/template/template-siswa.xlsx');
 
         if (file_exists($path)) {
             return response()->download($path);

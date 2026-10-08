@@ -70,6 +70,13 @@
                 <span data-sidebar-label>Data Pegawai</span>
             </a>
 
+            <a href="{{ route('admin.users.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : '' }}"
+                @if (request()->routeIs('admin.users.*')) aria-current="page" @endif>
+                <i class="bi bi-person-gear text-base shrink-0"></i>
+                <span data-sidebar-label>Manajemen User</span>
+            </a>
+
             <a href="#"
                 class="sidebar-link mt-auto w-full text-left border-t border-gray-200 dark:border-gray-700 pt-3">
                 <i class="bi bi-box-arrow-right text-base shrink-0"></i>
