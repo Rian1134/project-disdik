@@ -58,7 +58,9 @@
                 <span data-sidebar-label>Data Sekolah</span>
             </a>
 
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.siswa.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.siswa.*') ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : '' }}"
+                @if (request()->routeIs('admin.siswa.*')) aria-current="page" @endif>
                 <i class="bi bi-people-fill text-base shrink-0"></i>
                 <span data-sidebar-label>Data Siswa</span>
             </a>
@@ -66,11 +68,6 @@
             <a href="#" class="sidebar-link">
                 <i class="bi bi-person-badge-fill text-base shrink-0"></i>
                 <span data-sidebar-label>Data Pegawai</span>
-            </a>
-
-            <a href="#" class="sidebar-link">
-                <i class="bi bi-person-fill text-base shrink-0"></i>
-                <span data-sidebar-label>Data User</span>
             </a>
 
             <a href="#"

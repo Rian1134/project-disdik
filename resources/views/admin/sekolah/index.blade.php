@@ -61,16 +61,28 @@
                             class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
-                        <form action="{{ route('admin.sekolah.destroy', $sekolah) }}" method="POST"
-                            onsubmit="return confirm('Hapus {{ $sekolah->nama_sekolah }}?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" title="Hapus"
-                                class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        </form>
+                        <button type="button" data-modal-open="hapus-{{ $sekolah->id }}" title="Hapus"
+                            class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
                     </div>
+
+                    <x-modal id="hapus-{{ $sekolah->id }}" size="sm" centered>
+                        <x-slot:header>Konfirmasi Hapus</x-slot:header>
+
+                        <p class="text-center text-sm">
+                            Yakin ingin menghapus <strong>{{ $sekolah->nama_sekolah }}</strong>?
+                        </p>
+
+                        <x-slot:footer>
+                            <x-button variant="light" data-modal-close>Batal</x-button>
+                            <form action="{{ route('admin.sekolah.destroy', $sekolah) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <x-button type="submit" variant="danger">Hapus</x-button>
+                            </form>
+                        </x-slot:footer>
+                    </x-modal>
                 </x-table.cell>
             </x-table.row>
         @empty
