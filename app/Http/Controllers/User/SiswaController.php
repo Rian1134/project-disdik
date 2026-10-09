@@ -7,17 +7,28 @@ use App\Imports\SiswaImport;
 use App\Models\Sekolah;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SiswaController extends Controller
 {
     /**
-     * Daftar siswa pada sekolah milik user yang login.
+     * Daftar siswa pada sekolah milik user.
+     * Tetap bisa dibuka walau data sekolah belum diisi (tabel tampil kosong).
      */
     public function index()
     {
         $sekolah = $this->sekolah();
-        $siswas = $sekolah->siswas()->orderBy('kelas')->orderBy('nama_siswa')->paginate(15);
+
+        $siswas = Siswa::query()
+            ->when(
+                $sekolah,
+                fn ($q) => $q->where('sekolah_id', $sekolah->id),
+                fn ($q) => $q->whereRaw('1 = 0')
+            )
+            ->orderBy('kelas')
+            ->orderBy('nama_siswa')
+            ->paginate(15);
 
         return view('user.siswa.index', compact('sekolah', 'siswas'));
     }
@@ -27,6 +38,10 @@ class SiswaController extends Controller
      */
     public function create()
     {
+        if (! $this->sekolah()) {
+            return $this->belumAdaSekolah();
+        }
+
         $opsi = $this->opsi();
 
         return view('user.siswa.create', compact('opsi'));
@@ -37,10 +52,12 @@ class SiswaController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate(SiswaImport::rules(), [], SiswaImport::labels());
+        if (! $sekolah = $this->sekolah()) {
+            return $this->belumAdaSekolah();
+        }
 
-        // sekolah_id tidak diisi dari form, selalu sekolah milik user.
-        $data['sekolah_id'] = $this->sekolah()->id;
+        $data = $request->validate(SiswaImport::rules(), [], SiswaImport::labels());
+        $data['sekolah_id'] = $sekolah->id;
 
         Siswa::create($data);
 
@@ -53,11 +70,15 @@ class SiswaController extends Controller
      */
     public function import(Request $request)
     {
+        if (! $sekolah = $this->sekolah()) {
+            return $this->belumAdaSekolah();
+        }
+
         $request->validate([
             'file' => ['required', 'file', 'mimes:xlsx,xls', 'max:5120'],
         ], [], ['file' => 'File Excel']);
 
-        Excel::import(new SiswaImport($this->sekolah()->id), $request->file('file'));
+        Excel::import(new SiswaImport($sekolah->id), $request->file('file'));
 
         return redirect()->route('user.siswa.index')
             ->with('success', 'Data siswa berhasil diimport dari Excel.');
@@ -126,23 +147,30 @@ class SiswaController extends Controller
     }
 
     /**
-     * Sekolah milik user yang login (tabel sekolahs punya kolom user_id).
+     * Sekolah milik user yang login, atau null kalau belum diisi.
      */
-    private function sekolah(): Sekolah
+    private function sekolah(): ?Sekolah
     {
-        $sekolah = Sekolah::where('user_id', auth()->id())->first();
-
-        abort_if(! $sekolah, 403, 'Akun kamu belum terhubung dengan sekolah.');
-
-        return $sekolah;
+        return Sekolah::where('user_id', Auth::id())->first();
     }
 
     /**
-     * User hanya boleh mengakses siswa di sekolahnya sendiri.
+     * Dipakai saat user belum punya data sekolah: kembali ke tab siswa dengan pesan.
+     */
+    private function belumAdaSekolah()
+    {
+        return redirect()->route('user.siswa.index')
+            ->with('error', 'Lengkapi data sekolah terlebih dahulu sebelum menambah data siswa.');
+    }
+
+    /**
+     * Siswa milik sekolah lain dianggap tidak ada (404), bukan forbidden.
      */
     private function pastikanMilikSendiri(Siswa $siswa): void
     {
-        abort_unless((int) $siswa->sekolah_id === (int) $this->sekolah()->id, 403);
+        $sekolah = $this->sekolah();
+
+        abort_unless($sekolah && (int) $siswa->sekolah_id === (int) $sekolah->id, 404);
     }
 
     /**

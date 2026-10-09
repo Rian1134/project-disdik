@@ -3,13 +3,25 @@
 @section('title', 'Data Siswa')
 
 @section('content')
+    @if (! $sekolah)
+        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
+            <i class="bi bi-info-circle-fill me-1"></i>
+            Data sekolah kamu belum diisi, jadi data siswa belum bisa ditambahkan.
+            <a href="{{ route('user.sekolah.index') }}" class="font-semibold underline">Lengkapi Data Sekolah</a>
+        </div>
+    @endif
+
     <x-card>
         <x-slot:header>
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="font-semibold">Siswa {{ $sekolah->nama_sekolah }}</span>
-                <x-button href="{{ route('user.siswa.create') }}" size="sm">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah
-                </x-button>
+                <span class="font-semibold">
+                    {{ $sekolah ? 'Siswa ' . $sekolah->nama_sekolah : 'Data Siswa' }}
+                </span>
+                @if ($sekolah)
+                    <x-button href="{{ route('user.siswa.create') }}" size="sm">
+                        <i class="bi bi-plus-lg me-1"></i> Tambah
+                    </x-button>
+                @endif
             </div>
         </x-slot:header>
 

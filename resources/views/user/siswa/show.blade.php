@@ -3,26 +3,6 @@
 @section('title', 'Detail Siswa')
 
 @section('content')
-    <div class="mx-auto max-w-3xl">
-        <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <div>
-                <h1 class="text-xl font-semibold text-gray-800">Detail Siswa</h1>
-                <p class="text-sm text-gray-500">{{ $siswa->nama_siswa }}</p>
-            </div>
-            <div class="flex gap-2">
-                <a href="{{ route('user.siswa.index') }}"
-                   class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
-                <a href="{{ route('user.siswa.edit', $siswa) }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-3 py-2 text-sm font-medium text-white hover:bg-amber-600">
-                    <i class="bi bi-pencil-square"></i> Edit
-                </a>
-           @extends('layouts.user')
-
-@section('title', 'Detail Siswa')
-
-@section('content')
 <x-card>
     <x-slot:header>
         <span class="font-semibold">Detail Siswa</span>
@@ -135,27 +115,4 @@
         </div>
     </x-slot:footer>
 </x-card>
-@endsection </div>
-        </div>
-
-        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-            <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-                @foreach ($fields as $key => $label)
-                    @php
-                        $nilai = $siswa->{$key};
-                        if ($key === 'jenis_kelamin') {
-                            $nilai = $opsi['jenis_kelamin'][$nilai] ?? $nilai;
-                        }
-                        if ($nilai instanceof \Carbon\CarbonInterface) {
-                            $nilai = $nilai->format('d-m-Y');
-                        }
-                    @endphp
-                    <div>
-                        <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ $label }}</dt>
-                        <dd class="mt-1 text-sm text-gray-800">{{ filled($nilai) ? $nilai : '-' }}</dd>
-                    </div>
-                @endforeach
-            </dl>
-        </div>
-    </div>
 @endsection
