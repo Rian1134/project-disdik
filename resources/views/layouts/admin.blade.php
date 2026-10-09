@@ -35,6 +35,21 @@
         @endif
     </div>
 
+    {{-- ===== MODAL KONFIRMASI LOGOUT ===== --}}
+    <x-modal id="logoutModal" size="sm" centered>
+        <x-slot:header>Konfirmasi Logout</x-slot:header>
+
+        <p class="text-center text-sm">Yakin ingin keluar dari sistem?</p>
+
+        <x-slot:footer>
+            <x-button variant="light" data-modal-close>Batal</x-button>
+            <form action="{{ route('logout') }}" method="POST" class="inline">
+                @csrf
+                <x-button type="submit" variant="danger">Logout</x-button>
+            </form>
+        </x-slot:footer>
+    </x-modal>
+
     <div class="flex min-h-screen">
 
         {{-- Sidebar putih polos, tanpa warna aksen --}}
@@ -42,8 +57,7 @@
             <div class="flex items-center gap-3 border-b border-gray-200 dark:border-gray-700 pb-4 mb-3">
                 <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="md" />
                 <div class="min-w-0 flex-1" data-sidebar-label>
-                    <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
-                        {{ Auth::user()?->name ?? 'Admin' }}</p>
+                    <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">{{ Auth::user()?->name ?? 'Admin' }}</p>
                     <p class="truncate text-xs text-gray-500 dark:text-gray-400">Admin</p>
                 </div>
             </div>
@@ -73,18 +87,11 @@
                 <span data-sidebar-label>Data Pegawai</span>
             </a>
 
-            <a href="{{ route('admin.users.index') }}"
-                class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : '' }}"
-                @if (request()->routeIs('admin.users.*')) aria-current="page" @endif>
-                <i class="bi bi-person-gear text-base shrink-0"></i>
-                <span data-sidebar-label>Manajemen User</span>
-            </a>
-
-            <a href="#"
+            <button type="button" data-modal-open="logoutModal"
                 class="sidebar-link mt-auto w-full text-left border-t border-gray-200 dark:border-gray-700 pt-3">
                 <i class="bi bi-box-arrow-right text-base shrink-0"></i>
                 <span data-sidebar-label>Logout</span>
-            </a>
+            </button>
         </x-sidebar>
 
         {{-- Kolom kanan: navbar (sticky) + konten + footer --}}
@@ -118,8 +125,7 @@
                 <x-slot:actions>
                     <div class="flex items-center gap-2">
                         <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="xs" />
-                        <span
-                            class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
+                        <span class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
                     </div>
                 </x-slot:actions>
             </x-navbar>

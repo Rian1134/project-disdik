@@ -102,27 +102,27 @@
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Tipe Internet</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->tipe_internet }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->tipe_internet ?? '-' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Provider Internet</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->internet_provider }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->internet_provider ?? '-' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Bandwidth Internet</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->bandwith_internet . ' Mbps' }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->bandwith_internet ? $sekolah->bandwith_internet . ' Mbps' : '-' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Sumber Listrik</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->sumber_listrik }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->sumber_listrik ?? '-' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Daya Listrik</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->daya_listrik . ' VA' }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->daya_listrik ? $sekolah->daya_listrik . ' VA' : '-' }}</dd>
                 </div>
                 <div class="flex justify-between gap-4 py-2">
                     <dt class="text-gray-500 dark:text-gray-400">Sumber Air</dt>
-                    <dd class="text-right font-medium">{{ $sekolah->sumber_air }}</dd>
+                    <dd class="text-right font-medium">{{ $sekolah->sumber_air ?? '-' }}</dd>
                 </div>
             </dl>
         </div>

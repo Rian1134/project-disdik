@@ -107,12 +107,12 @@ class SekolahController extends Controller
 
             'laus_tanah' => ['required', 'integer'],
             'laus_bangunan' => ['required', 'integer'],
-            'tipe_internet' => ['required', 'integer'],
-            'internet_provider' => ['required', 'integer'],
-            'bandwith_internet' => ['required', 'integer'],
-            'sumber_listrik' => ['required', 'string'],
-            'daya_listrik' => ['required', 'integer'],
-            'sumber_air' => ['required', 'string'],
+            'tipe_internet' => ['nullable', 'string'],
+            'internet_provider' => ['nullable', 'string'],
+            'bandwith_internet' => ['nullable', 'integer'],
+            'sumber_listrik' => ['nullable', 'string'],
+            'daya_listrik' => ['nullable', 'integer'],
+            'sumber_air' => ['nullable', 'string'],
         ]);
     }
 }

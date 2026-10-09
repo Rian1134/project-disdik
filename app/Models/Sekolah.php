@@ -2,23 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Sekolah extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
+        'user_id',
         'nss',
         'npsn',
         'nama_sekolah',
         'nama_kepala_sekolah',
         'akreditasi',
         'status_sekolah',
-        'tangga_sk_pendirian',
-        'tangga_sk_izin_oprasional',
+        'tanggal_sk_pendirian',
+        'tanggal_sk_izin_oprasional',
         'implementasi_kurikulum',
+
         'alamat',
         'rt_rw',
         'desa_kelurahan',
@@ -26,6 +25,7 @@ class Sekolah extends Model
         'kabupaten',
         'provinsi',
         'kode_pos',
+
         'laus_tanah',
         'laus_bangunan',
         'tipe_internet',
@@ -35,6 +35,11 @@ class Sekolah extends Model
         'daya_listrik',
         'sumber_air',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function siswas()
     {

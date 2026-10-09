@@ -37,12 +37,12 @@ return new class extends Migration
 
             $table->integer('laus_tanah');
             $table->integer('laus_bangunan');
-            $table->integer('tipe_internet');
-            $table->integer('internet_provider');
-            $table->integer('bandwith_internet');
-            $table->string('sumber_listrik');
-            $table->integer('daya_listrik');
-            $table->string('sumber_air');
+            $table->string('tipe_internet')->nullable();
+            $table->string('internet_provider')->nullable();
+            $table->integer('bandwith_internet')->nullable();
+            $table->string('sumber_listrik')->nullable();
+            $table->integer('daya_listrik')->nullable();
+            $table->string('sumber_air')->nullable();
 
             $table->timestamps();
         });

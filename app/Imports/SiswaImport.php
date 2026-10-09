@@ -9,18 +9,31 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 
 /**
  * Import Template_Data_Siswa_web.xlsx (sheet "Data Siswa", data mulai baris ke-3).
  * Semua baris divalidasi dulu; kalau ada yang salah, tidak ada data yang tersimpan.
+ *
+ * Hanya sheet PERTAMA yang dibaca; sheet lain (mis. "Petunjuk") diabaikan.
  */
-class SiswaImport implements ToCollection, WithStartRow
+class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
 {
     use MembacaTanggal;
 
     public function __construct(private int $sekolahId)
     {
+    }
+
+    /**
+     * Hanya sheet pertama yang diproses oleh class ini.
+     */
+    public function sheets(): array
+    {
+        return [
+            0 => $this,
+        ];
     }
 
     public function startRow(): int
@@ -36,8 +49,15 @@ class SiswaImport implements ToCollection, WithStartRow
         foreach ($rows->values() as $i => $row) {
             $v = fn (int $k) => trim((string) ($row[$k] ?? ''));
 
-            // Baris kosong (hanya berisi nomor urut)
-            if ($v(1) === '' && $v(3) === '') {
+            // Lewati baris yang kosong (kolom 0 = nomor urut, tidak dihitung).
+            $kosong = true;
+            for ($k = 1; $k <= 17; $k++) {
+                if ($v($k) !== '') {
+                    $kosong = false;
+                    break;
+                }
+            }
+            if ($kosong) {
                 continue;
             }
 
