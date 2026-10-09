@@ -6,16 +6,16 @@
 @php $manual = old('nama') !== null; @endphp
 <x-card>
     <x-slot:header>
-        <span class="font-semibold">Tambah Pegawai</span>
+        <span class="font-semibold"><i class="bi bi-person-plus-fill me-2 text-amber-500"></i>Tambah Pegawai</span>
     </x-slot:header>
 
     <x-tabs id="tambahPegawaiTabs">
         <x-slot:nav>
             <x-tabs.link target="tab-excel" :active="! $manual">
-                <i class="bi bi-file-earmark-excel me-1"></i> Upload Excel
+                <i class="bi bi-file-earmark-excel me-1 text-emerald-600 dark:text-emerald-400"></i> Upload Excel
             </x-tabs.link>
             <x-tabs.link target="tab-manual" :active="$manual">
-                <i class="bi bi-pencil-square me-1"></i> Isi Manual
+                <i class="bi bi-pencil-square me-1 text-amber-500"></i> Isi Manual
             </x-tabs.link>
         </x-slot:nav>
 
@@ -29,8 +29,8 @@
                     <x-form.input name="file" label="File Excel" type="file" accept=".xlsx,.xls" helper="Format .xlsx atau .xls, maksimal 5 MB." required />
                 </div>
 
-                <div class="mt-4 rounded border border-gray-200 p-4 text-sm dark:border-gray-700">
-                    <p class="mb-2 font-semibold">Petunjuk</p>
+                <div class="mt-4 rounded-lg border border-sky-200 bg-sky-50 p-4 text-sm dark:border-sky-500/30 dark:bg-sky-500/10">
+                    <p class="mb-2 font-semibold text-sky-700 dark:text-sky-300"><i class="bi bi-info-circle-fill me-1"></i>Petunjuk</p>
                     <ol class="list-decimal space-y-1 ps-5 text-gray-600 dark:text-gray-300">
                         <li>Download template, lalu isi data pegawai pada sheet "Data Pegawai" mulai baris ke-2 (baris 1 adalah judul kolom, jangan diubah).</li>
                         <li>Pilih <strong>Sekolah</strong> di atas. Seluruh pegawai di file ini akan dimasukkan ke sekolah tersebut.</li>
@@ -42,7 +42,7 @@
 
                 <div class="mt-6 flex flex-wrap justify-between gap-2">
                     <x-button href="{{ route('admin.files.download.pegawai') }}" variant="light">
-                        <i class="bi bi-download me-1"></i> Download Template
+                        <i class="bi bi-download me-1 text-emerald-600 dark:text-emerald-400"></i> Download Template
                     </x-button>
                     <div class="flex gap-2">
                         <x-button href="{{ route('admin.pegawai.index') }}" variant="light">Batal</x-button>
@@ -60,7 +60,7 @@
                 @csrf
 
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <h3 class="font-semibold md:col-span-2">Data Pribadi</h3>
+                    <h3 class="flex items-center gap-2 font-semibold text-indigo-700 dark:text-indigo-300 md:col-span-2"><i class="bi bi-person-vcard-fill"></i>Data Pribadi</h3>
 
                     <x-form.select name="sekolah_id" label="Sekolah" placeholder="Pilih sekolah" :options="$sekolahs" :value="old('sekolah_id', request('sekolah_id'))" required />
                     <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama')" required />
@@ -74,7 +74,7 @@
                         <x-form.textarea name="alamat" label="Alamat Tempat Tinggal" rows="2" required>{{ old('alamat') }}</x-form.textarea>
                     </div>
 
-                    <h3 class="mt-2 font-semibold md:col-span-2">Kepegawaian</h3>
+                    <h3 class="mt-2 flex items-center gap-2 font-semibold text-amber-600 dark:text-amber-300 md:col-span-2"><i class="bi bi-briefcase-fill"></i>Kepegawaian</h3>
 
                     <x-form.input name="golongan" label="Golongan" helper="Contoh: III/a. Kosongkan jika tidak ada." :value="old('golongan')" />
                     <x-form.input name="pangkat" label="Pangkat" helper="Kosongkan jika tidak ada." :value="old('pangkat')" />
@@ -83,7 +83,7 @@
                     <x-form.select name="tugas" label="Tugas" placeholder="Pilih tugas" :options="$opsi['tugas']" :value="old('tugas')" required />
                     <x-form.select name="status_kepegawaian" label="Status Kepegawaian" placeholder="Pilih status" :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian')" required />
 
-                    <h3 class="mt-2 font-semibold md:col-span-2">Pendidikan</h3>
+                    <h3 class="mt-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300 md:col-span-2"><i class="bi bi-mortarboard-fill"></i>Pendidikan</h3>
 
                     <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan" :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir')" required />
                     <x-form.input name="unit_satuan_pendidikan_terakhir" label="Unit Satuan Pendidikan Terakhir" helper="Nama sekolah/kampus pendidikan terakhir." :value="old('unit_satuan_pendidikan_terakhir')" required />

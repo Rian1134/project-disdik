@@ -13,7 +13,7 @@
             try {
                 var tersimpan = localStorage.getItem('theme');
                 var gelap = tersimpan ? tersimpan === 'dark' : window.matchMedia('(prefers-color-scheme: dark)')
-                .matches;
+                    .matches;
                 document.documentElement.classList.toggle('dark', gelap);
             } catch (e) {}
         })();
@@ -83,46 +83,14 @@
                 $aktif = 'bg-indigo-50 text-indigo-700 font-semibold dark:bg-indigo-500/20 dark:text-indigo-200';
                 $hover =
                     'text-gray-600 hover:bg-slate-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white';
-
-                // Tambah menu baru cukup menambah satu baris di sini.
-                $menu = [
-                    [
-                        'route' => 'admin.sekolah.index',
-                        'pattern' => 'admin.sekolah.*',
-                        'label' => 'Data Sekolah',
-                        'icon' => 'bi-building-fill',
-                        'tile' => 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300',
-                    ],
-                    [
-                        'route' => 'admin.siswa.index',
-                        'pattern' => 'admin.siswa.*',
-                        'label' => 'Data Siswa',
-                        'icon' => 'bi-people-fill',
-                        'tile' => 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300',
-                    ],
-                    [
-                        'route' => 'admin.pegawai.index',
-                        'pattern' => 'admin.pegawai.*',
-                        'label' => 'Data Pegawai',
-                        'icon' => 'bi-person-badge-fill',
-                        'tile' => 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300',
-                    ],
-                    [
-                        'route' => 'admin.users.index',
-                        'pattern' => 'admin.users.*',
-                        'label' => 'Users',
-                        'icon' => 'bi-person-fill-gear',
-                        'tile' => 'bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-300',
-                    ],
-                ];
             @endphp
 
             {{-- Profil (saat collapse: hanya avatar, tanpa padding berlebih) --}}
             <div
-                class="mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-indigo-50 to-sky-50 p-3 ring-1 ring-indigo-100 dark:from-indigo-500/10 dark:to-sky-500/10 dark:ring-indigo-500/20 [[data-sidebar-collapsed=true]_&]:justify-center [[data-sidebar-collapsed=true]_&]:gap-0 [[data-sidebar-collapsed=true]_&]:bg-none [[data-sidebar-collapsed=true]_&]:p-0 [[data-sidebar-collapsed=true]_&]:ring-0">
+                class="mb-3 flex items-center gap-3 rounded-xl bg-linear-to-br from-indigo-50 to-sky-50 p-3 ring-1 ring-indigo-100 dark:from-indigo-500/10 dark:to-sky-500/10 dark:ring-indigo-500/20 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:gap-0 in-data-[sidebar-collapsed=true]:bg-none in-data-[sidebar-collapsed=true]:p-0 in-data-[sidebar-collapsed=true]:ring-0">
                 {{-- shrink-0 agar avatar tidak gepeng; saat collapse dipaksa 36px agar muat di lebar 40px --}}
                 <div
-                    class="flex shrink-0 items-center justify-center [[data-sidebar-collapsed=true]_&]:[&>*]:h-9 [[data-sidebar-collapsed=true]_&]:[&>*]:w-9">
+                    class="flex shrink-0 items-center justify-center in-data-[sidebar-collapsed=true]:*:h-9 in-data-[sidebar-collapsed=true]:*:w-9">
                     <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="md" />
                 </div>
                 <div class="min-w-0 flex-1" data-sidebar-label>
@@ -137,27 +105,70 @@
                 Menu Utama
             </p>
 
-            @foreach ($menu as $item)
-                @php $on = request()->routeIs($item['pattern']); @endphp
-                <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}"
-                    class="sidebar-link group relative rounded-lg [[data-sidebar-collapsed=true]_&]:justify-center [[data-sidebar-collapsed=true]_&]:px-1 {{ $on ? $aktif : $hover }}"
-                    @if ($on) aria-current="page" @endif>
-                    @if ($on)
-                        <span class="absolute inset-y-1.5 left-0 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-400"
-                            aria-hidden="true"></span>
-                    @endif
-                    <span
-                        class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base transition-transform group-hover:scale-105 {{ $item['tile'] }}">
-                        <i class="bi {{ $item['icon'] }}"></i>
-                    </span>
-                    <span class="truncate" data-sidebar-label>{{ $item['label'] }}</span>
-                </a>
-            @endforeach
+            {{-- Data Sekolah --}}
+            <a href="{{ route('admin.sekolah.index') }}" title="Data Sekolah"
+                class="sidebar-link group relative rounded-lg in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1 {{ request()->routeIs('admin.sekolah.*') ? $aktif : $hover }}"
+                @if (request()->routeIs('admin.sekolah.*')) aria-current="page" @endif>
+                @if (request()->routeIs('admin.sekolah.*'))
+                    <span class="absolute inset-y-1.5 left-0 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-400"
+                        aria-hidden="true"></span>
+                @endif
+                <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base transition-transform group-hover:scale-105 bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
+                    <i class="bi bi-building-fill"></i>
+                </span>
+                <span class="truncate" data-sidebar-label>Data Sekolah</span>
+            </a>
+
+            {{-- Data Siswa --}}
+            <a href="{{ route('admin.siswa.index') }}" title="Data Siswa"
+                class="sidebar-link group relative rounded-lg in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1 {{ request()->routeIs('admin.siswa.*') ? $aktif : $hover }}"
+                @if (request()->routeIs('admin.siswa.*')) aria-current="page" @endif>
+                @if (request()->routeIs('admin.siswa.*'))
+                    <span class="absolute inset-y-1.5 left-0 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-400"
+                        aria-hidden="true"></span>
+                @endif
+                <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base transition-transform group-hover:scale-105 bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300">
+                    <i class="bi bi-people-fill"></i>
+                </span>
+                <span class="truncate" data-sidebar-label>Data Siswa</span>
+            </a>
+
+            {{-- Data Pegawai --}}
+            <a href="{{ route('admin.pegawai.index') }}" title="Data Pegawai"
+                class="sidebar-link group relative rounded-lg in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1 {{ request()->routeIs('admin.pegawai.*') ? $aktif : $hover }}"
+                @if (request()->routeIs('admin.pegawai.*')) aria-current="page" @endif>
+                @if (request()->routeIs('admin.pegawai.*'))
+                    <span class="absolute inset-y-1.5 left-0 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-400"
+                        aria-hidden="true"></span>
+                @endif
+                <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base transition-transform group-hover:scale-105 bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300">
+                    <i class="bi bi-person-badge-fill"></i>
+                </span>
+                <span class="truncate" data-sidebar-label>Data Pegawai</span>
+            </a>
+
+            {{-- Users --}}
+            <a href="{{ route('admin.users.index') }}" title="Users"
+                class="sidebar-link group relative rounded-lg in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1 {{ request()->routeIs('admin.users.*') ? $aktif : $hover }}"
+                @if (request()->routeIs('admin.users.*')) aria-current="page" @endif>
+                @if (request()->routeIs('admin.users.*'))
+                    <span class="absolute inset-y-1.5 left-0 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-400"
+                        aria-hidden="true"></span>
+                @endif
+                <span
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base transition-transform group-hover:scale-105 bg-sky-100 text-sky-600 dark:bg-sky-500/20 dark:text-sky-300">
+                    <i class="bi bi-person-fill-gear"></i>
+                </span>
+                <span class="truncate" data-sidebar-label>Users</span>
+            </a>
 
             {{-- Logout: mt-auto mendorongnya ke dasar sidebar (slot berada di dalam nav flex-1) --}}
             <div class="mt-auto border-t border-gray-200 pt-3 dark:border-gray-700">
                 <button type="button" data-modal-open="logoutModal" title="Logout"
-                    class="sidebar-link group w-full rounded-lg text-left text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 [[data-sidebar-collapsed=true]_&]:justify-center [[data-sidebar-collapsed=true]_&]:px-1">
+                    class="sidebar-link group w-full rounded-lg text-left text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1">
                     <span
                         class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-base text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">
                         <i class="bi bi-box-arrow-right"></i>

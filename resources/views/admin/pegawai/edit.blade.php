@@ -5,7 +5,7 @@
 @section('content')
 <x-card>
     <x-slot:header>
-        <span class="font-semibold">Edit Pegawai</span>
+        <span class="font-semibold"><i class="bi bi-pencil-square me-2 text-amber-500"></i>Edit Pegawai</span>
     </x-slot:header>
 
     <form action="{{ route('admin.pegawai.update', $pegawai) }}" method="POST">
@@ -13,7 +13,7 @@
         @method('PUT')
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <h3 class="font-semibold md:col-span-2">Data Pribadi</h3>
+            <h3 class="flex items-center gap-2 font-semibold text-indigo-700 dark:text-indigo-300 md:col-span-2"><i class="bi bi-person-vcard-fill"></i>Data Pribadi</h3>
 
             <x-form.select name="sekolah_id" label="Sekolah" placeholder="Pilih sekolah" :options="$sekolahs" :value="old('sekolah_id', $pegawai->sekolah_id)" required />
             <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama', $pegawai->nama)" required />
@@ -27,7 +27,7 @@
                 <x-form.textarea name="alamat" label="Alamat Tempat Tinggal" rows="2" required>{{ old('alamat', $pegawai->alamat) }}</x-form.textarea>
             </div>
 
-            <h3 class="mt-2 font-semibold md:col-span-2">Kepegawaian</h3>
+            <h3 class="mt-2 flex items-center gap-2 font-semibold text-amber-600 dark:text-amber-300 md:col-span-2"><i class="bi bi-briefcase-fill"></i>Kepegawaian</h3>
 
             <x-form.input name="golongan" label="Golongan" helper="Contoh: III/a. Kosongkan jika tidak ada." :value="old('golongan', $pegawai->golongan)" />
             <x-form.input name="pangkat" label="Pangkat" helper="Kosongkan jika tidak ada." :value="old('pangkat', $pegawai->pangkat)" />
@@ -36,7 +36,7 @@
             <x-form.select name="tugas" label="Tugas" placeholder="Pilih tugas" :options="$opsi['tugas']" :value="old('tugas', $pegawai->tugas)" required />
             <x-form.select name="status_kepegawaian" label="Status Kepegawaian" placeholder="Pilih status" :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian', $pegawai->status_kepegawaian)" required />
 
-            <h3 class="mt-2 font-semibold md:col-span-2">Pendidikan</h3>
+            <h3 class="mt-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300 md:col-span-2"><i class="bi bi-mortarboard-fill"></i>Pendidikan</h3>
 
             <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan" :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir', $pegawai->pendidikan_terakhir)" required />
             <x-form.input name="unit_satuan_pendidikan_terakhir" label="Unit Satuan Pendidikan Terakhir" helper="Nama sekolah/kampus pendidikan terakhir." :value="old('unit_satuan_pendidikan_terakhir', $pegawai->unit_satuan_pendidikan_terakhir)" required />
