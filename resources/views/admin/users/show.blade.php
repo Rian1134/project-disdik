@@ -91,11 +91,11 @@
         <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
             <div class="flex justify-between gap-4 py-2">
                 <dt class="shrink-0 text-slate-500 dark:text-slate-400">Nama</dt>
-                <dd class="min-w-0 break-words text-right font-medium">{{ $user->name }}</dd>
+                <dd class="min-w-0 wrap-break-word text-right font-medium">{{ $user->name }}</dd>
             </div>
             <div class="flex justify-between gap-4 py-2">
                 <dt class="shrink-0 text-slate-500 dark:text-slate-400">Email</dt>
-                <dd class="min-w-0 break-words text-right font-medium">{{ $user->email }}</dd>
+                <dd class="min-w-0 wrap-break-word text-right font-medium">{{ $user->email }}</dd>
             </div>
             <div class="flex justify-between gap-4 py-2">
                 <dt class="shrink-0 text-slate-500 dark:text-slate-400">Role</dt>
