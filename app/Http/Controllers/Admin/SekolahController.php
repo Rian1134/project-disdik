@@ -77,7 +77,19 @@ class SekolahController extends Controller
         $guru = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Pendidik')->count();
         $tu = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Kependidikan')->count();
 
-        return view('admin.sekolah.show', compact('sekolah', 'guru', 'tu'));
+        $pegawais = Pegawai::where('sekolah_id', $sekolah->id)
+            ->orderByDesc('jabatan')
+            ->orderBy('nama')
+            ->paginate(10, ['*'], 'pegawai_page')
+            ->withQueryString();
+
+        $siswas = $sekolah->siswas()
+            ->orderBy('kelas')
+            ->orderBy('nama_siswa')
+            ->paginate(15, ['*'], 'siswa_page')
+            ->withQueryString();
+
+        return view('admin.sekolah.show', compact('sekolah', 'guru', 'tu', 'pegawais', 'siswas'));
     }
 
     /**
