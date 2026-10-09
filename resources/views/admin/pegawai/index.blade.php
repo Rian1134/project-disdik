@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Data Sekolah')
+@section('title', 'Data Pegawai')
 
 @section('content')
 <x-card>
     <x-slot:header>
         <div class="flex items-center justify-between gap-2">
-            <span class="font-semibold">List Sekolah</span>
-            <x-button href="{{ route('admin.sekolah.create') }}" size="sm">
+            <span class="font-semibold">List Pegawai</span>
+            <x-button href="{{ route('admin.pegawai.create') }}" size="sm">
                 <i class="bi bi-plus-lg me-1"></i> Tambah
             </x-button>
         </div>
@@ -15,22 +15,30 @@
 
     <x-table striped hover bordered class="text-sm">
         <x-slot:head>
-            <tr class="bg-gray-100 text-center align-middle dark:bg-gray-700">
-                <x-table.heading rowspan="2" class="text-center align-middle">No</x-table.heading>
-                <x-table.heading colspan="2" class="text-center">Nomor</x-table.heading>
-                <x-table.heading rowspan="2" class="min-w-56 text-center align-middle">Nama Sekolah</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Jumlah Tenaga Pendidik / Guru</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Jumlah Tenaga Kependidikan / TU</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Jumlah Siswa</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Status Sekolah</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Akreditasi Sekolah</x-table.heading>
-                <x-table.heading rowspan="2" class="min-w-64 text-center align-middle">Alamat Sekolah</x-table.heading>
-                <x-table.heading rowspan="2" class="text-center align-middle">Kecamatan</x-table.heading>
-                <x-table.heading rowspan="2" class="min-w-28 text-center align-middle">Aksi</x-table.heading>
+            <tr class="bg-gray-100 dark:bg-gray-700">
+                <x-table.heading rowspan="3" class="text-center align-middle">No</x-table.heading>
+                <x-table.heading colspan="2" class="text-center align-middle">Nomor</x-table.heading>
+                <x-table.heading rowspan="3" class="text-center align-middle min-w-56">Nama Sekolah</x-table.heading>
+                <x-table.heading colspan="11" class="text-center align-middle">Jumlah Pegawai</x-table.heading>
             </tr>
-            <tr class="bg-gray-100 text-center dark:bg-gray-700">
-                <x-table.heading class="text-center">Statistik Sekolah (NSS)</x-table.heading>
-                <x-table.heading class="text-center">Pokok Sekolah Nasional (NPSN)</x-table.heading>
+            <tr class="bg-gray-100 dark:bg-gray-700">
+                <x-table.heading rowspan="2" class="text-center align-middle">Statistik Sekolah (NSS)</x-table.heading>
+                <x-table.heading rowspan="2" class="text-center align-middle">Pokok Sekolah Nasional (NPSN)</x-table.heading>
+                <x-table.heading colspan="5" class="text-center align-middle">Tenaga Pendidik / Guru</x-table.heading>
+                <x-table.heading colspan="5" class="text-center align-middle">Tenaga Kependidikan / Tata Usaha</x-table.heading>
+                <x-table.heading rowspan="2" class="text-center align-middle">Total</x-table.heading>
+            </tr>
+            <tr class="bg-gray-100 dark:bg-gray-700">
+                <x-table.heading class="text-center align-middle">PNS</x-table.heading>
+                <x-table.heading class="text-center align-middle">PPPK</x-table.heading>
+                <x-table.heading class="text-center align-middle">PPPK Paruh Waktu</x-table.heading>
+                <x-table.heading class="text-center align-middle">Honorer</x-table.heading>
+                <x-table.heading class="text-center align-middle">Jumlah</x-table.heading>
+                <x-table.heading class="text-center align-middle">PNS</x-table.heading>
+                <x-table.heading class="text-center align-middle">PPPK</x-table.heading>
+                <x-table.heading class="text-center align-middle">PPPK Paruh Waktu</x-table.heading>
+                <x-table.heading class="text-center align-middle">Honorer</x-table.heading>
+                <x-table.heading class="text-center align-middle">Jumlah</x-table.heading>
             </tr>
         </x-slot:head>
 
@@ -39,54 +47,23 @@
                 <x-table.cell class="text-center">{{ $sekolahs->firstItem() + $loop->index }}</x-table.cell>
                 <x-table.cell class="whitespace-nowrap">{{ $sekolah->nss }}</x-table.cell>
                 <x-table.cell class="whitespace-nowrap">{{ $sekolah->npsn }}</x-table.cell>
-                <x-table.cell class="font-medium">{{ $sekolah->nama_sekolah }}</x-table.cell>
-                <x-table.cell class="text-center">-</x-table.cell>
-                <x-table.cell class="text-center">-</x-table.cell>
-                <x-table.cell class="text-center font-semibold">{{ $sekolah->siswas_count }}</x-table.cell>
-                <x-table.cell class="text-center">
-                    <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
+                <x-table.cell class="font-medium">
+                    <a href="{{ route('admin.pegawai.sekolah', $sekolah->id) }}" class="hover:underline">{{ $sekolah->nama_sekolah }}</a>
                 </x-table.cell>
-                <x-table.cell class="text-center">
-                    <x-badge variant="success" pill>{{ $sekolah->akreditasi }}</x-badge>
-                </x-table.cell>
-                <x-table.cell>{{ $sekolah->alamat }}</x-table.cell>
-                <x-table.cell>{{ $sekolah->kecamatan }}</x-table.cell>
-                <x-table.cell class="text-center whitespace-nowrap">
-                    <div class="inline-flex items-center gap-1">
-                        <a href="{{ route('admin.sekolah.show', $sekolah) }}" title="Detail"
-                            class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-                            <i class="bi bi-eye-fill"></i>
-                        </a>
-                        <a href="{{ route('admin.sekolah.edit', $sekolah) }}" title="Edit"
-                            class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-                            <i class="bi bi-pencil-fill"></i>
-                        </a>
-                        <button type="button" data-modal-open="hapus-{{ $sekolah->id }}" title="Hapus"
-                            class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </div>
-
-                    <x-modal id="hapus-{{ $sekolah->id }}" size="sm" centered>
-                        <x-slot:header>Konfirmasi Hapus</x-slot:header>
-
-                        <p class="text-center text-sm">
-                            Yakin ingin menghapus <strong>{{ $sekolah->nama_sekolah }}</strong>?
-                        </p>
-
-                        <x-slot:footer>
-                            <x-button variant="light" data-modal-close>Batal</x-button>
-                            <form action="{{ route('admin.sekolah.destroy', $sekolah) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-button type="submit" variant="danger">Hapus</x-button>
-                            </form>
-                        </x-slot:footer>
-                    </x-modal>
-                </x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->guru_pns }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->guru_pppk }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->guru_paruh }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->guru_honorer }}</x-table.cell>
+                <x-table.cell class="text-center font-semibold">{{ $sekolah->guru_pns + $sekolah->guru_pppk + $sekolah->guru_paruh + $sekolah->guru_honorer }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->tu_pns }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->tu_pppk }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->tu_paruh }}</x-table.cell>
+                <x-table.cell class="text-center">{{ $sekolah->tu_honorer }}</x-table.cell>
+                <x-table.cell class="text-center font-semibold">{{ $sekolah->tu_pns + $sekolah->tu_pppk + $sekolah->tu_paruh + $sekolah->tu_honorer }}</x-table.cell>
+                <x-table.cell class="text-center font-semibold">{{ $sekolah->guru_pns + $sekolah->guru_pppk + $sekolah->guru_paruh + $sekolah->guru_honorer + $sekolah->tu_pns + $sekolah->tu_pppk + $sekolah->tu_paruh + $sekolah->tu_honorer }}</x-table.cell>
             </x-table.row>
         @empty
-            <x-table.empty colspan="12" />
+            <x-table.empty colspan="15" />
         @endforelse
     </x-table>
 

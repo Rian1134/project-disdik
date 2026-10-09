@@ -42,7 +42,8 @@
             <div class="flex items-center gap-3 border-b border-gray-200 dark:border-gray-700 pb-4 mb-3">
                 <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="md" />
                 <div class="min-w-0 flex-1" data-sidebar-label>
-                    <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">{{ Auth::user()?->name ?? 'Admin' }}</p>
+                    <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        {{ Auth::user()?->name ?? 'Admin' }}</p>
                     <p class="truncate text-xs text-gray-500 dark:text-gray-400">Admin</p>
                 </div>
             </div>
@@ -65,7 +66,9 @@
                 <span data-sidebar-label>Data Siswa</span>
             </a>
 
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.pegawai.index') }}"
+                class="sidebar-link {{ request()->routeIs('admin.pegawai.*') ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : '' }}"
+                @if (request()->routeIs('admin.pegawai.*')) aria-current="page" @endif>
                 <i class="bi bi-person-badge-fill text-base shrink-0"></i>
                 <span data-sidebar-label>Data Pegawai</span>
             </a>
@@ -115,7 +118,8 @@
                 <x-slot:actions>
                     <div class="flex items-center gap-2">
                         <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="xs" />
-                        <span class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
+                        <span
+                            class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
                     </div>
                 </x-slot:actions>
             </x-navbar>

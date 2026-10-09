@@ -2,40 +2,25 @@
 
 namespace App\Imports;
 
+use App\Imports\Concerns\MembacaTanggal;
 use App\Models\Siswa;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsUnknownSheets;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStartRow;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 /**
  * Import Template_Data_Siswa_web.xlsx (sheet "Data Siswa", data mulai baris ke-3).
  * Semua baris divalidasi dulu; kalau ada yang salah, tidak ada data yang tersimpan.
  */
-class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets, SkipsUnknownSheets
+class SiswaImport implements ToCollection, WithStartRow
 {
+    use MembacaTanggal;
+
     public function __construct(private int $sekolahId)
     {
-    }
-
-    /**
-     * Hanya baca sheet "Data Siswa". Tanpa ini, Laravel Excel ikut membaca
-     * sheet "Petunjuk" dan teks petunjuknya dianggap data siswa.
-     */
-    public function sheets(): array
-    {
-        return ['Data Siswa' => $this];
-    }
-
-    public function onUnknownSheet($sheetName): void
-    {
-        // Sheet lain (mis. "Petunjuk") diabaikan.
     }
 
     public function startRow(): int
@@ -108,35 +93,6 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets, Ski
         }
 
         Siswa::insert($simpan);
-    }
-
-    /**
-     * Ubah teks tanggal jadi Y-m-d. Mendukung: 12-05-2010, 12/05/2010, 2010-05-12,
-     * 12 Mei 2010, dan angka tanggal Excel.
-     */
-    private function tanggal(string $teks): ?string
-    {
-        $teks = trim($teks);
-
-        if ($teks === '') {
-            return null;
-        }
-
-        if (is_numeric($teks)) {
-            return Date::excelToDateTimeObject((float) $teks)->format('Y-m-d');
-        }
-
-        foreach (['d-m-Y', 'd/m/Y', 'Y-m-d', 'd.m.Y'] as $format) {
-            if (Carbon::hasFormat($teks, $format)) {
-                return Carbon::createFromFormat($format, $teks)->format('Y-m-d');
-            }
-        }
-
-        try {
-            return Carbon::parseFromLocale($teks, 'id')->format('Y-m-d');
-        } catch (\Throwable) {
-            return null;
-        }
     }
 
     /**

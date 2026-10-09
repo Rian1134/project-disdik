@@ -40,4 +40,9 @@ class Sekolah extends Model
     {
         return $this->hasMany(Siswa::class);
     }
+
+    public function pegawais()
+    {
+        return $this->hasMany(Pegawai::class);
+    }
 }

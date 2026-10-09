@@ -12,6 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pegawais', function (Blueprint $table) {
+            
+            $table->unsignedBigInteger('sekolah_id');
+            $table->foreign('sekolah_id')->references('id')->on('sekolahs')->onDelete('cascade');
+
             $table->id();
             $table->string('nama');
             $table->string('nip');
@@ -21,8 +25,8 @@ return new class extends Migration
             $table->date('tanggal_lahir');
             $table->string('nik');
             $table->string('alamat');
-            $table->string('golongan');
-            $table->string('pangkat');
+            $table->string('golongan')->nullable();
+            $table->string('pangkat')->nullable();
             $table->date('terhitung_mulai_tanggal');
             $table->string('jabatan');
             $table->string('tugas');
