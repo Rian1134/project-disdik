@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pegawai;
 use App\Models\Sekolah;
+use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,9 +17,34 @@ class SekolahController extends Controller
      */
     public function index()
     {
-        $sekolahs = Sekolah::withCount('siswas')->orderBy('nama_sekolah')->paginate(15);
+        // Guru (Tenaga Pendidik) dan TU (Tenaga Kependidikan) dihitung terpisah per sekolah
+        $sekolahs = Sekolah::withCount('siswas')
+            ->addSelect([
+                'guru_count' => Pegawai::selectRaw('count(*)')
+                    ->whereColumn('sekolah_id', 'sekolahs.id')
+                    ->where('jabatan', 'Tenaga Pendidik'),
+                'tu_count' => Pegawai::selectRaw('count(*)')
+                    ->whereColumn('sekolah_id', 'sekolahs.id')
+                    ->where('jabatan', 'Tenaga Kependidikan'),
+            ])
+            ->orderBy('nama_sekolah')
+            ->paginate(15);
 
-        return view('admin.sekolah.index', compact('sekolahs'));
+        // Ringkasan untuk kartu statistik
+        $total = [
+            'sekolah' => $sekolahs->total(),
+            'siswa' => Siswa::count(),
+            'guru' => Pegawai::where('jabatan', 'Tenaga Pendidik')->count(),
+            'tu' => Pegawai::where('jabatan', 'Tenaga Kependidikan')->count(),
+        ];
+
+        // Data grafik (seluruh sekolah)
+        $status = Sekolah::selectRaw('status_sekolah, count(*) as total')
+            ->groupBy('status_sekolah')->pluck('total', 'status_sekolah');
+        $akreditasi = Sekolah::selectRaw('akreditasi, count(*) as total')
+            ->groupBy('akreditasi')->orderBy('akreditasi')->pluck('total', 'akreditasi');
+
+        return view('admin.sekolah.index', compact('sekolahs', 'total', 'status', 'akreditasi'));
     }
 
     /**
@@ -47,7 +74,10 @@ class SekolahController extends Controller
     {
         $sekolah->loadCount('siswas');
 
-        return view('admin.sekolah.show', compact('sekolah'));
+        $guru = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Pendidik')->count();
+        $tu = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Kependidikan')->count();
+
+        return view('admin.sekolah.show', compact('sekolah', 'guru', 'tu'));
     }
 
     /**
