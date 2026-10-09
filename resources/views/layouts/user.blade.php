@@ -81,7 +81,9 @@
                 <span data-sidebar-label>Data Siswa</span>
             </a>
 
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('user.pegawai.index') }}"
+                class="sidebar-link {{ request()->routeIs('user.pegawai.*') ? 'bg-gray-100 dark:bg-gray-700 font-semibold' : '' }}"
+                @if (request()->routeIs('user.pegawai.*')) aria-current="page" @endif>
                 <i class="bi bi-person-badge-fill text-base shrink-0"></i>
                 <span data-sidebar-label>Data Pegawai</span>
             </a>

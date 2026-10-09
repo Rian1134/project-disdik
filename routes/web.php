@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\SekolahController as AdminSekolahController;
 use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\User\PegawaiController as UserPegawaiController;
 use App\Http\Controllers\User\SekolahController as UserSekolahController;
 use App\Http\Controllers\User\SiswaController as UserSiswaController;
 use Illuminate\Support\Facades\Route;
@@ -38,4 +39,8 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::post('siswa/import', [UserSiswaController::class, 'import'])->name('siswa.import');
     Route::get('siswa/template', [UserSiswaController::class, 'download'])->name('siswa.download');
     Route::resource('siswa', UserSiswaController::class);
+
+    Route::post('pegawai/import', [UserPegawaiController::class, 'import'])->name('pegawai.import');
+    Route::get('pegawai/template', [UserPegawaiController::class, 'download'])->name('pegawai.download');
+    Route::resource('pegawai', UserPegawaiController::class);
 });
