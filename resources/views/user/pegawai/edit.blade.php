@@ -3,9 +3,25 @@
 @section('title', 'Edit Pegawai')
 
 @section('content')
+    @php
+        $bagian =
+            'flex items-center gap-2 border-b border-gray-200 pb-2 font-semibold md:col-span-2 dark:border-gray-700';
+        $ikonBagian = 'text-emerald-600 dark:text-emerald-400';
+    @endphp
     <x-card>
         <x-slot:header>
-            <span class="font-semibold">Edit Pegawai</span>
+            <div class="flex items-center gap-3">
+                <span
+                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-base font-semibold text-white">
+                    {{ mb_strtoupper(mb_substr($pegawai->nama, 0, 1)) }}
+                </span>
+                <div class="min-w-0">
+                    <h2 class="font-semibold leading-tight">Edit Pegawai</h2>
+                    <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+                        {{ $pegawai->nama }} &middot; {{ $pegawai->jabatan }}
+                    </p>
+                </div>
+            </div>
         </x-slot:header>
 
         <form action="{{ route('user.pegawai.update', $pegawai) }}" method="POST">
@@ -13,7 +29,7 @@
             @method('PUT')
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <h3 class="font-semibold md:col-span-2">Data Pribadi</h3>
+                <h3 class="{{ $bagian }}"><i class="bi bi-person-vcard {{ $ikonBagian }}"></i> Data Pribadi</h3>
 
                 <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama', $pegawai->nama)" required />
                 <x-form.input name="nik" label="NIK" :value="old('nik', $pegawai->nik)" required />
@@ -30,7 +46,7 @@
                         required>{{ old('alamat', $pegawai->alamat) }}</x-form.textarea>
                 </div>
 
-                <h3 class="mt-2 font-semibold md:col-span-2">Kepegawaian</h3>
+                <h3 class="{{ $bagian }} mt-2"><i class="bi bi-briefcase {{ $ikonBagian }}"></i> Kepegawaian</h3>
 
                 <x-form.input name="golongan" label="Golongan" helper="Contoh: III/a. Kosongkan jika tidak ada."
                     :value="old('golongan', $pegawai->golongan)" />
@@ -44,7 +60,7 @@
                 <x-form.select name="status_kepegawaian" label="Status Kepegawaian" placeholder="Pilih status"
                     :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian', $pegawai->status_kepegawaian)" required />
 
-                <h3 class="mt-2 font-semibold md:col-span-2">Pendidikan</h3>
+                <h3 class="{{ $bagian }} mt-2"><i class="bi bi-mortarboard {{ $ikonBagian }}"></i> Pendidikan</h3>
 
                 <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan"
                     :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir', $pegawai->pendidikan_terakhir)" required />
@@ -52,9 +68,9 @@
                     helper="Nama sekolah/kampus pendidikan terakhir." :value="old('unit_satuan_pendidikan_terakhir', $pegawai->unit_satuan_pendidikan_terakhir)" required />
             </div>
 
-            <div class="mt-6 flex justify-end gap-2">
+            <div class="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
                 <x-button href="{{ route('user.pegawai.index') }}" variant="light">Batal</x-button>
-                <x-button type="submit">Simpan</x-button>
+                <x-button type="submit"><i class="bi bi-check-lg me-1"></i> Simpan</x-button>
             </div>
         </form>
     </x-card>

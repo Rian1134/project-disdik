@@ -3,10 +3,25 @@
 @section('title', 'Tambah Pegawai')
 
 @section('content')
-    @php $manual = old('nama') !== null; @endphp
+    @php
+        $manual = old('nama') !== null;
+        $bagian =
+            'flex items-center gap-2 border-b border-gray-200 pb-2 font-semibold md:col-span-2 dark:border-gray-700';
+        $ikonBagian = 'text-emerald-600 dark:text-emerald-400';
+    @endphp
     <x-card>
         <x-slot:header>
-            <span class="font-semibold">Tambah Pegawai</span>
+            <div class="flex items-center gap-3">
+                <span
+                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-lg text-white">
+                    <i class="bi bi-person-plus-fill"></i>
+                </span>
+                <div>
+                    <h2 class="font-semibold leading-tight">Tambah Pegawai</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Upload data banyak pegawai lewat Excel atau isi satu
+                        per satu.</p>
+                </div>
+            </div>
         </x-slot:header>
 
         <x-tabs id="tambahPegawaiTabs">
@@ -27,9 +42,12 @@
                     <x-form.input name="file" label="File Excel" type="file" accept=".xlsx,.xls"
                         helper="Format .xlsx atau .xls, maksimal 5 MB." required />
 
-                    <div class="mt-4 rounded border border-gray-200 p-4 text-sm dark:border-gray-700">
-                        <p class="mb-2 font-semibold">Petunjuk</p>
-                        <ol class="list-decimal space-y-1 ps-5 text-gray-600 dark:text-gray-300">
+                    <div
+                        class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                        <p class="mb-2 flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
+                            <i class="bi bi-info-circle-fill"></i> Petunjuk
+                        </p>
+                        <ol class="list-decimal space-y-1 ps-5 text-gray-700 dark:text-gray-300">
                             <li>Download template, lalu isi data pegawai pada sheet "Data Pegawai" mulai <strong>baris
                                     ke-2</strong>. Baris contoh di template harus dihapus atau diganti, karena ikut
                                 tersimpan kalau dibiarkan.</li>
@@ -63,7 +81,8 @@
                     @csrf
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <h3 class="font-semibold md:col-span-2">Data Pribadi</h3>
+                        <h3 class="{{ $bagian }}"><i class="bi bi-person-vcard {{ $ikonBagian }}"></i> Data Pribadi
+                        </h3>
 
                         <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama')" required />
                         <x-form.input name="nik" label="NIK" :value="old('nik')" required />
@@ -81,7 +100,8 @@
                                 required>{{ old('alamat') }}</x-form.textarea>
                         </div>
 
-                        <h3 class="mt-2 font-semibold md:col-span-2">Kepegawaian</h3>
+                        <h3 class="{{ $bagian }} mt-2"><i class="bi bi-briefcase {{ $ikonBagian }}"></i> Kepegawaian
+                        </h3>
 
                         <x-form.input name="golongan" label="Golongan" helper="Contoh: III/a. Kosongkan jika tidak ada."
                             :value="old('golongan')" />
@@ -96,7 +116,8 @@
                         <x-form.select name="status_kepegawaian" label="Status Kepegawaian" placeholder="Pilih status"
                             :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian')" required />
 
-                        <h3 class="mt-2 font-semibold md:col-span-2">Pendidikan</h3>
+                        <h3 class="{{ $bagian }} mt-2"><i class="bi bi-mortarboard {{ $ikonBagian }}"></i>
+                            Pendidikan</h3>
 
                         <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan"
                             :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir')" required />
@@ -104,9 +125,9 @@
                             helper="Nama sekolah/kampus pendidikan terakhir." :value="old('unit_satuan_pendidikan_terakhir')" required />
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-2">
+                    <div class="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
                         <x-button href="{{ route('user.pegawai.index') }}" variant="light">Batal</x-button>
-                        <x-button type="submit">Simpan</x-button>
+                        <x-button type="submit"><i class="bi bi-check-lg me-1"></i> Simpan</x-button>
                     </div>
                 </form>
             </x-tabs.pane>
