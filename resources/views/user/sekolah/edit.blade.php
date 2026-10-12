@@ -5,7 +5,7 @@
 @section('content')
     @php
         // Tanggal dari model bisa berupa string atau Carbon; <input type="date"> butuh format Y-m-d.
-        $tglInput = fn ($nilai) => $nilai ? \Illuminate\Support\Carbon::parse($nilai)->format('Y-m-d') : null;
+        $tglInput = fn($nilai) => $nilai ? \Illuminate\Support\Carbon::parse($nilai)->format('Y-m-d') : null;
 
         $judulSeksi = 'mb-4 flex items-center gap-2 font-semibold';
         $ikonSeksi =
@@ -39,16 +39,19 @@
                         <x-form.input name="npsn" label="Nomor Pokok Sekolah Nasional" :value="old('npsn', $sekolah->npsn)" required />
                         <x-form.input name="nama_kepala_sekolah" label="Nama Kepala Sekolah" :value="old('nama_kepala_sekolah', $sekolah->nama_kepala_sekolah)" required />
                         <x-form.select name="akreditasi" label="Status Akreditasi" placeholder="Pilih akreditasi"
-                            :options="['A' => 'A', 'B' => 'B', 'C' => 'C']" :value="old('akreditasi', $sekolah->akreditasi)" required />
+                            :options="['A' => 'A', 'B' => 'B', 'C' => 'C', '-' => 'Tidak Terakreditasi']" :value="old('akreditasi', $sekolah->akreditasi)" required />
                         <x-form.select name="status_sekolah" label="Status Kepemilikan" placeholder="Pilih status"
                             :options="['Negeri' => 'Negeri', 'Swasta' => 'Swasta']" :value="old('status_sekolah', $sekolah->status_sekolah)" required />
                         <x-form.input name="tanggal_sk_pendirian" label="Tanggal SK Pendirian" type="date"
                             :value="old('tanggal_sk_pendirian', $tglInput($sekolah->tanggal_sk_pendirian))" required />
                         <x-form.input name="tanggal_sk_izin_oprasional" label="Tanggal SK Izin Operasional" type="date"
-                            :value="old('tanggal_sk_izin_oprasional', $tglInput($sekolah->tanggal_sk_izin_oprasional))" required />
+                            :value="old(
+                                'tanggal_sk_izin_oprasional',
+                                $tglInput($sekolah->tanggal_sk_izin_oprasional),
+                            )" required />
                         <div class="md:col-span-2">
-                            <x-form.input name="implementasi_kurikulum" label="Implementasi Kurikulum"
-                                :value="old('implementasi_kurikulum', $sekolah->implementasi_kurikulum)" required />
+                            <x-form.input name="implementasi_kurikulum" label="Implementasi Kurikulum" :value="old('implementasi_kurikulum', $sekolah->implementasi_kurikulum)"
+                                required />
                         </div>
                     </div>
                 </section>
@@ -111,21 +114,18 @@
                         <x-form.input name="laus_tanah" label="Luas Tanah" type="number" :value="old('laus_tanah', $sekolah->laus_tanah)" required>
                             <x-slot:suffix>m²</x-slot:suffix>
                         </x-form.input>
-                        <x-form.input name="laus_bangunan" label="Luas Bangunan" type="number"
-                            :value="old('laus_bangunan', $sekolah->laus_bangunan)" required>
+                        <x-form.input name="laus_bangunan" label="Luas Bangunan" type="number" :value="old('laus_bangunan', $sekolah->laus_bangunan)" required>
                             <x-slot:suffix>m²</x-slot:suffix>
                         </x-form.input>
                         <x-form.input name="tipe_internet" label="Tipe Internet" placeholder="Contoh: Fiber Optik"
                             :value="old('tipe_internet', $sekolah->tipe_internet)" />
                         <x-form.input name="internet_provider" label="Provider Internet" placeholder="Contoh: IndiHome"
                             :value="old('internet_provider', $sekolah->internet_provider)" />
-                        <x-form.input name="bandwith_internet" label="Bandwidth Internet" type="number"
-                            :value="old('bandwith_internet', $sekolah->bandwith_internet)">
+                        <x-form.input name="bandwith_internet" label="Bandwidth Internet" type="number" :value="old('bandwith_internet', $sekolah->bandwith_internet)">
                             <x-slot:suffix>Mbps</x-slot:suffix>
                         </x-form.input>
                         <x-form.input name="sumber_listrik" label="Sumber Listrik" :value="old('sumber_listrik', $sekolah->sumber_listrik)" />
-                        <x-form.input name="daya_listrik" label="Daya Listrik" type="number"
-                            :value="old('daya_listrik', $sekolah->daya_listrik)">
+                        <x-form.input name="daya_listrik" label="Daya Listrik" type="number" :value="old('daya_listrik', $sekolah->daya_listrik)">
                             <x-slot:suffix>VA</x-slot:suffix>
                         </x-form.input>
                         <x-form.input name="sumber_air" label="Sumber Air" :value="old('sumber_air', $sekolah->sumber_air)" />

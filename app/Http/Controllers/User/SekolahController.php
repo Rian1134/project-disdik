@@ -17,15 +17,28 @@ class SekolahController extends Controller
     {
         $sekolah = Sekolah::withCount('siswas')->where('user_id', Auth::id())->first();
 
-        $siswas = $sekolah?->siswas()->orderBy('nama_siswa')->paginate(10, ['*'], 'siswa_page');
-        $pegawais = $sekolah?->pegawais()->orderBy('nama')->paginate(10, ['*'], 'pegawai_page');
+        $siswas = $sekolah?->siswas()->orderBy('nama_siswa')->paginate(5, ['*'], 'siswa_page')?->withQueryString();
+        $pegawais = $sekolah?->pegawais()->orderBy('nama')->paginate(5, ['*'], 'pegawai_page')?->withQueryString();
 
-        $grafikSiswa = $sekolah?->siswas()->selectRaw('jenis_kelamin, count(*) as total')
-            ->groupBy('jenis_kelamin')->pluck('total', 'jenis_kelamin');
-        $grafikPegawai = $sekolah?->pegawais()->selectRaw('jabatan, count(*) as total')
-            ->groupBy('jabatan')->pluck('total', 'jabatan');
+        $grafikJk = $sekolah?->siswas()
+            ->selectRaw("if(jenis_kelamin = 'L', 'Laki-laki', 'Perempuan') as label, count(*) as total")
+            ->groupBy('label')->pluck('total', 'label');
+        $grafikKelas = $sekolah?->siswas()
+            ->selectRaw("concat('Kelas ', substring_index(kelas, ' ', 1)) as label, count(*) as total")
+            ->groupBy('label')->orderBy('label')->pluck('total', 'label');
 
-        return view('user.sekolah.index', compact('sekolah', 'siswas', 'pegawais', 'grafikSiswa', 'grafikPegawai'));
+        $grafikJabatan = $sekolah?->pegawais()
+            ->selectRaw('jabatan as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
+        $grafikGolongan = $sekolah?->pegawais()
+            ->selectRaw("coalesce(nullif(golongan, ''), 'Tanpa golongan') as label, count(*) as total")
+            ->groupBy('label')->pluck('total', 'label');
+        $grafikStatus = $sekolah?->pegawais()
+            ->selectRaw('status_kepegawaian as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
+
+        return view('user.sekolah.index', compact(
+            'sekolah', 'siswas', 'pegawais',
+            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus'
+        ));
     }
 
     /**

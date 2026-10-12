@@ -102,7 +102,9 @@
                         {{ $sekolah->nss }}</p>
                     <div class="mt-1 flex flex-wrap gap-1">
                         <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
-                        <x-badge variant="success" pill>Akreditasi {{ $sekolah->akreditasi }}</x-badge>
+                        <x-badge variant="success"
+                            pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
+                        </x-badge>
                     </div>
                 </div>
             </div>
@@ -169,7 +171,8 @@
                     @foreach ($k['baris'] as [$label, $nilai])
                         <div class="flex justify-between gap-4 py-2">
                             <dt class="shrink-0 text-slate-500 dark:text-slate-400">{{ $label }}</dt>
-                            <dd class="min-w-0 wrap-break-word text-right font-medium">{{ filled($nilai) ? $nilai : '-' }}</dd>
+                            <dd class="min-w-0 wrap-break-word text-right font-medium">{{ filled($nilai) ? $nilai : '-' }}
+                            </dd>
                         </div>
                     @endforeach
                 </dl>

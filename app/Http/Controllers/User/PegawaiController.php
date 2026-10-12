@@ -21,11 +21,12 @@ class PegawaiController extends Controller
     {
         $sekolah = $this->sekolahSaya();
 
+        // Semua pegawai yang sudah disetujui; tab filter, pencarian, dan paginasi dikerjakan JavaScript.
         $pegawais = Pegawai::disetujui()
             ->where('sekolah_id', $sekolah->id)
             ->orderBy('jabatan')
             ->orderBy('nama')
-            ->paginate(15);
+            ->get();
 
         $jumlahMenunggu = Pegawai::menungguTambah()
             ->where('sekolah_id', $sekolah->id)

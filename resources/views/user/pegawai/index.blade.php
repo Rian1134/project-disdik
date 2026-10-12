@@ -23,7 +23,7 @@
                     </span>
                     <div class="min-w-0">
                         <h2 class="truncate font-semibold leading-tight">Pegawai {{ $sekolah->nama_sekolah }}</h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Total {{ $pegawais->total() }} pegawai</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Total {{ $pegawais->count() }} pegawai</p>
                     </div>
                 </div>
                 <x-button href="{{ route('user.pegawai.create') }}" size="sm">
@@ -31,6 +31,11 @@
                 </x-button>
             </div>
         </x-slot:header>
+
+        {{-- Tab filter kategori (diisi oleh JavaScript di bawah) --}}
+        <div class="mb-4 hidden overflow-x-auto border-b border-gray-200 dark:border-gray-700">
+            <nav id="tabKategori" class="-mb-px flex min-w-max gap-1" aria-label="Filter kategori"></nav>
+        </div>
 
         <div class="relative mb-4 max-w-sm">
             <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -54,8 +59,7 @@
 
                 @forelse($pegawais as $pegawai)
                     <x-table.row>
-                        <x-table.cell
-                            class="text-center text-gray-500">{{ $pegawais->firstItem() + $loop->index }}</x-table.cell>
+                        <x-table.cell class="text-center text-gray-500">{{ $loop->iteration }}</x-table.cell>
                         <x-table.cell>
                             <div class="flex items-center gap-3">
                                 <span
@@ -75,7 +79,7 @@
                             </span>
                         </x-table.cell>
                         <x-table.cell>
-                            <p class="font-medium">{{ $pegawai->jabatan }}</p>
+                            <p class="font-medium" data-kategori="{{ $pegawai->jabatan }}">{{ $pegawai->jabatan }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $pegawai->tugas }}</p>
                         </x-table.cell>
                         <x-table.cell class="text-center">
@@ -152,26 +156,171 @@
             Tidak ada pegawai yang cocok.
         </p>
 
-        <x-pagination :paginator="$pegawais" class="mt-4" />
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p id="infoData" class="text-sm text-gray-500 dark:text-gray-400"></p>
+            <div id="pagerData" class="flex flex-wrap items-center gap-1"></div>
+        </div>
     </x-card>
 
     <script>
-        const cari = document.getElementById('cariPegawai');
-        const baris = document.querySelectorAll('#daftarPegawai tbody tr');
+        // Tab kategori + pencarian + paginasi, semuanya di sisi browser (tanpa reload halaman).
+        (function() {
+            const PER_HALAMAN = 15;
 
-        cari.addEventListener('input', () => {
-            const kata = cari.value.trim().toLowerCase();
-            let ada = 0;
+            const cari = document.getElementById('cariPegawai');
+            const kosong = document.getElementById('cariKosong');
+            const wadahTab = document.getElementById('tabKategori');
+            const wadahPager = document.getElementById('pagerData');
+            const info = document.getElementById('infoData');
+
+            // Hanya baris data (punya penanda kategori); baris "data kosong" bawaan tabel tidak ikut.
+            const baris = [...document.querySelectorAll('#daftarPegawai tbody tr')]
+                .filter(tr => tr.querySelector('[data-kategori]'));
+
+            const kategoriBaris = new Map(); // tr -> kategori
+            const teksBaris = new Map(); // tr -> teks untuk pencarian
+            const hitung = {}; // kategori -> jumlah baris
 
             baris.forEach(tr => {
-                // kolom Aksi (terakhir) tidak ikut dicari
-                const teks = [...tr.cells].slice(0, -1).map(td => td.textContent).join(' ').toLowerCase();
-                const cocok = teks.includes(kata);
-                tr.style.display = cocok ? '' : 'none';
-                ada += cocok;
+                const k = tr.querySelector('[data-kategori]').dataset.kategori;
+                kategoriBaris.set(tr, k);
+                // kolom No (pertama) dan Aksi (terakhir) tidak ikut dicari
+                teksBaris.set(tr, [...tr.cells].slice(1, -1).map(td => td.textContent).join(' ').toLowerCase());
+                hitung[k] = (hitung[k] || 0) + 1;
             });
 
-            document.getElementById('cariKosong').classList.toggle('hidden', ada > 0);
-        });
+            const daftarKategori = Object.keys(hitung)
+                .sort((a, b) => a.localeCompare(b, 'id', {
+                    numeric: true
+                }));
+
+            let kategoriAktif = '';
+            let halaman = 1;
+
+            const labelKategori = k => (k || 'Lainnya');
+
+            const dasarTab = 'inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-3 py-2 text-sm transition';
+            const tabAktif =
+                'border-emerald-600 font-semibold text-emerald-700 dark:border-emerald-400 dark:text-emerald-300';
+            const tabBiasa =
+                'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200';
+
+            function buatTab() {
+                if (!wadahTab || daftarKategori.length === 0) return;
+
+                const semua = [
+                    ['', 'Semua', baris.length]
+                ].concat(daftarKategori.map(k => [k, labelKategori(k), hitung[k]]));
+
+                wadahTab.innerHTML = '';
+                semua.forEach(([nilai, label, jumlah]) => {
+                    const tombol = document.createElement('button');
+                    tombol.type = 'button';
+                    tombol.dataset.nilai = nilai;
+                    tombol.innerHTML =
+                        '<span></span><span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800"></span>';
+                    tombol.children[0].textContent = label;
+                    tombol.children[1].textContent = jumlah;
+                    tombol.addEventListener('click', () => {
+                        kategoriAktif = nilai;
+                        halaman = 1;
+                        terapkan();
+                    });
+                    wadahTab.appendChild(tombol);
+                });
+
+                wadahTab.parentElement.classList.remove('hidden');
+            }
+
+            function tandaiTab() {
+                if (!wadahTab) return;
+                wadahTab.querySelectorAll('button').forEach(tombol => {
+                    const on = tombol.dataset.nilai === kategoriAktif;
+                    tombol.className = dasarTab + ' ' + (on ? tabAktif : tabBiasa);
+                    if (on) {
+                        tombol.setAttribute('aria-current', 'page');
+                    } else {
+                        tombol.removeAttribute('aria-current');
+                    }
+                });
+            }
+
+            function buatPager(jumlahHal) {
+                if (!wadahPager) return;
+                wadahPager.innerHTML = '';
+                if (jumlahHal <= 1) return;
+
+                const tambah = (teks, tujuan, nonaktif, aktif) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = teks;
+                    b.disabled = !!nonaktif;
+                    b.className = 'min-w-9 rounded-md border px-2.5 py-1 text-sm transition ' +
+                        (aktif ?
+                            'border-emerald-600 bg-emerald-600 text-white' :
+                            'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
+                            ) +
+                        (nonaktif ? ' cursor-not-allowed opacity-50' : '');
+                    if (!nonaktif) {
+                        b.addEventListener('click', () => {
+                            halaman = tujuan;
+                            terapkan();
+                        });
+                    }
+                    wadahPager.appendChild(b);
+                };
+
+                tambah('‹', halaman - 1, halaman === 1);
+                const awal = Math.max(1, Math.min(halaman - 2, jumlahHal - 4));
+                const akhir = Math.min(jumlahHal, awal + 4);
+                for (let p = awal; p <= akhir; p++) {
+                    tambah(String(p), p, false, p === halaman);
+                }
+                tambah('›', halaman + 1, halaman === jumlahHal);
+            }
+
+            function terapkan() {
+                const kata = cari.value.trim().toLowerCase();
+
+                const cocok = baris.filter(tr =>
+                    (!kategoriAktif || kategoriBaris.get(tr) === kategoriAktif) &&
+                    teksBaris.get(tr).includes(kata)
+                );
+
+                const jumlahHal = Math.max(1, Math.ceil(cocok.length / PER_HALAMAN));
+                halaman = Math.min(halaman, jumlahHal);
+
+                const awal = (halaman - 1) * PER_HALAMAN;
+                const tampil = cocok.slice(awal, awal + PER_HALAMAN);
+                const setTampil = new Set(tampil);
+
+                baris.forEach(tr => {
+                    tr.style.display = setTampil.has(tr) ? '' : 'none';
+                });
+
+                // nomor urut mengikuti hasil filter
+                tampil.forEach((tr, i) => {
+                    tr.cells[0].textContent = awal + i + 1;
+                });
+
+                if (kosong) kosong.classList.toggle('hidden', cocok.length > 0 || baris.length === 0);
+                if (info) {
+                    info.textContent = cocok.length ?
+                        'Menampilkan ' + (awal + 1) + '–' + (awal + tampil.length) + ' dari ' + cocok.length +
+                        ' pegawai' :
+                        '';
+                }
+
+                buatPager(jumlahHal);
+                tandaiTab();
+            }
+
+            buatTab();
+            cari.addEventListener('input', () => {
+                halaman = 1;
+                terapkan();
+            });
+            terapkan();
+        })();
     </script>
 @endsection

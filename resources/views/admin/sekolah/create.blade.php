@@ -21,7 +21,7 @@
                 <x-form.input name="nss" label="Nomor Statistik Sekolah" :value="old('nss')" required />
                 <x-form.input name="npsn" label="Nomor Pokok Sekolah Nasional" :value="old('npsn')" required />
                 <x-form.input name="nama_kepala_sekolah" label="Nama Kepala Sekolah" :value="old('nama_kepala_sekolah')" required />
-                <x-form.select name="akreditasi" label="Status Akreditasi" placeholder="Pilih akreditasi" :options="['A' => 'A', 'B' => 'B', 'C' => 'C']"
+                <x-form.select name="akreditasi" label="Status Akreditasi" placeholder="Pilih akreditasi" :options="['A' => 'A', 'B' => 'B', 'C' => 'C', '-' => 'Tidak Terakreditasi']"
                     :value="old('akreditasi')" required />
                 <x-form.select name="status_sekolah" label="Status Kepemilikan" placeholder="Pilih status" :options="['Negeri' => 'Negeri', 'Swasta' => 'Swasta']"
                     :value="old('status_sekolah')" required />

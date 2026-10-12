@@ -13,7 +13,7 @@
                 ['Nomor Statistik Sekolah', $sekolah->nss],
                 ['Nomor Pokok Sekolah Nasional', $sekolah->npsn],
                 ['Nama Kepala Sekolah', $sekolah->nama_kepala_sekolah],
-                ['Status Akreditasi', $sekolah->akreditasi],
+                ['Status Akreditasi', $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : $sekolah->akreditasi],
                 ['Status Kepemilikan', $sekolah->status_sekolah],
                 ['Tanggal SK Pendirian', $tgl($sekolah->tanggal_sk_pendirian)],
                 ['Tanggal SK Izin Operasional', $tgl($sekolah->tanggal_sk_izin_oprasional)],
@@ -52,6 +52,16 @@
 
             $judulKartu = 'font-semibold';
             $ikonKartu = 'me-1 text-emerald-600 dark:text-emerald-400';
+            $grafikSiswaKartu = [
+                ['grafikJk', 'bi-gender-ambiguous', 'Rasio Jenis Kelamin'],
+                ['grafikKelas', 'bi-mortarboard', 'Siswa per Kelas'],
+            ];
+            $grafikPegawaiKartu = [
+                ['grafikJabatan', 'bi-person-workspace', 'Status Guru/TU'],
+                ['grafikGolongan', 'bi-award', 'Status Golongan'],
+                ['grafikStatus', 'bi-patch-check', 'Status Kepegawaian'],
+            ];
+
             $thTabel = 'px-3 py-2 font-medium';
             $tdTabel = 'px-3 py-2';
         @endphp
@@ -72,7 +82,8 @@
                             NPSN {{ $sekolah->npsn }} &middot; NSS {{ $sekolah->nss }}
                         </p>
                         <div class="mt-2 flex flex-wrap gap-1.5">
-                            <x-badge variant="success" pill>Akreditasi {{ $sekolah->akreditasi }}</x-badge>
+                            <x-badge :variant="$sekolah->akreditasi === '-' ? 'secondary' : 'success'"
+                                pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
                             <x-badge variant="secondary" pill>{{ $sekolah->status_sekolah }}</x-badge>
                         </div>
                     </div>
@@ -169,33 +180,29 @@
             </dl>
         </x-card>
 
-        {{-- ===== Grafik ===== --}}
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <x-card>
-                <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-people {{ $ikonKartu }}"></i> Siswa per Jenis
-                        Kelamin</span>
-                </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
-                    <canvas id="grafikSiswa"></canvas>
-                </div>
-            </x-card>
-
-            <x-card>
-                <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-person-badge {{ $ikonKartu }}"></i> Pegawai per
-                        Jabatan</span>
-                </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
-                    <canvas id="grafikPegawai"></canvas>
-                </div>
-            </x-card>
+            @foreach ($grafikSiswaKartu as [$id, $ikon, $judul])
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i class="bi {{ $ikon }} {{ $ikonKartu }}"></i>
+                            {{ $judul }}</span>
+                    </x-slot:header>
+                    <div class="mx-auto h-64 max-w-xs">
+                        <canvas id="{{ $id }}"></canvas>
+                    </div>
+                </x-card>
+            @endforeach
         </div>
 
         {{-- ===== Daftar siswa ===== --}}
         <x-card>
             <x-slot:header>
-                <span class="{{ $judulKartu }}"><i class="bi bi-people {{ $ikonKartu }}"></i> Daftar Siswa</span>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="{{ $judulKartu }}"><i class="bi bi-people {{ $ikonKartu }}"></i> Daftar Siswa</span>
+                    <x-button href="{{ route('user.siswa.index') }}" size="xs">
+                        Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                    </x-button>
+                </div>
             </x-slot:header>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -211,7 +218,7 @@
                         @forelse ($siswas as $siswa)
                             <tr>
                                 <td class="{{ $tdTabel }}">{{ $siswas->firstItem() + $loop->index }}</td>
-                                <td class="{{ $tdTabel }} font-medium">{{ $siswa->nama_lengkap }}</td>
+                                <td class="{{ $tdTabel }} font-medium">{{ $siswa->nama_siswa }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($siswa->nisn) }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($siswa->jenis_kelamin) }}</td>
                             </tr>
@@ -228,11 +235,30 @@
             <div class="mt-3">{{ $siswas->links() }}</div>
         </x-card>
 
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            @foreach ($grafikPegawaiKartu as [$id, $ikon, $judul])
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i class="bi {{ $ikon }} {{ $ikonKartu }}"></i>
+                            {{ $judul }}</span>
+                    </x-slot:header>
+                    <div class="mx-auto h-64 max-w-xs">
+                        <canvas id="{{ $id }}"></canvas>
+                    </div>
+                </x-card>
+            @endforeach
+        </div>
+
         {{-- ===== Daftar pegawai ===== --}}
         <x-card>
             <x-slot:header>
-                <span class="{{ $judulKartu }}"><i class="bi bi-person-badge {{ $ikonKartu }}"></i> Daftar
-                    Pegawai</span>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="{{ $judulKartu }}"><i class="bi bi-person-badge {{ $ikonKartu }}"></i> Daftar
+                        Pegawai</span>
+                    <x-button href="{{ route('user.pegawai.index') }}" size="xs">
+                        Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                    </x-button>
+                </div>
             </x-slot:header>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -268,13 +294,15 @@
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script>
+            Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#d1d5db' : '#4b5563';
+
             const donat = (id, data) => new Chart(document.getElementById(id), {
                 type: 'doughnut',
                 data: {
                     labels: Object.entries(data).map(([k, v]) => `${k} (${v})`),
                     datasets: [{
                         data: Object.values(data),
-                        backgroundColor: ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e'],
+                        backgroundColor: ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'],
                     }],
                 },
                 options: {
@@ -287,8 +315,11 @@
                 },
             });
 
-            donat('grafikSiswa', @json($grafikSiswa));
-            donat('grafikPegawai', @json($grafikPegawai));
+            donat('grafikJk', @json($grafikJk));
+            donat('grafikKelas', @json($grafikKelas));
+            donat('grafikJabatan', @json($grafikJabatan));
+            donat('grafikGolongan', @json($grafikGolongan));
+            donat('grafikStatus', @json($grafikStatus));
         </script>
     @else
         <x-card>

@@ -20,6 +20,7 @@ class SiswaController extends Controller
     {
         $sekolah = $this->sekolah();
 
+        // Semua siswa yang sudah disetujui; tab filter, pencarian, dan paginasi dikerjakan JavaScript.
         $siswas = Siswa::query()
             ->disetujui()
             ->when(
@@ -29,7 +30,7 @@ class SiswaController extends Controller
             )
             ->orderBy('kelas')
             ->orderBy('nama_siswa')
-            ->paginate(15);
+            ->get();
 
         $jumlahMenunggu = $sekolah
             ? Siswa::menungguTambah()->where('sekolah_id', $sekolah->id)->count()
