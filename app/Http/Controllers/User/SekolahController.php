@@ -17,7 +17,15 @@ class SekolahController extends Controller
     {
         $sekolah = Sekolah::withCount('siswas')->where('user_id', Auth::id())->first();
 
-        return view('user.sekolah.index', compact('sekolah'));
+        $siswas = $sekolah?->siswas()->orderBy('nama_lengkap')->paginate(10, ['*'], 'siswa_page');
+        $pegawais = $sekolah?->pegawais()->orderBy('nama')->paginate(10, ['*'], 'pegawai_page');
+
+        $grafikSiswa = $sekolah?->siswas()->selectRaw('jenis_kelamin, count(*) as total')
+            ->groupBy('jenis_kelamin')->pluck('total', 'jenis_kelamin');
+        $grafikPegawai = $sekolah?->pegawais()->selectRaw('jabatan, count(*) as total')
+            ->groupBy('jabatan')->pluck('total', 'jabatan');
+
+        return view('user.sekolah.index', compact('sekolah', 'siswas', 'pegawais', 'grafikSiswa', 'grafikPegawai'));
     }
 
     /**
