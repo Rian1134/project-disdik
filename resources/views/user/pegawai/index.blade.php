@@ -3,6 +3,14 @@
 @section('title', 'Data Pegawai')
 
 @section('content')
+    @if ($jumlahMenunggu > 0)
+        <div
+            class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+            <i class="bi bi-hourglass-split me-1"></i>
+            {{ $jumlahMenunggu }} pegawai hasil import sedang menunggu persetujuan admin dan belum tampil di daftar ini.
+        </div>
+    @endif
+
     <x-card>
         <x-slot:header>
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -35,7 +43,12 @@
                     <x-table.cell class="text-center">{{ $pegawai->jenis_kelamin }}</x-table.cell>
                     <x-table.cell>{{ $pegawai->jabatan }}</x-table.cell>
                     <x-table.cell>{{ $pegawai->tugas }}</x-table.cell>
-                    <x-table.cell class="text-center">{{ $pegawai->status_kepegawaian }}</x-table.cell>
+                    <x-table.cell class="text-center">
+                        {{ $pegawai->status_kepegawaian }}
+                        @if ($pegawai->isMenungguHapus())
+                            <x-badge variant="warning" pill>Menunggu hapus</x-badge>
+                        @endif
+                    </x-table.cell>
                     <x-table.cell class="text-center whitespace-nowrap">
                         <div class="inline-flex items-center gap-1">
                             <a href="{{ route('user.pegawai.show', $pegawai) }}" title="Detail"
@@ -46,28 +59,44 @@
                                 class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
-                            <button type="button" data-modal-open="hapus-{{ $pegawai->id }}" title="Hapus"
-                                class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
+                            @if ($pegawai->isMenungguHapus())
+                                <span title="Pengajuan hapus menunggu admin"
+                                    class="cursor-not-allowed rounded border border-gray-200 px-2 py-1 text-gray-400 dark:border-gray-700">
+                                    <i class="bi bi-hourglass-split"></i>
+                                </span>
+                            @else
+                                <button type="button" data-modal-open="hapus-{{ $pegawai->id }}"
+                                    title="{{ $pegawai->isDariImport() ? 'Ajukan hapus' : 'Hapus' }}"
+                                    class="rounded border border-gray-300 px-2 py-1 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            @endif
                         </div>
 
-                        <x-modal id="hapus-{{ $pegawai->id }}" size="sm" centered>
-                            <x-slot:header>Konfirmasi Hapus</x-slot:header>
+                        @unless ($pegawai->isMenungguHapus())
+                            <x-modal id="hapus-{{ $pegawai->id }}" size="sm" centered>
+                                <x-slot:header>{{ $pegawai->isDariImport() ? 'Ajukan Penghapusan' : 'Konfirmasi Hapus' }}</x-slot:header>
 
-                            <p class="text-center text-sm">
-                                Yakin ingin menghapus <strong>{{ $pegawai->nama }}</strong>?
-                            </p>
+                                <p class="text-center text-sm">
+                                    @if ($pegawai->isDariImport())
+                                        Ajukan penghapusan <strong>{{ $pegawai->nama }}</strong>?
+                                        Data baru dihapus setelah disetujui admin.
+                                    @else
+                                        Yakin ingin menghapus <strong>{{ $pegawai->nama }}</strong>?
+                                    @endif
+                                </p>
 
-                            <x-slot:footer>
-                                <x-button variant="light" data-modal-close>Batal</x-button>
-                                <form action="{{ route('user.pegawai.destroy', $pegawai) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-button type="submit" variant="danger">Hapus</x-button>
-                                </form>
-                            </x-slot:footer>
-                        </x-modal>
+                                <x-slot:footer>
+                                    <x-button variant="light" data-modal-close>Batal</x-button>
+                                    <form action="{{ route('user.pegawai.destroy', $pegawai) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <x-button type="submit"
+                                            variant="danger">{{ $pegawai->isDariImport() ? 'Ajukan' : 'Hapus' }}</x-button>
+                                    </form>
+                                </x-slot:footer>
+                            </x-modal>
+                        @endunless
                     </x-table.cell>
                 </x-table.row>
             @empty

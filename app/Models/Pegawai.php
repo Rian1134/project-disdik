@@ -2,15 +2,30 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\MemerlukanPersetujuan;
 use Illuminate\Database\Eloquent\Model;
 
 class Pegawai extends Model
 {
+    use MemerlukanPersetujuan;
+
+    public const STATUS_MENUNGGU = 'menunggu';
+
+    public const STATUS_DISETUJUI = 'disetujui';
+
+    public const SUMBER_MANUAL = 'manual';
+
+    public const SUMBER_IMPORT = 'import';
+
     // Pilihan dropdown (sama dengan dropdown di template Excel)
     public const AGAMA = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
+
     public const JABATAN = ['Tenaga Pendidik', 'Tenaga Kependidikan'];
+
     public const TUGAS = ['Kepala Sekolah', 'Wakil Kepala Sekolah', 'Bendahara', 'Guru Mapel', 'Bimbingan Konseling', 'Tata Usaha', 'Laboran', 'Pustakawan', 'Kebersihan', 'Security', 'Lainnya'];
+
     public const STATUS_KEPEGAWAIAN = ['PNS', 'PPPK', 'PPPK Paruh Waktu', 'Non-ASN', 'Honorer', 'Lainnya'];
+
     public const PENDIDIKAN = ['S3', 'S2', 'S1', 'SMA Sederajat', 'SMP Sederajat', 'SD Sederajat', 'Lainnya'];
 
     protected $fillable = [

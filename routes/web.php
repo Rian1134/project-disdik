@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
+use App\Http\Controllers\Admin\PersetujuanPegawaiController;
 use App\Http\Controllers\Admin\PersetujuanSiswaController;
 use App\Http\Controllers\Admin\SekolahController as AdminSekolahController;
 use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
@@ -37,6 +38,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
         Route::post('hapus/{siswa}/setujui', [PersetujuanSiswaController::class, 'setujuiHapus'])->name('hapus.setujui');
         Route::post('hapus/{siswa}/tolak', [PersetujuanSiswaController::class, 'tolakHapus'])->name('hapus.tolak');
+    });
+
+    // Persetujuan pegawai hasil import (tambah & hapus)
+    Route::prefix('persetujuan-pegawai')->name('persetujuan-pegawai.')->group(function () {
+        Route::get('/', [PersetujuanPegawaiController::class, 'index'])->name('index');
+
+        Route::post('tambah/{pegawai}/setujui', [PersetujuanPegawaiController::class, 'setujuiTambah'])->name('tambah.setujui');
+        Route::post('tambah/{pegawai}/tolak', [PersetujuanPegawaiController::class, 'tolakTambah'])->name('tambah.tolak');
+        Route::post('tambah/sekolah/{sekolah}/setujui-semua', [PersetujuanPegawaiController::class, 'setujuiSemuaTambah'])->name('tambah.setujui-semua');
+
+        Route::post('hapus/{pegawai}/setujui', [PersetujuanPegawaiController::class, 'setujuiHapus'])->name('hapus.setujui');
+        Route::post('hapus/{pegawai}/tolak', [PersetujuanPegawaiController::class, 'tolakHapus'])->name('hapus.tolak');
     });
 
     Route::resource('pegawai', AdminPegawaiController::class);
