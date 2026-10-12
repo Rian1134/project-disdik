@@ -14,13 +14,14 @@ class SiswaController extends Controller
 {
     /**
      * Daftar siswa pada sekolah milik user.
-     * Tetap bisa dibuka walau data sekolah belum diisi (tabel tampil kosong).
+     * Hanya siswa yang sudah disetujui admin yang tampil di daftar.
      */
     public function index()
     {
         $sekolah = $this->sekolah();
 
         $siswas = Siswa::query()
+            ->disetujui()
             ->when(
                 $sekolah,
                 fn ($q) => $q->where('sekolah_id', $sekolah->id),
@@ -30,7 +31,11 @@ class SiswaController extends Controller
             ->orderBy('nama_siswa')
             ->paginate(15);
 
-        return view('user.siswa.index', compact('sekolah', 'siswas'));
+        $jumlahMenunggu = $sekolah
+            ? Siswa::menungguTambah()->where('sekolah_id', $sekolah->id)->count()
+            : 0;
+
+        return view('user.siswa.index', compact('sekolah', 'siswas', 'jumlahMenunggu'));
     }
 
     /**
@@ -49,6 +54,7 @@ class SiswaController extends Controller
 
     /**
      * Store a newly created resource in storage (isi manual).
+     * Isi manual langsung masuk daftar (tidak perlu persetujuan).
      */
     public function store(Request $request)
     {
@@ -58,6 +64,8 @@ class SiswaController extends Controller
 
         $data = $request->validate(SiswaImport::rules(), [], SiswaImport::labels());
         $data['sekolah_id'] = $sekolah->id;
+        $data['status_persetujuan'] = Siswa::STATUS_DISETUJUI;
+        $data['sumber'] = Siswa::SUMBER_MANUAL;
 
         Siswa::create($data);
 
@@ -66,7 +74,8 @@ class SiswaController extends Controller
     }
 
     /**
-     * Import banyak siswa dari file Excel (template Template_Data_Siswa_web.xlsx).
+     * Import banyak siswa dari file Excel.
+     * Siswa hasil import berstatus "menunggu" sampai disetujui admin.
      */
     public function import(Request $request)
     {
@@ -78,10 +87,21 @@ class SiswaController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls', 'max:5120'],
         ], [], ['file' => 'File Excel']);
 
+        // Penanda: semua siswa dengan id lebih besar dari ini dibuat oleh import ini.
+        $idTerakhir = (int) Siswa::max('id');
+
         Excel::import(new SiswaImport($sekolah->id), $request->file('file'));
 
+        $jumlah = Siswa::query()
+            ->where('sekolah_id', $sekolah->id)
+            ->where('id', '>', $idTerakhir)
+            ->update([
+                'status_persetujuan' => Siswa::STATUS_MENUNGGU,
+                'sumber' => Siswa::SUMBER_IMPORT,
+            ]);
+
         return redirect()->route('user.siswa.index')
-            ->with('success', 'Data siswa berhasil diimport dari Excel.');
+            ->with('success', "{$jumlah} data siswa berhasil diimport dan menunggu persetujuan admin sebelum masuk ke daftar.");
     }
 
     /**
@@ -122,11 +142,25 @@ class SiswaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus siswa.
+     * - Siswa hasil import: hanya mengajukan penghapusan, admin yang memutuskan.
+     * - Siswa isi manual: langsung dihapus.
      */
     public function destroy(Siswa $siswa)
     {
         $this->pastikanMilikSendiri($siswa);
+
+        if ($siswa->isDariImport()) {
+            if ($siswa->isMenungguHapus()) {
+                return redirect()->route('user.siswa.index')
+                    ->with('error', 'Pengajuan hapus untuk siswa ini sudah dikirim dan menunggu admin.');
+            }
+
+            $siswa->update(['hapus_diajukan_pada' => now()]);
+
+            return redirect()->route('user.siswa.index')
+                ->with('success', 'Pengajuan hapus dikirim. Data akan dihapus setelah disetujui admin.');
+        }
 
         $siswa->delete();
 
@@ -164,13 +198,18 @@ class SiswaController extends Controller
     }
 
     /**
-     * Siswa milik sekolah lain dianggap tidak ada (404), bukan forbidden.
+     * Siswa milik sekolah lain, atau yang belum disetujui admin, dianggap tidak ada (404).
      */
     private function pastikanMilikSendiri(Siswa $siswa): void
     {
         $sekolah = $this->sekolah();
 
-        abort_unless($sekolah && (int) $siswa->sekolah_id === (int) $sekolah->id, 404);
+        abort_unless(
+            $sekolah
+                && (int) $siswa->sekolah_id === (int) $sekolah->id
+                && ! $siswa->isMenungguTambah(),
+            404
+        );
     }
 
     /**

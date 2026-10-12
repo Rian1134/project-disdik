@@ -2,15 +2,30 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\MemerlukanPersetujuan;
 use Illuminate\Database\Eloquent\Model;
 
 class Siswa extends Model
 {
+    use MemerlukanPersetujuan;
+
+    public const STATUS_MENUNGGU = 'menunggu';
+
+    public const STATUS_DISETUJUI = 'disetujui';
+
+    public const SUMBER_MANUAL = 'manual';
+
+    public const SUMBER_IMPORT = 'import';
+
     // Pilihan dropdown (sama dengan dropdown di template Excel)
     public const STATUS_TEMPAT_TINGGAL = ['Rumah sendiri', 'Rumah orang tua', 'Wali', 'Kost', 'Kontrak', 'Asrama', 'Lainnya'];
+
     public const PEKERJAAN = ['PNS', 'TNI', 'Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Buruh', 'Nelayan', 'Pedagang', 'Tidak bekerja', 'Lainnya'];
+
     public const PENGHASILAN = ['Rp 0', '< Rp1 juta', 'Rp1–3 juta', 'Rp3–5 juta', 'Rp5–10 juta', '> Rp10 juta'];
+
     public const BANTUAN = ['PIP', 'KIP', 'KJP', 'PKH', 'Beasiswa Sekolah', 'Beasiswa Prestasi', 'Tidak Ada', 'Lainnya'];
+
     public const STATUS_PELAJAR = ['Aktif', 'Pindah', 'Berhenti', 'Meninggal'];
 
     protected $fillable = [

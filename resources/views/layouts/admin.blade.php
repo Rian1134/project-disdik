@@ -88,6 +88,12 @@
                 $menu = [
                     ['admin.sekolah.*', 'admin.sekolah.index', 'Data Sekolah', 'bi-building'],
                     ['admin.siswa.*', 'admin.siswa.index', 'Data Siswa', 'bi-people'],
+                    [
+                        'admin.persetujuan-siswa.*',
+                        'admin.persetujuan-siswa.index',
+                        'Persetujuan Siswa',
+                        'bi-clipboard-check',
+                    ],
                     ['admin.pegawai.*', 'admin.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
                     ['admin.users.*', 'admin.users.index', 'Users', 'bi-person-gear'],
                 ];
