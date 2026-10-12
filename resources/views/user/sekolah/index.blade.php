@@ -214,10 +214,10 @@
                             <th class="{{ $thTabel }}">L/P</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody id="isiSiswa" class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse ($siswas as $siswa)
-                            <tr>
-                                <td class="{{ $tdTabel }}">{{ $siswas->firstItem() + $loop->index }}</td>
+                            <tr data-baris>
+                                <td class="{{ $tdTabel }}">{{ $loop->iteration }}</td>
                                 <td class="{{ $tdTabel }} font-medium">{{ $siswa->nama_siswa }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($siswa->nisn) }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($siswa->jenis_kelamin) }}</td>
@@ -232,7 +232,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $siswas->links() }}</div>
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <p id="infoSiswa" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                <div id="pagerSiswa" class="flex flex-wrap items-center gap-1"></div>
+            </div>
         </x-card>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -270,10 +273,10 @@
                             <th class="{{ $thTabel }}">Jabatan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody id="isiPegawai" class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse ($pegawais as $pegawai)
-                            <tr>
-                                <td class="{{ $tdTabel }}">{{ $pegawais->firstItem() + $loop->index }}</td>
+                            <tr data-baris>
+                                <td class="{{ $tdTabel }}">{{ $loop->iteration }}</td>
                                 <td class="{{ $tdTabel }} font-medium">{{ $pegawai->nama }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($pegawai->nip) }}</td>
                                 <td class="{{ $tdTabel }}">{{ $isi($pegawai->jabatan) }}</td>
@@ -288,7 +291,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">{{ $pegawais->links() }}</div>
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <p id="infoPegawai" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                <div id="pagerPegawai" class="flex flex-wrap items-center gap-1"></div>
+            </div>
         </x-card>
 
 
@@ -320,6 +326,57 @@
             donat('grafikJabatan', @json($grafikJabatan));
             donat('grafikGolongan', @json($grafikGolongan));
             donat('grafikStatus', @json($grafikStatus));
+
+            // Paginasi di browser: tampilkan 5 baris per halaman.
+            function paginasi(idIsi, idInfo, idPager, nama, perHalaman = 5) {
+                const baris = [...document.querySelectorAll('#' + idIsi + ' tr[data-baris]')];
+                const info = document.getElementById(idInfo);
+                const pager = document.getElementById(idPager);
+                const total = baris.length;
+                const jumlahHal = Math.max(1, Math.ceil(total / perHalaman));
+                let halaman = 1;
+
+                function tampil() {
+                    const awal = (halaman - 1) * perHalaman;
+                    baris.forEach((tr, i) => {
+                        tr.style.display = i >= awal && i < awal + perHalaman ? '' : 'none';
+                        tr.cells[0].textContent = i + 1;
+                    });
+
+                    info.textContent = total ?
+                        `Menampilkan ${awal + 1}–${Math.min(awal + perHalaman, total)} dari ${total} ${nama}` : '';
+
+                    pager.innerHTML = '';
+                    if (jumlahHal <= 1) return;
+
+                    const tombol = (teks, tujuan, nonaktif, aktif) => {
+                        const b = document.createElement('button');
+                        b.type = 'button';
+                        b.textContent = teks;
+                        b.disabled = !!nonaktif;
+                        b.className = 'min-w-9 rounded-md border px-2.5 py-1 text-sm transition ' +
+                            (aktif ? 'border-emerald-600 bg-emerald-600 text-white' :
+                                'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
+                                ) +
+                            (nonaktif ? ' cursor-not-allowed opacity-50' : '');
+                        if (!nonaktif) b.addEventListener('click', () => {
+                            halaman = tujuan;
+                            tampil();
+                        });
+                        pager.appendChild(b);
+                    };
+
+                    tombol('‹', halaman - 1, halaman === 1);
+                    const mulai = Math.max(1, Math.min(halaman - 2, jumlahHal - 4));
+                    for (let p = mulai; p <= Math.min(jumlahHal, mulai + 4); p++) tombol(String(p), p, false, p === halaman);
+                    tombol('›', halaman + 1, halaman === jumlahHal);
+                }
+
+                tampil();
+            }
+
+            paginasi('isiSiswa', 'infoSiswa', 'pagerSiswa', 'siswa');
+            paginasi('isiPegawai', 'infoPegawai', 'pagerPegawai', 'pegawai');
         </script>
     @else
         <x-card>

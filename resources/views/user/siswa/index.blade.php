@@ -187,7 +187,7 @@
     <script>
         // Tab kategori + pencarian + paginasi, semuanya di sisi browser (tanpa reload halaman).
         (function() {
-            const PER_HALAMAN = 15;
+            const PER_HALAMAN = 20;
 
             const cari = document.getElementById('cariSiswa');
             const kosong = document.getElementById('cariKosong');
@@ -281,7 +281,7 @@
                         (aktif ?
                             'border-emerald-600 bg-emerald-600 text-white' :
                             'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
-                            ) +
+                        ) +
                         (nonaktif ? ' cursor-not-allowed opacity-50' : '');
                     if (!nonaktif) {
                         b.addEventListener('click', () => {
