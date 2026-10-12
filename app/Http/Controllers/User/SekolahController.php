@@ -17,7 +17,7 @@ class SekolahController extends Controller
     {
         $sekolah = Sekolah::withCount('siswas')->where('user_id', Auth::id())->first();
 
-        $siswas = $sekolah?->siswas()->orderBy('nama_lengkap')->paginate(10, ['*'], 'siswa_page');
+        $siswas = $sekolah?->siswas()->orderBy('nama_siswa')->paginate(10, ['*'], 'siswa_page');
         $pegawais = $sekolah?->pegawais()->orderBy('nama')->paginate(10, ['*'], 'pegawai_page');
 
         $grafikSiswa = $sekolah?->siswas()->selectRaw('jenis_kelamin, count(*) as total')
