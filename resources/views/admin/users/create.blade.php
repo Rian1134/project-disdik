@@ -24,8 +24,8 @@
 
                 <div>
                     <label for="name" class="{{ $label }}">Nama <span class="text-red-500">*</span></label>
-                    <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                        class="{{ $input }}">
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus
+                        autocomplete="off" class="{{ $input }}">
                     @error('name')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
@@ -34,7 +34,7 @@
                 <div>
                     <label for="email" class="{{ $label }}">Email <span class="text-red-500">*</span></label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                        class="{{ $input }}">
+                        autocomplete="off" class="{{ $input }}">
                     @error('email')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
@@ -70,9 +70,11 @@
                     <select id="role" name="role" class="{{ $input }}">
                         <option value="">— Tanpa role —</option>
                         @foreach ($roles as $nama)
-                            <option value="{{ $nama }}" @selected(old('role') === $nama)>{{ $nama }}</option>
+                            <option value="{{ $nama }}" @selected(old('role', 'user') === $nama)>{{ $nama }}</option>
                         @endforeach
                     </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">User tanpa role tidak dapat membuka halaman
+                        apa pun setelah login.</p>
                     @error('role')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror

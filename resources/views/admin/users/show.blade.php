@@ -3,13 +3,18 @@
 @section('title', 'Detail User')
 
 @section('content')
-    <x-breadcrumb :items="[['label' => 'Manajemen User', 'url' => route('admin.users.index')], ['label' => $user->name]]" />
+    {{-- Breadcrumb sudah dirender otomatis oleh layout (dari @section('title')), jadi tidak dibuat lagi di sini --}}
 
     {{-- ===== Header user ===== --}}
     <x-card>
         <div class="flex flex-col gap-4 border-l-4 border-indigo-500 pl-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex min-w-0 items-center gap-3">
-                <x-avatar :name="$user->name" size="lg" rounded="md" />
+                @if ($user->logo)
+                    <img src="{{ asset('uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
+                        class="h-14 w-14 shrink-0 rounded-xl border border-gray-200 object-cover dark:border-gray-700">
+                @else
+                    <x-avatar :name="$user->name" size="lg" rounded="md" />
+                @endif
                 <div class="min-w-0">
                     <h2 class="truncate text-lg font-bold text-indigo-700 dark:text-indigo-300">{{ $user->name }}</h2>
                     <p class="truncate text-sm text-gray-500 dark:text-gray-400">{{ $user->email }}</p>

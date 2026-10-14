@@ -7,6 +7,7 @@ use App\Models\Sekolah;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
@@ -40,7 +41,7 @@ class UserController extends Controller
     public function create()
     {
         return view('admin.users.create', [
-            'user' => new User(),
+            'user' => new User,
             'roles' => $this->roles(),
             'currentRole' => null,
         ]);
@@ -105,7 +106,11 @@ class UserController extends Controller
         }
 
         $user->update($payload);
-        $this->simpanRole($user, $data['role'] ?? null);
+
+        // Role akun sendiri tidak boleh diubah, agar admin tidak mengunci dirinya sendiri.
+        if ($user->id !== Auth::id()) {
+            $this->simpanRole($user, $data['role'] ?? null);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User berhasil diperbarui.');
@@ -125,6 +130,11 @@ class UserController extends Controller
 
         if (Sekolah::where('user_id', $user->id)->exists()) {
             return back()->with('error', "User {$user->name} masih memiliki data sekolah, jadi tidak bisa dihapus.");
+        }
+
+        // Hapus juga file logo user agar tidak tertinggal di folder uploads
+        if ($user->logo) {
+            File::delete(public_path('uploads/logo/'.$user->logo));
         }
 
         $user->delete();

@@ -68,12 +68,17 @@
 
                 <div>
                     <label for="role" class="{{ $label }}">Role</label>
-                    <select id="role" name="role" class="{{ $input }}">
+                    <select id="role" name="role" @disabled($user->id === auth()->id())
+                        class="{{ $input }} disabled:cursor-not-allowed disabled:opacity-60">
                         <option value="">— Tanpa role —</option>
                         @foreach ($roles as $nama)
                             <option value="{{ $nama }}" @selected(old('role', $currentRole) === $nama)>{{ $nama }}</option>
                         @endforeach
                     </select>
+                    @if ($user->id === auth()->id())
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Role akun yang sedang Anda pakai tidak
+                            dapat diubah.</p>
+                    @endif
                     @error('role')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror

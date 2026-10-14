@@ -54,7 +54,12 @@
                         <x-table.cell class="text-center">{{ $users->firstItem() + $loop->index }}</x-table.cell>
                         <x-table.cell>
                             <div class="flex items-center gap-2">
-                                <x-avatar :name="$user->name" size="xs" />
+                                @if ($user->logo)
+                                    <img src="{{ asset('uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
+                                        loading="lazy" class="h-6 w-6 shrink-0 rounded-full object-cover">
+                                @else
+                                    <x-avatar :name="$user->name" size="xs" />
+                                @endif
                                 <span class="font-medium text-indigo-700 dark:text-indigo-300">{{ $user->name }}</span>
                                 @if ($user->id === auth()->id())
                                     <span
