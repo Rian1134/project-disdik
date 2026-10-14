@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\PegawaiController as UserPegawaiController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\SekolahController as UserSekolahController;
 use App\Http\Controllers\User\SiswaController as UserSiswaController;
 use Illuminate\Support\Facades\Route;
@@ -69,4 +70,10 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::post('pegawai/import', [UserPegawaiController::class, 'import'])->name('pegawai.import');
     Route::get('pegawai/template', [UserPegawaiController::class, 'download'])->name('pegawai.download');
     Route::resource('pegawai', UserPegawaiController::class);
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/logo', [ProfileController::class, 'updateLogo'])->name('profile.logo.update');
+    Route::delete('/profile/logo', [ProfileController::class, 'destroy'])->name('profile.logo.destroy');
 });

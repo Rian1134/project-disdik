@@ -8,6 +8,9 @@
             $tgl = fn($nilai) => $nilai ? \Illuminate\Support\Carbon::parse($nilai)->translatedFormat('d F Y') : '-';
             $isi = fn($nilai, $satuan = '') => filled($nilai) ? $nilai . $satuan : '-';
 
+            // Logo user yang sedang login dipakai sebagai logo sekolah (null jika belum upload)
+            $logoSekolah = Auth::user()?->logo ? asset('uploads/logo/' . Auth::user()->logo) : null;
+
             $identitas = [
                 ['Nama Sekolah', $sekolah->nama_sekolah],
                 ['Nomor Statistik Sekolah', $sekolah->nss],
@@ -61,10 +64,15 @@
         <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 sm:p-5">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="flex min-w-0 items-center gap-4">
-                    <span
-                        class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-2xl text-white">
-                        <i class="bi bi-building"></i>
-                    </span>
+                    @if ($logoSekolah)
+                        <img src="{{ $logoSekolah }}" alt="Logo {{ $sekolah->nama_sekolah }}" loading="lazy"
+                            class="h-16 w-16 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-white dark:ring-emerald-400/40 dark:ring-offset-gray-900 sm:h-20 sm:w-20">
+                    @else
+                        <span
+                            class="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 text-3xl text-white shadow-md ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-white dark:ring-emerald-400/40 dark:ring-offset-gray-900 sm:h-20 sm:w-20 sm:text-4xl">
+                            <i class="bi bi-building"></i>
+                        </span>
+                    @endif
                     <div class="min-w-0">
                         <h2 class="truncate text-lg font-semibold text-gray-800 dark:text-gray-100">
                             {{ $sekolah->nama_sekolah }}

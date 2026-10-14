@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMANDIK-SMP - @yield('title')</title>
+    <title>
+        @hasSection('title')
+            @yield('title') -
+        @endif SIMANDIK-SMP
+    </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     {{-- Terapkan tema sebelum halaman dirender agar tidak berkedip (flash) --}}
@@ -29,9 +33,17 @@
     </style>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- CSS per-halaman (@push('styles') di masing-masing view) --}}
+    @stack('styles')
 </head>
 
-<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+<body class="bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100">
+
+    @php
+        // URL logo user yang sedang login (null jika belum upload)
+        $logo = Auth::user()?->logo ? asset('uploads/logo/' . Auth::user()->logo) : null;
+    @endphp
 
     {{-- Toast container: wajib ada agar flash message & showToast() berfungsi --}}
     <div id="toast-container"
@@ -73,7 +85,7 @@
         </x-slot:footer>
     </x-modal>
 
-    <div class="flex min-h-screen">
+    <div class="flex min-h-dvh">
 
         {{-- Sidebar --}}
         {{-- Komponen x-sidebar sudah membungkus slot dalam <nav class="flex flex-1 flex-col gap-1">,
@@ -89,6 +101,7 @@
                     ['user.sekolah.*', 'user.sekolah.index', 'Data Sekolah', 'bi-building'],
                     ['user.siswa.*', 'user.siswa.index', 'Data Siswa', 'bi-people'],
                     ['user.pegawai.*', 'user.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
+                    ['user.profile.*', 'user.profile.index', 'Profil Saya', 'bi-person-circle'],
                 ];
             @endphp
 
@@ -97,7 +110,11 @@
                 class="mb-4 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-800 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:gap-0 in-data-[sidebar-collapsed=true]:border-0 in-data-[sidebar-collapsed=true]:pb-0">
                 <div
                     class="flex shrink-0 items-center justify-center in-data-[sidebar-collapsed=true]:*:h-9 in-data-[sidebar-collapsed=true]:*:w-9">
-                    <x-avatar :name="Auth::user()?->name ?? 'User'" size="md" status="online" />
+                    @if ($logo)
+                        <img src="{{ $logo }}" alt="Logo" class="h-10 w-10 rounded-full object-cover">
+                    @else
+                        <x-avatar :name="Auth::user()?->name ?? 'User'" size="md" status="online" />
+                    @endif
                 </div>
                 <div class="min-w-0 flex-1" data-sidebar-label>
                     <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100"
@@ -176,7 +193,12 @@
                             <x-slot:trigger>
                                 <button type="button"
                                     class="flex items-center gap-2 rounded-lg p-1 sm:pr-2 transition hover:bg-emerald-50 dark:hover:bg-gray-800">
-                                    <x-avatar :name="Auth::user()?->name ?? 'User'" size="xs" />
+                                    @if ($logo)
+                                        <img src="{{ $logo }}" alt="Logo"
+                                            class="h-7 w-7 rounded-full object-cover">
+                                    @else
+                                        <x-avatar :name="Auth::user()?->name ?? 'User'" size="xs" />
+                                    @endif
                                     <span
                                         class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'User' }}</span>
                                     <i class="bi bi-chevron-down hidden text-xs text-gray-400 sm:inline"></i>
@@ -188,6 +210,10 @@
                                     {{ Auth::user()?->name ?? 'User' }}</p>
                                 <p class="text-xs text-emerald-600 dark:text-emerald-400">Operator Sekolah</p>
                             </div>
+                            <a href="{{ route('user.profile.index') }}"
+                                class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
+                                <i class="bi bi-person-circle me-2"></i> Profil Saya
+                            </a>
                             <x-dropdown.item danger data-modal-open="logoutModal">
                                 <i class="bi bi-box-arrow-right me-2"></i> Logout
                             </x-dropdown.item>
