@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $logoUrl = $user->logo ? asset('uploads/logo/' . $user->logo) : null;
+        $logoUrl = $user->logo ? asset('storage/uploads/logo/' . $user->logo) : null;
         $inputClass =
             'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500';
         $labelClass = 'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';

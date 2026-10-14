@@ -18,7 +18,7 @@
 
             <div class="mb-4 flex items-center gap-4">
                 @if ($user->logo)
-                    <img src="{{ asset('uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
+                    <img src="{{ asset('storage/uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
                         class="h-24 w-24 rounded-full object-cover">
                 @else
                     <div

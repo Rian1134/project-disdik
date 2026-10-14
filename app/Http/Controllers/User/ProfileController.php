@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -65,13 +66,28 @@ class ProfileController extends Controller
         ], [], ['logo' => 'Logo']);
 
         $user = $request->user();
-        $this->hapusFile($user->logo);
 
+        // Hapus logo lama dari Laravel Storage
+        if ($user->logo) {
+            Storage::disk('public')->delete('uploads/logo/'.$user->logo);
+        }
+
+        // Nama file baru
         $nama = 'logo-'.$user->id.'-'.time().'.webp';
-        File::ensureDirectoryExists(public_path('uploads/logo'));
-        $this->simpanWebp($request->file('logo')->getPathname(), public_path('uploads/logo/'.$nama));
 
-        $user->update(['logo' => $nama]);
+        // Pastikan direktori tersedia
+        Storage::disk('public')->makeDirectory('uploads/logo');
+
+        // Simpan logo dalam format WebP
+        $this->simpanWebp(
+            $request->file('logo')->getPathname(),
+            Storage::disk('public')->path('uploads/logo/'.$nama)
+        );
+
+        // Simpan nama file ke database
+        $user->update([
+            'logo' => $nama,
+        ]);
 
         return back()->with('success', 'Logo berhasil diperbarui.');
     }
@@ -115,7 +131,7 @@ class ProfileController extends Controller
     private function hapusFile(?string $nama): void
     {
         if ($nama) {
-            File::delete(public_path('uploads/logo/'.$nama));
+            Storage::disk('public')->delete('uploads/logo/'.$nama);
         }
     }
 }

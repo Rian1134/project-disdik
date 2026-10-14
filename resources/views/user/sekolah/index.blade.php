@@ -9,7 +9,7 @@
             $isi = fn($nilai, $satuan = '') => filled($nilai) ? $nilai . $satuan : '-';
 
             // Logo user yang sedang login dipakai sebagai logo sekolah (null jika belum upload)
-            $logoSekolah = Auth::user()?->logo ? asset('uploads/logo/' . Auth::user()->logo) : null;
+            $logoSekolah = Auth::user()?->logo ? asset('storage/uploads/logo/' . Auth::user()->logo) : null;
 
             $identitas = [
                 ['Nama Sekolah', $sekolah->nama_sekolah],

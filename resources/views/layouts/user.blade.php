@@ -40,10 +40,12 @@
 
 <body class="bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100">
 
+
     @php
-        // URL logo user yang sedang login (null jika belum upload)
-        $logo = Auth::user()?->logo ? asset('uploads/logo/' . Auth::user()->logo) : null;
+        // URL logo user dari Laravel Storage
+        $logo = Auth::user()?->logo ? asset('storage/uploads/logo/' . Auth::user()->logo) : null;
     @endphp
+
 
     {{-- Toast container: wajib ada agar flash message & showToast() berfungsi --}}
     <div id="toast-container"

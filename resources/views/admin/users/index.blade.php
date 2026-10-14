@@ -55,7 +55,7 @@
                         <x-table.cell>
                             <div class="flex items-center gap-2">
                                 @if ($user->logo)
-                                    <img src="{{ asset('uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
+                                    <img src="{{ asset('storage/uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
                                         loading="lazy" class="h-6 w-6 shrink-0 rounded-full object-cover">
                                 @else
                                     <x-avatar :name="$user->name" size="xs" />
