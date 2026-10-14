@@ -11,16 +11,23 @@
     // Baris total di bawah tabel (jumlah sekolah pada halaman ini)
     $guruKolom = collect($kat)->map(fn($k) => $jml("guru_$k"));
     $tuKolom = collect($kat)->map(fn($k) => $jml("tu_$k"));
-    $barisTotal = $guruKolom->concat([$guruKolom->sum()])->concat($tuKolom)->concat([$tuKolom->sum(), $guruKolom->sum() + $tuKolom->sum()]);
+    $barisTotal = $guruKolom
+        ->concat([$jml('guru_total')])
+        ->concat($tuKolom)
+        ->concat([$jml('tu_total'), $jml('guru_total') + $jml('tu_total')]);
 
     // Data grafik (hanya sekolah pada halaman ini)
     $grafik = [
-        'jabatan' => [collect($kat)->sum(fn($k) => $jml("guru_$k")), collect($kat)->sum(fn($k) => $jml("tu_$k"))],
+        'jabatan' => [$jml('guru_total'), $jml('tu_total')],
         'status' => collect($kat)->map(fn($k) => $jml("guru_$k") + $jml("tu_$k"))->all(),
-        'sekolah' => $col->map(fn($x) => [
-            'nama' => $x->nama_sekolah,
-            'total' => collect($kat)->sum(fn($k) => (int) $x->{"guru_$k"} + (int) $x->{"tu_$k"}),
-        ])->values(),
+        'sekolah' => $col
+            ->map(
+                fn($x) => [
+                    'nama' => $x->nama_sekolah,
+                    'total' => (int) $x->guru_total + (int) $x->tu_total,
+                ],
+            )
+            ->values(),
     ];
 @endphp
 
@@ -53,7 +60,8 @@
         </x-card>
         <x-card>
             <x-slot:header>
-                <span class="font-semibold">Pegawai per Sekolah <span class="text-xs font-normal text-gray-400">(halaman ini)</span></span>
+                <span class="font-semibold">Pegawai per Sekolah <span class="text-xs font-normal text-gray-400">(halaman
+                        ini)</span></span>
             </x-slot:header>
             <div class="relative h-64"><canvas id="chartSekolah"></canvas></div>
         </x-card>
@@ -68,7 +76,8 @@
         <form method="GET" action="{{ route('admin.pegawai.index') }}" id="formCari" class="mb-4">
             <div class="relative max-w-sm">
                 <i class="bi bi-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" name="q" value="{{ $q }}" autocomplete="off" placeholder="Cari nama sekolah, NSS, atau NPSN..."
+                <input type="text" name="q" value="{{ $q }}" autocomplete="off"
+                    placeholder="Cari nama sekolah, NSS, atau NPSN..."
                     class="w-full rounded-md border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
                 <button type="button" id="hapusCari" title="Hapus pencarian"
                     class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 {{ $q === '' ? 'hidden' : '' }}">
@@ -80,7 +89,8 @@
         {{-- Bagian ini diganti oleh script pencarian di layout --}}
         <div id="hasil" class="transition-opacity">
             <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
-                Menampilkan <span class="font-semibold text-indigo-600 dark:text-indigo-300">{{ $sekolahs->total() }}</span> sekolah
+                Menampilkan <span class="font-semibold text-indigo-600 dark:text-indigo-300">{{ $sekolahs->total() }}</span>
+                sekolah
                 @if ($q !== '')
                     untuk pencarian "<span class="font-medium">{{ $q }}</span>"
                 @endif
@@ -91,14 +101,22 @@
                     <tr class="bg-indigo-50 text-indigo-900 dark:bg-indigo-500/20 dark:text-indigo-100">
                         <x-table.heading rowspan="3" class="text-center align-middle">No</x-table.heading>
                         <x-table.heading colspan="2" class="text-center align-middle">Nomor</x-table.heading>
-                        <x-table.heading rowspan="3" class="min-w-56 text-center align-middle">Nama Sekolah</x-table.heading>
+                        <x-table.heading rowspan="3" class="min-w-56 text-center align-middle">Nama
+                            Sekolah</x-table.heading>
                         <x-table.heading colspan="11" class="text-center align-middle">Jumlah Pegawai</x-table.heading>
+                        <x-table.heading rowspan="3" class="text-center align-middle">Aksi</x-table.heading>
                     </tr>
                     <tr class="bg-indigo-50 text-indigo-900 dark:bg-indigo-500/20 dark:text-indigo-100">
-                        <x-table.heading rowspan="2" class="text-center align-middle">Statistik Sekolah (NSS)</x-table.heading>
-                        <x-table.heading rowspan="2" class="text-center align-middle">Pokok Sekolah Nasional (NPSN)</x-table.heading>
-                        <x-table.heading colspan="5" class="bg-indigo-100 text-center align-middle dark:bg-indigo-500/30">Tenaga Pendidik / Guru</x-table.heading>
-                        <x-table.heading colspan="5" class="bg-gray-100 text-center align-middle text-gray-700 dark:bg-gray-700 dark:text-gray-100">Tenaga Kependidikan / Tata Usaha</x-table.heading>
+                        <x-table.heading rowspan="2" class="text-center align-middle">Statistik Sekolah
+                            (NSS)</x-table.heading>
+                        <x-table.heading rowspan="2" class="text-center align-middle">Pokok Sekolah Nasional
+                            (NPSN)</x-table.heading>
+                        <x-table.heading colspan="5"
+                            class="bg-indigo-100 text-center align-middle dark:bg-indigo-500/30">Tenaga Pendidik /
+                            Guru</x-table.heading>
+                        <x-table.heading colspan="5"
+                            class="bg-gray-100 text-center align-middle text-gray-700 dark:bg-gray-700 dark:text-gray-100">Tenaga
+                            Kependidikan / Tata Usaha</x-table.heading>
                         <x-table.heading rowspan="2" class="text-center align-middle">Total</x-table.heading>
                     </tr>
                     <tr class="bg-indigo-50 text-indigo-900 dark:bg-indigo-500/20 dark:text-indigo-100">
@@ -119,37 +137,47 @@
                     <x-table.row class="bg-indigo-50 font-semibold dark:bg-indigo-500/10">
                         <x-table.cell colspan="4" class="text-center">Total (halaman ini)</x-table.cell>
                         @foreach ($barisTotal as $angka)
-                            <x-table.cell class="text-center text-indigo-700 dark:text-indigo-200">{{ $angka }}</x-table.cell>
+                            <x-table.cell
+                                class="text-center text-indigo-700 dark:text-indigo-200">{{ $angka }}</x-table.cell>
                         @endforeach
+                        <x-table.cell></x-table.cell>
                     </x-table.row>
                 @endif
 
                 @forelse($sekolahs as $sekolah)
                     @php
-                        $g = $sekolah->guru_pns + $sekolah->guru_pppk + $sekolah->guru_paruh + $sekolah->guru_honorer;
-                        $t = $sekolah->tu_pns + $sekolah->tu_pppk + $sekolah->tu_paruh + $sekolah->tu_honorer;
+                        $g = $sekolah->guru_total;
+                        $t = $sekolah->tu_total;
                     @endphp
                     <x-table.row>
                         <x-table.cell class="text-center">{{ $sekolahs->firstItem() + $loop->index }}</x-table.cell>
                         <x-table.cell class="whitespace-nowrap">{{ $sekolah->nss }}</x-table.cell>
                         <x-table.cell class="whitespace-nowrap">{{ $sekolah->npsn }}</x-table.cell>
-                        <x-table.cell class="font-medium">
-                            <a href="{{ route('admin.pegawai.sekolah', $sekolah->id) }}" class="text-indigo-700 hover:underline dark:text-indigo-300">{{ $sekolah->nama_sekolah }}</a>
-                        </x-table.cell>
+                        <x-table.cell
+                            class="font-medium text-indigo-700 dark:text-indigo-300">{{ $sekolah->nama_sekolah }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->guru_pns }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->guru_pppk }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->guru_paruh }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->guru_honorer }}</x-table.cell>
-                        <x-table.cell class="text-center font-semibold text-indigo-600 dark:text-indigo-300">{{ $g }}</x-table.cell>
+                        <x-table.cell
+                            class="text-center font-semibold text-indigo-600 dark:text-indigo-300">{{ $g }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->tu_pns }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->tu_pppk }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->tu_paruh }}</x-table.cell>
                         <x-table.cell class="text-center">{{ $sekolah->tu_honorer }}</x-table.cell>
-                        <x-table.cell class="text-center font-semibold text-indigo-600 dark:text-indigo-300">{{ $t }}</x-table.cell>
-                        <x-table.cell class="text-center font-bold text-indigo-700 dark:text-indigo-200">{{ $g + $t }}</x-table.cell>
+                        <x-table.cell
+                            class="text-center font-semibold text-indigo-600 dark:text-indigo-300">{{ $t }}</x-table.cell>
+                        <x-table.cell
+                            class="text-center font-bold text-indigo-700 dark:text-indigo-200">{{ $g + $t }}</x-table.cell>
+                        <x-table.cell class="whitespace-nowrap text-center">
+                            <a href="{{ route('admin.pegawai.sekolah', $sekolah->id) }}"
+                                class="inline-flex items-center rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-medium text-indigo-700 transition hover:bg-indigo-50 dark:border-indigo-500/30 dark:text-indigo-300 dark:hover:bg-indigo-500/10">
+                                <i class="bi bi-person-badge me-1"></i> Lihat Pegawai
+                            </a>
+                        </x-table.cell>
                     </x-table.row>
                 @empty
-                    <x-table.empty colspan="15" />
+                    <x-table.empty colspan="16" />
                 @endforelse
             </x-table>
 

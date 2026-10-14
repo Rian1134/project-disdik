@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pegawai;
 use App\Models\Sekolah;
+use App\Models\Siswa;
 
 class PersetujuanPegawaiController extends Controller
 {
@@ -31,7 +32,14 @@ class PersetujuanPegawaiController extends Controller
             ->having('menunggu_count', '>', 0)
             ->get();
 
-        return view('admin.persetujuan-pegawai.index', compact('menungguTambah', 'menungguHapus', 'ringkasanSekolah'));
+        // Lencana angka pada tab atas (siswa & pegawai). Tab yang sedang dibuka memakai total paginator.
+        $jenis = 'pegawai';
+        $badgeSiswa = Siswa::menungguTambah()->count() + Siswa::menungguHapus()->count();
+        $badgePegawai = $menungguTambah->total() + $menungguHapus->total();
+
+        return view('admin.persetujuan.index', compact(
+            'jenis', 'menungguTambah', 'menungguHapus', 'ringkasanSekolah', 'badgeSiswa', 'badgePegawai'
+        ));
     }
 
     /** Setujui satu pegawai import -> masuk ke daftar. */

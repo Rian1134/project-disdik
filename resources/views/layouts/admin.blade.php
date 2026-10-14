@@ -88,10 +88,9 @@
                 $menu = [
                     ['admin.sekolah.*', 'admin.sekolah.index', 'Data Sekolah', 'bi-building'],
                     ['admin.siswa.*', 'admin.siswa.index', 'Data Siswa', 'bi-people'],
-                    ['admin.persetujuan-siswa.*', 'admin.persetujuan-siswa.index', 'Persetujuan Siswa', 'bi-clipboard-check'],
                     ['admin.pegawai.*', 'admin.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
-                    ['admin.persetujuan-pegawai.*', 'admin.persetujuan-pegawai.index', 'Persetujuan Pegawai', 'bi-person-check'],
                     ['admin.users.*', 'admin.users.index', 'Users', 'bi-person-gear'],
+                    ['admin.persetujuan-*', 'admin.persetujuan-siswa.index', 'Persetujuan', 'bi-clipboard-check'],
                 ];
             @endphp
 

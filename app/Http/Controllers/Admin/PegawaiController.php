@@ -19,7 +19,8 @@ class PegawaiController extends Controller
     {
         // guru_total / tu_total menghitung semua status (termasuk Non-ASN dan Lainnya)
         // supaya tidak ada pegawai yang terlewat di kolom Jumlah dan Total.
-        $guru = "pegawais.jabatan = 'Tenaga Pendidik'";
+        // Guru = Guru, Kepala Sekolah, dan Wakil Kepala Sekolah ('Tenaga Pendidik' tetap dikenali untuk data lama).
+        $guru = "pegawais.jabatan in ('Guru', 'Kepala Sekolah', 'Wakil Kepala Sekolah', 'Tenaga Pendidik')";
         $tu = "pegawais.jabatan = 'Tenaga Kependidikan'";
 
         $sekolahs = Sekolah::leftJoin('pegawais', 'pegawais.sekolah_id', '=', 'sekolahs.id')
@@ -52,7 +53,7 @@ class PegawaiController extends Controller
     public function sekolah(Sekolah $sekolah)
     {
         // Tidak memakai relasi $sekolah->pegawais() supaya model Sekolah tidak perlu diubah.
-        $pegawais = Pegawai::where('sekolah_id', $sekolah->id)->orderBy('jabatan')->orderBy('nama')->paginate(15);
+        $pegawais = Pegawai::where('sekolah_id', $sekolah->id)->orderBy('jabatan')->orderBy('nama')->get();
 
         return view('admin.pegawai.sekolah', compact('sekolah', 'pegawais'));
     }

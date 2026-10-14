@@ -55,7 +55,7 @@ class SiswaController extends Controller
      */
     public function sekolah(Sekolah $sekolah)
     {
-        $siswas = $sekolah->siswas()->orderBy('kelas')->orderBy('nama_siswa')->paginate(15);
+        $siswas = $sekolah->siswas()->orderBy('kelas')->orderBy('nama_siswa')->get();
 
         return view('admin.siswa.sekolah', compact('sekolah', 'siswas'));
     }
