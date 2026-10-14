@@ -53,28 +53,7 @@
 
             <div class="relative max-w-md">
                 <h2 class="text-3xl font-bold leading-tight">Kelola Data Siswa.</h2>
-                <p class="mt-3 text-emerald-100">Data sekolah, siswa, dan pegawai tersimpan rapi dan mudah dipantau.</p>
-
-                <ul class="mt-8 space-y-4 text-sm">
-                    <li class="flex items-center gap-3">
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                            <i class="bi bi-building"></i>
-                        </span>
-                        Profil dan sarana sekolah
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                            <i class="bi bi-people"></i>
-                        </span>
-                        Data siswa lengkap dengan grafik
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                            <i class="bi bi-person-badge"></i>
-                        </span>
-                        Data guru dan tenaga kependidikan
-                    </li>
-                </ul>
+        
             </div>
 
             <p class="relative text-xs text-emerald-100/80">&copy; {{ date('Y') }} SIMANDIK-SMP</p>
