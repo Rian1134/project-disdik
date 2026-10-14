@@ -99,7 +99,7 @@
                 class="mb-4 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-800 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:gap-0 in-data-[sidebar-collapsed=true]:border-0 in-data-[sidebar-collapsed=true]:pb-0">
                 <div
                     class="flex shrink-0 items-center justify-center in-data-[sidebar-collapsed=true]:*:h-9 in-data-[sidebar-collapsed=true]:*:w-9">
-                    <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="md" />
+                    <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="md" status="online" />
                 </div>
                 <div class="min-w-0 flex-1" data-sidebar-label>
                     <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100"
@@ -161,14 +161,6 @@
                             </span>
                             <span class="truncate text-sm sm:text-base">SIMANDIK-SMP</span>
                         </span>
-                        @hasSection('title')
-                            <span
-                                class="hidden md:flex items-center gap-2 text-gray-300 dark:text-gray-600 text-sm min-w-0">
-                                <span>/</span>
-                                <span
-                                    class="truncate font-medium text-emerald-700 dark:text-emerald-300">@yield('title')</span>
-                            </span>
-                        @endif
                     </div>
                 </x-slot:brand>
 
@@ -180,15 +172,41 @@
                             <i class="bi bi-moon-stars dark:hidden"></i>
                             <i class="bi bi-sun hidden dark:inline"></i>
                         </button>
-                        <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="xs" />
-                        <span
-                            class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
+
+                        {{-- Dropdown profil: logout membuka modal konfirmasi di atas --}}
+                        <x-dropdown align="right">
+                            <x-slot:trigger>
+                                <button type="button"
+                                    class="flex items-center gap-2 rounded-lg p-1 sm:pr-2 transition hover:bg-emerald-50 dark:hover:bg-gray-800">
+                                    <x-avatar :name="Auth::user()?->name ?? 'Admin'" size="xs" />
+                                    <span
+                                        class="hidden sm:block max-w-32 truncate text-sm text-gray-700 dark:text-gray-200">{{ Auth::user()?->name ?? 'Admin' }}</span>
+                                    <i class="bi bi-chevron-down hidden text-xs text-gray-400 sm:inline"></i>
+                                </button>
+                            </x-slot:trigger>
+
+                            <div class="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
+                                <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                    {{ Auth::user()?->name ?? 'Admin' }}</p>
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400">Admin</p>
+                            </div>
+                            <x-dropdown.item danger data-modal-open="logoutModal">
+                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                            </x-dropdown.item>
+                        </x-dropdown>
                     </div>
                 </x-slot:actions>
             </x-navbar>
 
             <main class="flex-1 w-full min-w-0">
                 <div class="p-3 sm:p-4 lg:p-6 max-w-[1600px] mx-auto flex flex-col gap-4 min-w-0">
+                    @hasSection('title')
+                        <x-breadcrumb :items="[
+                            ['label' => 'Beranda', 'url' => route('admin.sekolah.index')],
+                            ['label' => trim($__env->yieldContent('title'))],
+                        ]" />
+                    @endif
+
                     @yield('content')
                 </div>
             </main>
