@@ -52,15 +52,6 @@
 
             $judulKartu = 'font-semibold';
             $ikonKartu = 'me-1 text-emerald-600 dark:text-emerald-400';
-            $grafikSiswaKartu = [
-                ['grafikJk', 'bi-gender-ambiguous', 'Rasio Jenis Kelamin'],
-                ['grafikKelas', 'bi-mortarboard', 'Siswa per Kelas'],
-            ];
-            $grafikPegawaiKartu = [
-                ['grafikJabatan', 'bi-person-workspace', 'Status Guru/TU'],
-                ['grafikGolongan', 'bi-award', 'Status Golongan'],
-                ['grafikStatus', 'bi-patch-check', 'Status Kepegawaian'],
-            ];
 
             $thTabel = 'px-3 py-2 font-medium';
             $tdTabel = 'px-3 py-2';
@@ -181,17 +172,25 @@
         </x-card>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            @foreach ($grafikSiswaKartu as [$id, $ikon, $judul])
-                <x-card>
-                    <x-slot:header>
-                        <span class="{{ $judulKartu }}"><i class="bi {{ $ikon }} {{ $ikonKartu }}"></i>
-                            {{ $judul }}</span>
-                    </x-slot:header>
-                    <div class="mx-auto h-64 max-w-xs">
-                        <canvas id="{{ $id }}"></canvas>
-                    </div>
-                </x-card>
-            @endforeach
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i class="bi bi-gender-ambiguous {{ $ikonKartu }}"></i> Rasio
+                        Jenis Kelamin</span>
+                </x-slot:header>
+                <div class="mx-auto h-64 max-w-xs">
+                    <canvas id="grafikJk"></canvas>
+                </div>
+            </x-card>
+
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i class="bi bi-mortarboard {{ $ikonKartu }}"></i> Siswa per
+                        Kelas</span>
+                </x-slot:header>
+                <div class="mx-auto h-64 max-w-xs">
+                    <canvas id="grafikKelas"></canvas>
+                </div>
+            </x-card>
         </div>
 
         {{-- ===== Daftar siswa ===== --}}
@@ -239,17 +238,35 @@
         </x-card>
 
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            @foreach ($grafikPegawaiKartu as [$id, $ikon, $judul])
-                <x-card>
-                    <x-slot:header>
-                        <span class="{{ $judulKartu }}"><i class="bi {{ $ikon }} {{ $ikonKartu }}"></i>
-                            {{ $judul }}</span>
-                    </x-slot:header>
-                    <div class="mx-auto h-64 max-w-xs">
-                        <canvas id="{{ $id }}"></canvas>
-                    </div>
-                </x-card>
-            @endforeach
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i class="bi bi-person-workspace {{ $ikonKartu }}"></i> Status
+                        Guru/TU</span>
+                </x-slot:header>
+                <div class="mx-auto h-64 max-w-xs">
+                    <canvas id="grafikJabatan"></canvas>
+                </div>
+            </x-card>
+
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i class="bi bi-award {{ $ikonKartu }}"></i> Status
+                        Golongan</span>
+                </x-slot:header>
+                <div class="mx-auto h-64 max-w-xs">
+                    <canvas id="grafikGolongan"></canvas>
+                </div>
+            </x-card>
+
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i class="bi bi-patch-check {{ $ikonKartu }}"></i> Status
+                        Kepegawaian</span>
+                </x-slot:header>
+                <div class="mx-auto h-64 max-w-xs">
+                    <canvas id="grafikStatus"></canvas>
+                </div>
+            </x-card>
         </div>
 
         {{-- ===== Daftar pegawai ===== --}}
@@ -302,30 +319,72 @@
         <script>
             Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#d1d5db' : '#4b5563';
 
-            const donat = (id, data) => new Chart(document.getElementById(id), {
+            const palet = ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'];
+
+            // Plugin: angka di tiap irisan + total di tengah donat
+            const angka = (judul) => ({
+                id: 'angka',
+                afterDatasetsDraw(chart) {
+                    const ctx = chart.ctx;
+                    const data = chart.data.datasets[0].data;
+                    const gelap = document.documentElement.classList.contains('dark');
+
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '700 12px sans-serif';
+                    chart.getDatasetMeta(0).data.forEach((irisan, i) => {
+                        if (!data[i] || irisan.circumference < 0.3) return; // irisan terlalu kecil: lewati
+                        const p = irisan.tooltipPosition();
+                        ctx.fillText(data[i], p.x, p.y);
+                    });
+
+                    const a = chart.chartArea;
+                    const x = (a.left + a.right) / 2;
+                    const y = (a.top + a.bottom) / 2;
+                    ctx.fillStyle = gelap ? '#f1f5f9' : '#1e293b';
+                    ctx.font = '700 24px sans-serif';
+                    ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 7);
+                    ctx.fillStyle = gelap ? '#94a3b8' : '#64748b';
+                    ctx.font = '400 11px sans-serif';
+                    ctx.fillText(judul, x, y + 14);
+                    ctx.restore();
+                },
+            });
+
+            // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
+            const donat = (id, data, judul, warnaLabel = {}) => new Chart(document.getElementById(id), {
                 type: 'doughnut',
                 data: {
                     labels: Object.entries(data).map(([k, v]) => `${k} (${v})`),
                     datasets: [{
                         data: Object.values(data),
-                        backgroundColor: ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'],
+                        backgroundColor: Object.keys(data).map((k, i) => warnaLabel[k] ?? palet[i % palet
+                            .length]),
                     }],
                 },
                 options: {
                     maintainAspectRatio: false,
+                    cutout: '60%',
                     plugins: {
                         legend: {
                             position: 'bottom'
                         }
                     },
                 },
+                plugins: [angka(judul)],
             });
 
-            donat('grafikJk', @json($grafikJk));
-            donat('grafikKelas', @json($grafikKelas));
-            donat('grafikJabatan', @json($grafikJabatan));
-            donat('grafikGolongan', @json($grafikGolongan));
-            donat('grafikStatus', @json($grafikStatus));
+            donat('grafikJk', @json($grafikJk), 'Siswa', {
+                'Laki-laki': '#3b82f6',
+                'Perempuan': '#f43f5e'
+            });
+            donat('grafikKelas', @json($grafikKelas), 'Siswa');
+            donat('grafikJabatan', @json($grafikJabatan), 'Pegawai');
+            donat('grafikGolongan', @json($grafikGolongan), 'Pegawai');
+            donat('grafikStatus', @json($grafikStatus), 'Pegawai');
 
             // Paginasi di browser: tampilkan 5 baris per halaman.
             function paginasi(idIsi, idInfo, idPager, nama, perHalaman = 5) {
@@ -357,7 +416,7 @@
                         b.className = 'min-w-9 rounded-md border px-2.5 py-1 text-sm transition ' +
                             (aktif ? 'border-emerald-600 bg-emerald-600 text-white' :
                                 'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
-                                ) +
+                            ) +
                             (nonaktif ? ' cursor-not-allowed opacity-50' : '');
                         if (!nonaktif) b.addEventListener('click', () => {
                             halaman = tujuan;
