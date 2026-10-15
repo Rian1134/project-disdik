@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIMANDIK-SMP</title>
+    <title>Login - SIMADIK</title>
+    <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     {{-- Terapkan tema sebelum halaman dirender agar tidak berkedip (flash) --}}
@@ -34,96 +35,126 @@
 <body class="bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100">
     <main class="grid min-h-dvh lg:grid-cols-2">
 
-        {{-- ===== Panel merek (hanya layar lebar) ===== --}}
-        <section
-            class="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-emerald-600 via-emerald-700 to-teal-800 p-12 text-white lg:flex">
-            {{-- Hiasan latar --}}
-            <div class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10"
-                aria-hidden="true"></div>
-            <div class="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-black/10"
-                aria-hidden="true"></div>
+        {{-- ===== Panel merek (layar lebar): foto gedung + overlay biru ===== --}}
+        <section class="relative isolate hidden flex-col justify-between overflow-hidden p-12 text-white lg:flex">
+            <img src="{{ asset('assets/img/foto-disdik.webp') }}" alt="" aria-hidden="true"
+                class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_40%]">
+            <div class="absolute inset-0 -z-10 bg-linear-to-b from-blue-950/80 via-blue-900/60 to-blue-950/90"></div>
 
-            <div class="relative flex items-center gap-3">
-                <span
-                    class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-2xl ring-1 ring-white/30">
-                    <i class="bi bi-building"></i>
+            <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
+                    <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
+                        class="h-full w-full object-contain">
                 </span>
-                <span class="text-lg font-bold tracking-wide">SIMANDIK-SMP</span>
+                <span class="text-xl font-extrabold tracking-wide">SIMADIK</span>
+            </a>
+
+            <div class="max-w-md">
+                <span
+                    class="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
+                    <i class="bi bi-building"></i> Disdikbud Kabupaten Lahat
+                </span>
+                <h2 class="mt-4 text-3xl font-bold leading-tight drop-shadow">
+                    Sistem Informasi Manajemen Akademik &amp; Pendidikan
+                </h2>
+                <p class="mt-3 text-blue-100">
+                    Kelola data sekolah, siswa, dan pegawai dalam satu aplikasi yang sederhana dan terintegrasi.
+                </p>
             </div>
 
-            <div class="relative max-w-md">
-                <h2 class="text-3xl font-bold leading-tight">Kelola Data Siswa.</h2>
-        
-            </div>
-
-            <p class="relative text-xs text-emerald-100/80">&copy; {{ date('Y') }} SIMANDIK-SMP</p>
+            <p class="text-xs text-blue-200">&copy; {{ date('Y') }} SIMADIK. Seluruh hak cipta dilindungi.</p>
         </section>
 
-        {{-- ===== Form login ===== --}}
-        <section class="relative flex items-center justify-center p-4 sm:p-8">
+        {{-- ===== Sisi form ===== --}}
+        <section class="relative flex flex-col">
 
-            {{-- Tombol ganti tema --}}
+            {{-- Tombol ganti tema (di mobile berada di atas banner, jadi putih) --}}
             <button type="button" id="themeToggle" title="Ganti tema" aria-label="Ganti tema terang/gelap"
-                class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300">
+                class="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur transition hover:bg-white/25 lg:bg-transparent lg:text-gray-500 lg:backdrop-blur-none lg:hover:bg-blue-50 lg:hover:text-blue-600 dark:lg:text-gray-400 dark:lg:hover:bg-gray-800 dark:lg:hover:text-blue-300">
                 <i class="bi bi-moon-stars dark:hidden"></i>
                 <i class="bi bi-sun hidden dark:inline"></i>
             </button>
 
-            <div class="w-full max-w-sm">
+            {{-- Banner untuk layar kecil --}}
+            <div class="relative isolate overflow-hidden text-center text-white lg:hidden">
+                <img src="{{ asset('assets/img/foto-disdik.webp') }}" alt="" aria-hidden="true"
+                    class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_40%]">
+                <div class="absolute inset-0 -z-10 bg-linear-to-b from-blue-950/75 via-blue-900/65 to-blue-950/90">
+                </div>
 
-                {{-- Merek untuk layar kecil --}}
-                <div class="mb-8 text-center lg:hidden">
+                <div class="px-4 pb-20 pt-10 sm:pb-24 sm:pt-12">
                     <span
-                        class="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 text-3xl text-white shadow-md">
-                        <i class="bi bi-building"></i>
+                        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white p-2 shadow-xl ring-4 ring-white/30">
+                        <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
+                            class="h-full w-full object-contain">
                     </span>
-                    <h1 class="text-xl font-bold text-gray-800 dark:text-gray-100">SIMANDIK-SMP</h1>
+                    <h1 class="mt-3 text-2xl font-extrabold tracking-wide drop-shadow">SIMADIK</h1>
+                    <p class="mx-auto mt-1 max-w-xs text-xs text-blue-100 sm:text-sm">
+                        Sistem Informasi Manajemen Akademik &amp; Pendidikan
+                    </p>
                 </div>
+            </div>
 
-                <div class="mb-6 hidden lg:block">
-                    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Selamat datang</h1>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Silakan login untuk melanjutkan.</p>
+            {{-- Konten form: di mobile kartu naik menimpa banner --}}
+            <div
+                class="relative z-10 -mt-12 flex flex-1 justify-center px-4 pb-8 sm:-mt-16 lg:mt-0 lg:items-center lg:p-8">
+                <div class="w-full max-w-sm">
+
+                    <div class="mb-6 hidden lg:block">
+                        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Selamat datang</h1>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Silakan login untuk melanjutkan.</p>
+                    </div>
+
+                    {{-- Pesan sukses / error dari server (mis. setelah logout atau akun ditolak) --}}
+                    @if (session('success'))
+                        <x-alert type="success" dismissible class="mb-4">{{ session('success') }}</x-alert>
+                    @endif
+                    @if (session('error'))
+                        <x-alert type="danger" dismissible class="mb-4">{{ session('error') }}</x-alert>
+                    @endif
+
+                    <x-card class="shadow-xl lg:shadow-md">
+                        <div class="mb-4 text-center lg:hidden">
+                            <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">Selamat datang</h2>
+                            <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Silakan login untuk melanjutkan.
+                            </p>
+                        </div>
+
+                        <form id="formLogin" action="{{ route('login.store') }}" method="POST"
+                            class="flex flex-col gap-4">
+                            @csrf
+
+                            <x-form.input name="email" label="Email" type="email" placeholder="nama@email.com"
+                                autocomplete="username" inputmode="email" autofocus required />
+
+                            {{-- Tombol mata memakai slot suffix milik x-form.input --}}
+                            <x-form.input name="password" label="Password" type="password"
+                                placeholder="Masukkan password" autocomplete="current-password" required>
+                                <x-slot:suffix>
+                                    <button type="button" id="tombolMata" title="Tampilkan password"
+                                        aria-label="Tampilkan password" aria-pressed="false"
+                                        class="inline-flex items-center justify-center p-1 text-gray-500 transition hover:text-blue-600 focus:outline-none focus-visible:text-blue-600 dark:text-gray-400 dark:hover:text-blue-300">
+                                        <i class="bi bi-eye text-lg"></i>
+                                    </button>
+                                </x-slot:suffix>
+                            </x-form.input>
+
+                            <x-button type="submit" id="tombolLogin" size="lg" full-width>
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                            </x-button>
+                        </form>
+                    </x-card>
+
+                    <div class="mt-6 text-center">
+                        <a href="{{ route('home') }}"
+                            class="inline-flex items-center gap-1 text-sm text-gray-500 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-300">
+                            <i class="bi bi-arrow-left"></i> Kembali ke beranda
+                        </a>
+                        <p class="mt-3 text-xs text-gray-400 dark:text-gray-600 lg:hidden">
+                            &copy; {{ date('Y') }} SIMADIK
+                        </p>
+                    </div>
                 </div>
-                <p class="mb-6 text-center text-sm text-gray-500 dark:text-gray-400 lg:hidden">
-                    Silakan login untuk melanjutkan.
-                </p>
-
-                {{-- Pesan sukses / error dari server (mis. setelah logout atau akun ditolak) --}}
-                @if (session('success'))
-                    <x-alert type="success" dismissible class="mb-4">{{ session('success') }}</x-alert>
-                @endif
-                @if (session('error'))
-                    <x-alert type="danger" dismissible class="mb-4">{{ session('error') }}</x-alert>
-                @endif
-
-                <x-card>
-                    <form id="formLogin" action="{{ route('login.store') }}" method="POST" class="flex flex-col gap-4">
-                        @csrf
-
-                        <x-form.input name="email" label="Email" type="email" placeholder="nama@email.com"
-                            autocomplete="username" autofocus required />
-
-                        {{-- Tombol mata memakai slot suffix milik x-form.input --}}
-                        <x-form.input name="password" label="Password" type="password" placeholder="Masukkan password"
-                            autocomplete="current-password" required>
-                            <x-slot:suffix>
-                                <button type="button" id="tombolMata" title="Tampilkan password"
-                                    aria-label="Tampilkan password" aria-pressed="false"
-                                    class="inline-flex items-center justify-center text-gray-500 transition hover:text-emerald-600 focus:outline-none focus-visible:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-300">
-                                    <i class="bi bi-eye text-lg"></i>
-                                </button>
-                            </x-slot:suffix>
-                        </x-form.input>
-
-                        <x-button type="submit" id="tombolLogin" full-width>
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
-                        </x-button>
-                    </form>
-                </x-card>
-
-                <p class="mt-6 text-center text-xs text-gray-400 dark:text-gray-600 lg:hidden">
-                    &copy; {{ date('Y') }} SIMANDIK-SMP
-                </p>
             </div>
         </section>
     </main>

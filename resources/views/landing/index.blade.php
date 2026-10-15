@@ -9,7 +9,7 @@
         {{-- Foto latar: overlay dibuat lebih tipis supaya foto gedung tetap terlihat --}}
         <img src="{{ asset('assets/img/foto-disdik.webp') }}" alt="Gedung Dinas Pendidikan dan Kebudayaan Kabupaten Lahat"
             class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_40%]">
-        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-950/70 via-blue-900/50 to-blue-950/80"></div>
+        <div class="absolute inset-0 -z-10 bg-linear-to-b from-blue-950/70 via-blue-900/50 to-blue-950/80"></div>
 
         <div class="mx-auto w-full max-w-4xl px-4 pb-32 pt-16 text-center text-white sm:pb-36 sm:pt-20 lg:pt-28">
             {{-- Logo --}}

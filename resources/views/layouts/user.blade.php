@@ -7,8 +7,9 @@
     <title>
         @hasSection('title')
             @yield('title') -
-        @endif SIMANDIK-SMP
+        @endif SIMADIK
     </title>
+    <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     {{-- Terapkan tema sebelum halaman dirender agar tidak berkedip (flash) --}}
@@ -92,11 +93,10 @@
         {{-- Sidebar --}}
         {{-- Komponen x-sidebar sudah membungkus slot dalam <nav class="flex flex-1 flex-col gap-1">,
              jadi di sini cukup isi menunya langsung (jangan bungkus lagi dengan nav/h-full). --}}
-        <x-sidebar id="mainSidebar" class="border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <x-sidebar id="mainSidebar" class="border-r border-blue-900 bg-blue-950">
             @php
-                $aktif = 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-emerald-500/15 dark:text-emerald-300';
-                $hover =
-                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100';
+                $aktif = 'bg-white/15 text-white font-semibold';
+                $hover = 'text-blue-100 hover:bg-white/10 hover:text-white';
 
                 // [pola route aktif, route tujuan, nama menu, ikon]
                 $menu = [
@@ -109,7 +109,7 @@
 
             {{-- Profil (saat collapse: hanya avatar) --}}
             <div
-                class="mb-4 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-gray-800 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:gap-0 in-data-[sidebar-collapsed=true]:border-0 in-data-[sidebar-collapsed=true]:pb-0">
+                class="mb-4 flex items-center gap-3 border-b border-white/10 pb-4 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:gap-0 in-data-[sidebar-collapsed=true]:border-0 in-data-[sidebar-collapsed=true]:pb-0">
                 <div
                     class="flex shrink-0 items-center justify-center in-data-[sidebar-collapsed=true]:*:h-9 in-data-[sidebar-collapsed=true]:*:w-9">
                     @if ($logo)
@@ -119,14 +119,13 @@
                     @endif
                 </div>
                 <div class="min-w-0 flex-1" data-sidebar-label>
-                    <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100"
-                        title="{{ Auth::user()?->name ?? 'User' }}">{{ Auth::user()?->name ?? 'User' }}</p>
-                    <p class="truncate text-xs text-emerald-600 dark:text-emerald-400">Operator Sekolah</p>
+                    <p class="truncate text-sm font-semibold text-white" title="{{ Auth::user()?->name ?? 'User' }}">
+                        {{ Auth::user()?->name ?? 'User' }}</p>
+                    <p class="truncate text-xs text-sky-300">Operator Sekolah</p>
                 </div>
             </div>
 
-            <p class="mb-1 px-2 text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500"
-                data-sidebar-label>
+            <p class="mb-1 px-2 text-[11px] font-medium uppercase tracking-wider text-blue-300/70" data-sidebar-label>
                 Menu Utama
             </p>
 
@@ -136,11 +135,11 @@
                     class="sidebar-link group relative rounded-lg in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1 {{ $on ? $aktif : $hover }}"
                     @if ($on) aria-current="page" @endif>
                     @if ($on)
-                        <span class="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-emerald-600 dark:bg-emerald-400"
+                        <span class="absolute inset-y-2 left-0 w-0.5 rounded-r-full bg-sky-300"
                             aria-hidden="true"></span>
                     @endif
                     <span
-                        class="inline-flex h-8 w-8 shrink-0 items-center justify-center text-lg {{ $on ? '' : 'text-emerald-600 dark:text-emerald-400' }}">
+                        class="inline-flex h-8 w-8 shrink-0 items-center justify-center text-lg {{ $on ? '' : 'text-sky-300' }}">
                         <i class="bi {{ $ikon }}"></i>
                     </span>
                     <span class="truncate" data-sidebar-label>{{ $nama }}</span>
@@ -148,9 +147,9 @@
             @endforeach
 
             {{-- Logout: mt-auto mendorongnya ke dasar sidebar (slot berada di dalam nav flex-1) --}}
-            <div class="mt-auto border-t border-gray-100 pt-3 dark:border-gray-800">
+            <div class="mt-auto border-t border-white/10 pt-3">
                 <button type="button" data-modal-open="logoutModal" title="Logout"
-                    class="sidebar-link group w-full rounded-lg text-left text-gray-500 hover:bg-rose-50 hover:text-rose-600 dark:text-gray-400 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1">
+                    class="sidebar-link group w-full rounded-lg text-left text-blue-100 hover:bg-rose-500/20 hover:text-rose-300 in-data-[sidebar-collapsed=true]:justify-center in-data-[sidebar-collapsed=true]:px-1">
                     <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center text-lg">
                         <i class="bi bi-box-arrow-right"></i>
                     </span>
@@ -167,16 +166,17 @@
                 <x-slot:brand>
                     <div class="flex items-center gap-2 min-w-0">
                         <button data-sidebar-open="mainSidebar"
-                            class="inline-flex items-center justify-center rounded-md p-1.5 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-gray-800 sm:hidden shrink-0"
+                            class="inline-flex items-center justify-center rounded-md p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-gray-800 sm:hidden shrink-0"
                             aria-label="Buka menu">
                             <i class="bi bi-list text-2xl leading-none"></i>
                         </button>
                         <span class="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100 truncate">
                             <span
-                                class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-sm text-white">
-                                <i class="bi bi-building"></i>
+                                class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white p-0.5 ring-1 ring-gray-200 dark:ring-gray-700">
+                                <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo SIMADIK"
+                                    class="h-full w-full object-contain">
                             </span>
-                            <span class="truncate text-sm sm:text-base">SIMANDIK-SMP</span>
+                            <span class="truncate text-sm sm:text-base">SIMADIK</span>
                         </span>
                     </div>
                 </x-slot:brand>
@@ -185,7 +185,7 @@
                     <div class="flex items-center gap-2">
                         {{-- Tombol ganti tema --}}
                         <button type="button" id="themeToggle" title="Ganti tema" aria-label="Ganti tema terang/gelap"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-emerald-50 hover:text-emerald-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300">
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-300">
                             <i class="bi bi-moon-stars dark:hidden"></i>
                             <i class="bi bi-sun hidden dark:inline"></i>
                         </button>
@@ -194,7 +194,7 @@
                         <x-dropdown align="right">
                             <x-slot:trigger>
                                 <button type="button"
-                                    class="flex items-center gap-2 rounded-lg p-1 sm:pr-2 transition hover:bg-emerald-50 dark:hover:bg-gray-800">
+                                    class="flex items-center gap-2 rounded-lg p-1 sm:pr-2 transition hover:bg-blue-50 dark:hover:bg-gray-800">
                                     @if ($logo)
                                         <img src="{{ $logo }}" alt="Logo"
                                             class="h-7 w-7 rounded-full object-cover">
@@ -210,7 +210,7 @@
                             <div class="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
                                 <p class="truncate text-sm font-semibold text-gray-800 dark:text-gray-100">
                                     {{ Auth::user()?->name ?? 'User' }}</p>
-                                <p class="text-xs text-emerald-600 dark:text-emerald-400">Operator Sekolah</p>
+                                <p class="text-xs text-blue-600 dark:text-blue-400">Operator Sekolah</p>
                             </div>
                             <a href="{{ route('user.profile.index') }}"
                                 class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800">
@@ -239,7 +239,7 @@
 
             <footer
                 class="border-t border-gray-200 px-3 py-4 text-center text-xs text-gray-400 dark:border-gray-800 dark:text-gray-600 sm:px-4 lg:px-6">
-                &copy; {{ date('Y') }} <span class="font-medium text-emerald-600">SIMANDIK-SMP</span>
+                &copy; {{ date('Y') }} <span class="font-medium text-blue-600">SIMADIK</span>
             </footer>
         </div>
     </div>
