@@ -33,8 +33,8 @@
         </x-slot:header>
 
         {{-- Tab filter kategori (diisi oleh JavaScript di bawah) --}}
-        <div class="mb-4 hidden overflow-x-auto border-b border-gray-200 dark:border-gray-700">
-            <nav id="tabKategori" class="-mb-px flex min-w-max gap-1" aria-label="Filter kategori"></nav>
+        <div class="mb-4 hidden overflow-x-auto pb-1">
+            <nav id="tabKategori" class="flex min-w-max gap-2" aria-label="Filter kategori"></nav>
         </div>
 
         <div class="relative mb-4 max-w-sm">
@@ -47,7 +47,7 @@
             <x-table hover class="text-sm">
                 <x-slot:head>
                     <tr
-                        class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                        class="bg-emerald-50 text-xs uppercase tracking-wide text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
                         <x-table.heading class="text-center">No</x-table.heading>
                         <x-table.heading class="min-w-56">Pegawai</x-table.heading>
                         <x-table.heading class="text-center">L/P</x-table.heading>
@@ -58,12 +58,18 @@
                 </x-slot:head>
 
                 @forelse($pegawais as $pegawai)
+                    @php
+                        $warnaJk =
+                            $pegawai->jenis_kelamin === 'L'
+                                ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+                                : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300';
+                    @endphp
                     <x-table.row>
                         <x-table.cell class="text-center text-gray-500">{{ $loop->iteration }}</x-table.cell>
                         <x-table.cell>
                             <div class="flex items-center gap-3">
                                 <span
-                                    class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                                    class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold {{ $warnaJk }}">
                                     {{ mb_strtoupper(mb_substr($pegawai->nama, 0, 1)) }}
                                 </span>
                                 <div class="min-w-0">
@@ -74,7 +80,7 @@
                         </x-table.cell>
                         <x-table.cell class="text-center">
                             <span
-                                class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold {{ $pegawai->jenis_kelamin === 'L' ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300' }}">
+                                class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold {{ $warnaJk }}">
                                 {{ $pegawai->jenis_kelamin }}
                             </span>
                         </x-table.cell>
@@ -156,7 +162,7 @@
             Tidak ada pegawai yang cocok.
         </p>
 
-        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
             <p id="infoData" class="text-sm text-gray-500 dark:text-gray-400"></p>
             <div id="pagerData" class="flex flex-wrap items-center gap-1"></div>
         </div>
@@ -199,11 +205,31 @@
 
             const labelKategori = k => (k || 'Lainnya');
 
-            const dasarTab = 'inline-flex items-center gap-2 whitespace-nowrap border-b-2 px-3 py-2 text-sm transition';
-            const tabAktif =
-                'border-emerald-600 font-semibold text-emerald-700 dark:border-emerald-400 dark:text-emerald-300';
-            const tabBiasa =
-                'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200';
+            // Warna tab: [aktif, biasa]. Kelas ditulis utuh agar terbaca Tailwind.
+            // Tab "Semua" memakai hijau; kategori lain bergantian memakai warna berikutnya.
+            const warnaTab = [
+                ['bg-emerald-600 text-white',
+                    'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:hover:bg-emerald-500/25'
+                ],
+                ['bg-sky-600 text-white',
+                    'bg-sky-50 text-sky-700 hover:bg-sky-100 dark:bg-sky-500/15 dark:text-sky-300 dark:hover:bg-sky-500/25'
+                ],
+                ['bg-violet-600 text-white',
+                    'bg-violet-50 text-violet-700 hover:bg-violet-100 dark:bg-violet-500/15 dark:text-violet-300 dark:hover:bg-violet-500/25'
+                ],
+                ['bg-amber-500 text-white',
+                    'bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:hover:bg-amber-500/25'
+                ],
+                ['bg-rose-600 text-white',
+                    'bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:hover:bg-rose-500/25'
+                ],
+                ['bg-teal-600 text-white',
+                    'bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-500/15 dark:text-teal-300 dark:hover:bg-teal-500/25'
+                ],
+            ];
+            const dasarTab =
+                'inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm transition';
+            const warnaTabKe = i => warnaTab[i === 0 ? 0 : 1 + ((i - 1) % (warnaTab.length - 1))];
 
             function buatTab() {
                 if (!wadahTab || daftarKategori.length === 0) return;
@@ -213,12 +239,12 @@
                 ].concat(daftarKategori.map(k => [k, labelKategori(k), hitung[k]]));
 
                 wadahTab.innerHTML = '';
-                semua.forEach(([nilai, label, jumlah]) => {
+                semua.forEach(([nilai, label, jumlah], i) => {
                     const tombol = document.createElement('button');
                     tombol.type = 'button';
                     tombol.dataset.nilai = nilai;
-                    tombol.innerHTML =
-                        '<span></span><span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800"></span>';
+                    tombol.dataset.warna = i;
+                    tombol.innerHTML = '<span></span><span></span>';
                     tombol.children[0].textContent = label;
                     tombol.children[1].textContent = jumlah;
                     tombol.addEventListener('click', () => {
@@ -236,7 +262,10 @@
                 if (!wadahTab) return;
                 wadahTab.querySelectorAll('button').forEach(tombol => {
                     const on = tombol.dataset.nilai === kategoriAktif;
-                    tombol.className = dasarTab + ' ' + (on ? tabAktif : tabBiasa);
+                    const [aktif, biasa] = warnaTabKe(Number(tombol.dataset.warna));
+                    tombol.className = dasarTab + ' ' + (on ? aktif + ' font-semibold shadow-sm' : biasa);
+                    tombol.children[1].className = 'rounded-full px-2 py-0.5 text-xs ' +
+                        (on ? 'bg-white/25' : 'bg-white/70 dark:bg-gray-900/40');
                     if (on) {
                         tombol.setAttribute('aria-current', 'page');
                     } else {
@@ -324,4 +353,3 @@
         })();
     </script>
 @endsection
-    
