@@ -34,11 +34,11 @@
         </x-slot:brand>
 
         <x-slot:menu>
-            <a href="#beranda"
+            <a href="{{ route('home') }}#beranda"
                 class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Beranda</a>
-            <a href="#statistik"
+            <a href="{{ route('home') }}#statistik"
                 class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Statistik</a>
-            <a href="#fitur"
+            <a href="{{ route('home') }}#fitur"
                 class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Fitur</a>
         </x-slot:menu>
 
@@ -74,9 +74,9 @@
             <div>
                 <h3 class="text-sm font-semibold uppercase tracking-wide text-white">Navigasi</h3>
                 <ul class="mt-3 space-y-2 text-sm text-blue-200">
-                    <li><a href="#beranda" class="hover:text-white">Beranda</a></li>
-                    <li><a href="#statistik" class="hover:text-white">Statistik</a></li>
-                    <li><a href="#fitur" class="hover:text-white">Fitur</a></li>
+                    <li><a href="{{ route('home') }}#beranda" class="hover:text-white">Beranda</a></li>
+                    <li><a href="{{ route('home') }}#statistik" class="hover:text-white">Statistik</a></li>
+                    <li><a href="{{ route('home') }}#fitur" class="hover:text-white">Fitur</a></li>
                     <li><a href="{{ route('login') }}" class="hover:text-white">Masuk</a></li>
                 </ul>
             </div>

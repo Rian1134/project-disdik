@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::middleware('throttle:60,1')->prefix('data')->name('public.')->group(function () {
+    Route::get('siswa', [HomeController::class, 'siswa'])->name('siswa');
+    Route::get('pegawai', [HomeController::class, 'pegawai'])->name('pegawai');
+    Route::get('sekolah', [HomeController::class, 'sekolah'])->name('sekolah');
+});
+
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.store');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');

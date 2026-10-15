@@ -5,13 +5,13 @@
 @section('content')
 
     {{-- Hero --}}
-    <section id="beranda" class="relative isolate flex min-h-[80vh] items-center overflow-hidden">
+    <section id="beranda" class="relative isolate flex min-h-[75svh] items-center overflow-hidden sm:min-h-[80vh]">
         {{-- Foto latar: overlay dibuat lebih tipis supaya foto gedung tetap terlihat --}}
         <img src="{{ asset('assets/img/foto-disdik.webp') }}" alt="Gedung Dinas Pendidikan dan Kebudayaan Kabupaten Lahat"
             class="absolute inset-0 -z-20 h-full w-full object-cover object-[center_40%]">
         <div class="absolute inset-0 -z-10 bg-linear-to-b from-blue-950/70 via-blue-900/50 to-blue-950/80"></div>
 
-        <div class="mx-auto w-full max-w-4xl px-4 pb-32 pt-16 text-center text-white sm:pb-36 sm:pt-20 lg:pt-28">
+        <div class="mx-auto w-full max-w-4xl px-4 pb-28 pt-10 text-center text-white sm:pb-36 sm:pt-20 lg:pt-28">
             {{-- Logo --}}
             <div
                 class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-xl ring-4 ring-white/40 sm:h-28 sm:w-28">
@@ -20,9 +20,9 @@
             </div>
 
             <span
-                class="mt-6 inline-flex max-w-full items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur sm:text-sm">
+                class="mt-6 inline-flex max-w-full items-center gap-2 rounded-2xl bg-white/20 px-3 py-1.5 text-center text-xs font-semibold leading-snug backdrop-blur sm:rounded-full sm:text-sm">
                 <i class="bi bi-building shrink-0"></i>
-                <span class="truncate">Dinas Pendidikan dan Kebudayaan Kabupaten Lahat</span>
+                <span>Dinas Pendidikan dan Kebudayaan Kabupaten Lahat</span>
             </span>
 
             <h1 class="mt-5 text-4xl font-extrabold tracking-tight drop-shadow-lg sm:text-5xl lg:text-6xl">
@@ -36,8 +36,9 @@
             </p>
 
             <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-                <x-button href="{{ route('login') }}" size="lg">Masuk ke Aplikasi</x-button>
-                <x-button href="#statistik" variant="light" size="lg">Lihat Statistik</x-button>
+                <x-button href="{{ route('login') }}" size="lg" class="w-full sm:w-auto">Masuk ke Aplikasi</x-button>
+                <x-button href="#statistik" variant="light" size="lg" class="w-full sm:w-auto">Lihat
+                    Statistik</x-button>
             </div>
         </div>
     </section>
@@ -48,24 +49,28 @@
             $items = [
                 [
                     'label' => 'Siswa',
+                    'href' => route('public.siswa'),
                     'value' => $stats['siswa'],
                     'icon' => 'bi-mortarboard-fill',
                     'color' => 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300',
                 ],
                 [
                     'label' => 'Tenaga Pendidik',
+                    'href' => route('public.pegawai', ['jenis' => 'pendidik']),
                     'value' => $stats['pendidik'],
                     'icon' => 'bi-person-workspace',
                     'color' => 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300',
                 ],
                 [
                     'label' => 'Tenaga Kependidikan',
+                    'href' => route('public.pegawai', ['jenis' => 'kependidikan']),
                     'value' => $stats['kependidikan'],
                     'icon' => 'bi-person-badge-fill',
                     'color' => 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300',
                 ],
                 [
                     'label' => 'Sekolah',
+                    'href' => route('public.sekolah'),
                     'value' => $stats['sekolah'],
                     'icon' => 'bi-building-fill',
                     'color' => 'bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300',
@@ -75,21 +80,30 @@
 
         <div class="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             @foreach ($items as $item)
-                <x-card class="shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                    <div class="flex flex-col items-center py-2 text-center sm:py-4">
-                        <span
-                            class="flex h-12 w-12 items-center justify-center rounded-full text-2xl sm:h-16 sm:w-16 sm:text-3xl {{ $item['color'] }}">
-                            <i class="bi {{ $item['icon'] }}"></i>
-                        </span>
-                        <div class="mt-3 text-2xl font-bold sm:mt-4 sm:text-4xl">
-                            {{ number_format($item['value'], 0, ',', '.') }}
+                <a href="{{ $item['href'] }}"
+                    class="group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    aria-label="Lihat daftar {{ $item['label'] }}">
+                    <x-card
+                        class="h-full shadow-lg transition group-hover:-translate-y-1 group-hover:shadow-xl group-active:scale-[0.98]">
+                        <div class="flex flex-col items-center py-2 text-center sm:py-4">
+                            <span
+                                class="flex h-12 w-12 items-center justify-center rounded-full text-2xl sm:h-16 sm:w-16 sm:text-3xl {{ $item['color'] }}">
+                                <i class="bi {{ $item['icon'] }}"></i>
+                            </span>
+                            <div class="mt-3 text-2xl font-bold sm:mt-4 sm:text-4xl">
+                                {{ number_format($item['value'], 0, ',', '.') }}
+                            </div>
+                            <div
+                                class="mt-1 wrap-break-word text-[11px] font-medium uppercase leading-tight tracking-wide text-gray-500 dark:text-gray-400 sm:text-sm">
+                                {{ $item['label'] }}
+                            </div>
+                            <span
+                                class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 group-hover:underline dark:text-blue-300">
+                                Lihat daftar <i class="bi bi-arrow-right"></i>
+                            </span>
                         </div>
-                        <div
-                            class="mt-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 sm:text-sm">
-                            {{ $item['label'] }}
-                        </div>
-                    </div>
-                </x-card>
+                    </x-card>
+                </a>
             @endforeach
         </div>
     </section>
@@ -126,13 +140,16 @@
 
             <div class="grid gap-4 sm:gap-6 md:grid-cols-3">
                 @foreach ($fiturs as $fitur)
-                    <div class="rounded-xl border border-gray-200 p-5 text-center dark:border-gray-700 sm:p-6 md:text-left">
+                    <div
+                        class="flex items-start gap-4 rounded-xl border border-gray-200 p-4 text-left dark:border-gray-700 sm:p-6 md:block">
                         <span
-                            class="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-xl text-white md:mx-0">
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-xl text-white sm:h-12 sm:w-12">
                             <i class="bi {{ $fitur['icon'] }}"></i>
                         </span>
-                        <h3 class="mt-4 text-lg font-semibold">{{ $fitur['title'] }}</h3>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $fitur['desc'] }}</p>
+                        <div class="min-w-0">
+                            <h3 class="text-base font-semibold sm:text-lg md:mt-4">{{ $fitur['title'] }}</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 md:mt-2">{{ $fitur['desc'] }}</p>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -145,8 +162,8 @@
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 sm:text-base">
             Masuk dengan akun Anda untuk mengakses SIMADIK.
         </p>
-        <div class="mt-6">
-            <x-button href="{{ route('login') }}" size="lg">Masuk Sekarang</x-button>
+        <div class="mx-auto mt-6 max-w-xs sm:max-w-none">
+            <x-button href="{{ route('login') }}" size="lg" class="w-full sm:w-auto">Masuk Sekarang</x-button>
         </div>
     </section>
 
