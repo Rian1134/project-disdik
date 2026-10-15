@@ -4,76 +4,77 @@
 
 @section('content')
     @php
-        // Daftar siswa sekolah ini. Idealnya dikirim dari controller sebagai $siswas;
-        // jika belum, diambil di sini (15 per halaman, parameter halaman: siswa_page).
-        $siswas =
-            $siswas ??
-            $sekolah
-                ->siswas()
-                ->orderBy('kelas')
-                ->orderBy('nama_siswa')
-                ->paginate(15, ['*'], 'siswa_page')
-                ->withQueryString();
+        $tgl = fn($nilai) => $nilai ? \Illuminate\Support\Carbon::parse($nilai)->translatedFormat('d F Y') : '-';
+        $isi = fn($nilai, $satuan = '') => filled($nilai) ? $nilai . $satuan : '-';
 
-        // Daftar pegawai sekolah ini (guru dulu, lalu TU; 10 per halaman, parameter: pegawai_page).
-        $pegawais =
-            $pegawais ??
-            \App\Models\Pegawai::where('sekolah_id', $sekolah->id)
-                ->orderByDesc('jabatan')
-                ->orderBy('nama')
-                ->paginate(10, ['*'], 'pegawai_page')
-                ->withQueryString();
+        // Misi diisi satu poin per baris
+        $daftarMisi = array_filter(array_map('trim', explode("\n", (string) $sekolah->misi)));
 
-        // Tiap kelompok = satu kartu. Tambah / ubah baris cukup di sini.
-        $kelompok = [
-            [
-                'judul' => 'Identitas Sekolah',
-                'ikon' => 'bi-building',
-                'warna' => 'text-indigo-600 dark:text-indigo-400',
-                'baris' => [
-                    ['Nama Sekolah', $sekolah->nama_sekolah],
-                    ['Nomor Statistik Sekolah', $sekolah->nss],
-                    ['Nomor Pokok Sekolah Nasional', $sekolah->npsn],
-                    ['Nama Kepala Sekolah', $sekolah->nama_kepala_sekolah],
-                    ['Status Akreditasi', $sekolah->akreditasi],
-                    ['Status Kepemilikan', $sekolah->status_sekolah],
-                    ['Tanggal SK Pendirian', $sekolah->tanggal_sk_pendirian],
-                    ['Tanggal SK Izin Operasional', $sekolah->tanggal_sk_izin_oprasional],
-                    ['Implementasi Kurikulum', $sekolah->implementasi_kurikulum],
-                ],
-            ],
-            [
-                'judul' => 'Alamat',
-                'ikon' => 'bi-geo-alt',
-                'warna' => 'text-emerald-600 dark:text-emerald-400',
-                'baris' => [
-                    ['Alamat', $sekolah->alamat],
-                    ['RT/RW', $sekolah->rt_rw],
-                    ['Desa/Kelurahan', $sekolah->desa_kelurahan],
-                    ['Kecamatan', $sekolah->kecamatan],
-                    ['Kabupaten', $sekolah->kabupaten],
-                    ['Provinsi', $sekolah->provinsi],
-                    ['Kode Pos', $sekolah->kode_pos],
-                ],
-            ],
-            [
-                'judul' => 'Sarana Pendukung',
-                'ikon' => 'bi-lightning-charge',
-                'warna' => 'text-amber-500',
-                'baris' => [
-                    ['Luas Tanah', filled($sekolah->laus_tanah) ? $sekolah->laus_tanah . ' m²' : null],
-                    ['Luas Bangunan', filled($sekolah->laus_bangunan) ? $sekolah->laus_bangunan . ' m²' : null],
-                    ['Tipe Internet', $sekolah->tipe_internet],
-                    ['Provider Internet', $sekolah->internet_provider],
-                    ['Bandwidth Internet', $sekolah->bandwith_internet ? $sekolah->bandwith_internet . ' Mbps' : null],
-                    ['Sumber Listrik', $sekolah->sumber_listrik],
-                    ['Daya Listrik', $sekolah->daya_listrik ? $sekolah->daya_listrik . ' VA' : null],
-                    ['Sumber Air', $sekolah->sumber_air],
-                ],
-            ],
+        $identitas = [
+            ['Nama Sekolah', $sekolah->nama_sekolah],
+            ['Nomor Statistik Sekolah', $sekolah->nss],
+            ['Nomor Pokok Sekolah Nasional', $sekolah->npsn],
+            ['Nama Kepala Sekolah', $sekolah->nama_kepala_sekolah],
+            ['Status Akreditasi', $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : $sekolah->akreditasi],
+            ['Status Kepemilikan', $sekolah->status_sekolah],
+            ['Tanggal SK Pendirian', $tgl($sekolah->tanggal_sk_pendirian)],
+            ['Tanggal SK Izin Operasional', $tgl($sekolah->tanggal_sk_izin_oprasional)],
+            ['Implementasi Kurikulum', $sekolah->implementasi_kurikulum],
+        ];
+
+        $alamat = [
+            ['Alamat', $sekolah->alamat],
+            ['RT/RW', $sekolah->rt_rw],
+            ['Desa/Kelurahan', $sekolah->desa_kelurahan],
+            ['Kecamatan', $sekolah->kecamatan],
+            ['Kabupaten', $sekolah->kabupaten],
+            ['Provinsi', $sekolah->provinsi],
+            ['Kode Pos', $sekolah->kode_pos],
+        ];
+
+        $sarana = [
+            ['Luas Tanah', $isi($sekolah->laus_tanah, ' m²')],
+            ['Luas Bangunan', $isi($sekolah->laus_bangunan, ' m²')],
+            ['Tipe Internet', $isi($sekolah->tipe_internet)],
+            ['Provider Internet', $isi($sekolah->internet_provider)],
+            ['Bandwidth Internet', $isi($sekolah->bandwith_internet, ' Mbps')],
+            ['Sumber Listrik', $isi($sekolah->sumber_listrik)],
+            ['Daya Listrik', $isi($sekolah->daya_listrik, ' VA')],
+            ['Sumber Air', $isi($sekolah->sumber_air)],
         ];
 
         $dokumen = ['SK Pendirian Sekolah', 'SK Izin Operasional', 'SK Akreditasi Sekolah'];
+
+        $stat = [
+            [
+                'bi-people',
+                'Jumlah Siswa',
+                $sekolah->siswas_count,
+                'border-sky-200 bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10',
+                'bg-sky-500',
+            ],
+            [
+                'bi-person-workspace',
+                'Guru (Tenaga Pendidik)',
+                $guru,
+                'border-violet-200 bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10',
+                'bg-violet-500',
+            ],
+            [
+                'bi-person-badge',
+                'TU (Tenaga Kependidikan)',
+                $tu,
+                'border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10',
+                'bg-emerald-500',
+            ],
+            [
+                'bi-trophy',
+                'Prestasi',
+                $prestasis->count(),
+                'border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10',
+                'bg-amber-500',
+            ],
+        ];
 
         $warnaStatus = [
             'PNS' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
@@ -83,6 +84,12 @@
             'Honorer' => 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300',
         ];
         $warnaStatusLain = 'bg-slate-100 text-slate-600 dark:bg-slate-500/20 dark:text-slate-300';
+
+        $judulKartu = 'font-semibold';
+        $ikonKartu = 'me-1';
+        $barisDl = 'flex justify-between gap-4 py-2';
+        $nilaiDl = 'min-w-0 break-words text-right font-medium';
+
     @endphp
 
     <x-breadcrumb :items="[
@@ -90,120 +97,341 @@
         ['label' => $sekolah->nama_sekolah],
     ]" />
 
-    {{-- ===== Header sekolah ===== --}}
+
+    {{-- ===== Header profil: logo + identitas singkat + statistik ===== --}}
     <div
         class="rounded-xl border border-gray-200 bg-linear-to-r from-emerald-50 via-white to-sky-50 p-4 dark:border-gray-800 dark:from-emerald-500/10 dark:via-gray-900 dark:to-sky-500/10 sm:p-6">
         <div class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
-            <x-avatar :name="$sekolah->nama_sekolah" size="lg" rounded="md" />
+            <span
+                class="inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-500 text-4xl text-white shadow-md">
+                <i class="bi bi-building"></i>
+            </span>
+
             <div class="min-w-0 flex-1">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 sm:text-xl">{{ $sekolah->nama_sekolah }}
-                </h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">NPSN {{ $sekolah->npsn }} &middot; NSS
-                    {{ $sekolah->nss }}</p>
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 sm:text-xl">
+                    {{ $sekolah->nama_sekolah }}</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    NPSN {{ $sekolah->npsn }} &middot; NSS {{ $sekolah->nss }}
+                </p>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     <i class="bi bi-geo-alt me-1 text-rose-500"></i>
                     {{ $sekolah->kecamatan }}, {{ $sekolah->kabupaten }}, {{ $sekolah->provinsi }}
                 </p>
                 <div class="mt-2 flex flex-wrap justify-center gap-1.5 sm:justify-start">
-                    <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
                     <x-badge :variant="$sekolah->akreditasi === '-' ? 'secondary' : 'success'"
                         pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
+                    <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
                 </div>
             </div>
-            <div class="flex w-full gap-2 sm:w-auto">
-                <x-button href="{{ route('admin.sekolah.index') }}" variant="light" class="flex-1 sm:flex-none">
+
+            <div class="flex w-full shrink-0 gap-2 sm:w-auto">
+                <x-button href="{{ route('admin.sekolah.index') }}" variant="light" size="sm"
+                    class="flex-1 sm:flex-none">
                     <i class="bi bi-arrow-left me-1"></i> Kembali
                 </x-button>
-                <x-button href="{{ route('admin.sekolah.edit', $sekolah) }}" class="flex-1 sm:flex-none">
+                <x-button href="{{ route('admin.sekolah.edit', $sekolah) }}" size="sm" class="flex-1 sm:flex-none">
                     <i class="bi bi-pencil-fill me-1"></i> Edit Profil
                 </x-button>
             </div>
         </div>
+
+        <div class="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            @foreach ($stat as [$ikon, $label, $nilai, $kotak, $warnaIkon])
+                <div class="flex min-w-0 items-center gap-3 rounded-lg border p-3 {{ $kotak }}">
+                    <span
+                        class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm {{ $warnaIkon }}">
+                        <i class="bi {{ $ikon }}"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $label }}</p>
+                        <p class="truncate text-base font-semibold">{{ $nilai }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     </div>
 
-    {{-- ===== Ringkasan jumlah ===== --}}
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <x-card>
-            <div class="flex items-center gap-3">
-                <span
-                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-lg text-white shadow-sm">
-                    <i class="bi bi-people"></i>
-                </span>
-                <div class="min-w-0">
-                    <p class="truncate text-xs text-gray-500 dark:text-gray-400">Jumlah Siswa</p>
-                    <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{{ $sekolah->siswas_count }}</p>
-                </div>
-            </div>
-        </x-card>
-        <x-card>
-            <div class="flex items-center gap-3">
-                <span
-                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-lg text-white shadow-sm">
-                    <i class="bi bi-person-workspace"></i>
-                </span>
-                <div class="min-w-0">
-                    <p class="truncate text-xs text-gray-500 dark:text-gray-400">Guru (Tenaga Pendidik)</p>
-                    <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-300">{{ $guru }}</p>
-                </div>
-            </div>
-        </x-card>
-        <x-card>
-            <div class="flex items-center gap-3">
-                <span
-                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-lg text-white shadow-sm">
-                    <i class="bi bi-person-badge"></i>
-                </span>
-                <div class="min-w-0">
-                    <p class="truncate text-xs text-gray-500 dark:text-gray-400">TU (Tenaga Kependidikan)</p>
-                    <p class="text-2xl font-bold text-amber-600 dark:text-amber-300">{{ $tu }}</p>
-                </div>
-            </div>
-        </x-card>
-    </div>
+    {{-- ===== Konten utama: kiri (visi-misi, identitas, prestasi) | kanan (alamat, sarana, dokumen) ===== --}}
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div class="flex min-w-0 flex-col gap-4 lg:col-span-2">
 
-    {{-- ===== Detail ===== --}}
-    <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
-        @foreach ($kelompok as $k)
+            {{-- Visi & Misi --}}
             <x-card>
                 <x-slot:header>
-                    <span class="font-semibold"><i
-                            class="bi {{ $k['ikon'] }} me-2 {{ $k['warna'] }}"></i>{{ $k['judul'] }}</span>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-bullseye {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i> Visi &
+                        Misi</span>
                 </x-slot:header>
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                    <div>
+                        <h4 class="mb-2 text-sm font-semibold text-violet-700 dark:text-violet-300">Visi</h4>
+                        @if (filled($sekolah->visi))
+                            <p class="border-l-2 border-violet-500 ps-3 text-sm leading-relaxed italic">
+                                {{ $sekolah->visi }}</p>
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Belum diisi.</p>
+                        @endif
+                    </div>
+                    <div>
+                        <h4 class="mb-2 text-sm font-semibold text-violet-700 dark:text-violet-300">Misi</h4>
+                        @if ($daftarMisi)
+                            <ol
+                                class="list-decimal space-y-1.5 wrap-break-word ps-5 text-sm leading-relaxed marker:font-semibold marker:text-violet-600">
+                                @foreach ($daftarMisi as $misi)
+                                    <li>{{ $misi }}</li>
+                                @endforeach
+                            </ol>
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Belum diisi.</p>
+                        @endif
+                    </div>
+                </div>
+            </x-card>
 
+            {{-- Identitas --}}
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-card-text {{ $ikonKartu }} text-emerald-600 dark:text-emerald-400"></i>
+                        Identitas
+                        Sekolah</span>
+                </x-slot:header>
+                <dl class="grid grid-cols-1 gap-x-8 text-sm sm:grid-cols-2">
+                    @foreach ($identitas as [$label, $nilai])
+                        <div class="{{ $barisDl }} border-b border-gray-200 dark:border-gray-700">
+                            <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                            <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            </x-card>
+
+            {{-- Prestasi --}}
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-trophy {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Prestasi
+                        Sekolah</span>
+                </x-slot:header>
+                <ul class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                    @forelse ($prestasis as $prestasi)
+                        <li class="flex items-center justify-between gap-3 py-2.5">
+                            <div class="flex min-w-0 items-center gap-3">
+                                <span
+                                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+                                    <i class="bi bi-award"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <p class="wrap-break-word font-medium">{{ $prestasi->prestasi }}</p>
+                                    <x-badge :variant="$prestasi->jenis === 'Akademik' ? 'success' : 'secondary'" pill>
+                                        {{ $prestasi->jenis }}</x-badge>
+                                </div>
+                            </div>
+                        </li>
+                    @empty
+                        <li class="py-6 text-center text-gray-500 dark:text-gray-400">Belum ada prestasi. Isi lewat Edit
+                            Profil.</li>
+                    @endforelse
+                </ul>
+            </x-card>
+        </div>
+
+        <div class="grid min-w-0 grid-cols-1 content-start gap-4 md:grid-cols-2 lg:grid-cols-1">
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-geo-alt {{ $ikonKartu }} text-rose-600 dark:text-rose-400"></i>
+                        Alamat</span>
+                </x-slot:header>
                 <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    @foreach ($k['baris'] as [$label, $nilai])
-                        <div class="flex justify-between gap-4 py-2">
-                            <dt class="shrink-0 text-slate-500 dark:text-slate-400">{{ $label }}</dt>
-                            <dd class="min-w-0 wrap-break-word text-right font-medium text-gray-800 dark:text-gray-100">
-                                {{ filled($nilai) ? $nilai : '-' }}
+                    @foreach ($alamat as [$label, $nilai])
+                        <div class="{{ $barisDl }}">
+                            <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                            <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            </x-card>
+
+            <x-card>
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-lightning-charge {{ $ikonKartu }} text-sky-600 dark:text-sky-400"></i>
+                        Sarana Pendukung</span>
+                </x-slot:header>
+                <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                    @foreach ($sarana as [$label, $nilai])
+                        <div class="{{ $barisDl }}">
+                            <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                            <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+            </x-card>
+
+            <x-card class="md:col-span-2 lg:col-span-1">
+                <x-slot:header>
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-file-earmark-text {{ $ikonKartu }} text-orange-600 dark:text-orange-400"></i>
+                        Dokumen SK</span>
+                </x-slot:header>
+                <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                    @foreach ($dokumen as $nama)
+                        <div class="flex items-center justify-between gap-3 py-2.5">
+                            <dt class="flex min-w-0 items-center gap-2 text-gray-600 dark:text-gray-300">
+                                <i class="bi bi-file-earmark-pdf shrink-0 text-base text-rose-500"></i>
+                                <span class="truncate">{{ $nama }}</span>
+                            </dt>
+                            <dd>
+                                <x-button href="#" size="xs" target="_blank">Lihat</x-button>
                             </dd>
                         </div>
                     @endforeach
                 </dl>
             </x-card>
-        @endforeach
+        </div>
     </div>
 
-    {{-- ===== Dokumen SK ===== --}}
+    {{-- ===== Data siswa ===== --}}
+    <div class="flex items-center gap-2 pt-2">
+        <span class="h-5 w-1 rounded-full bg-sky-500"></span>
+        <h3 class="font-semibold">Data Siswa</h3>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <x-card>
+            <x-slot:header>
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-gender-ambiguous {{ $ikonKartu }} text-sky-600 dark:text-sky-400"></i> Rasio
+                    Jenis Kelamin</span>
+            </x-slot:header>
+            <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <canvas id="grafikJk"></canvas>
+            </div>
+        </x-card>
+
+        <x-card>
+            <x-slot:header>
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-mortarboard {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i> Siswa
+                    per
+                    Kelas</span>
+            </x-slot:header>
+            <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <canvas id="grafikKelas"></canvas>
+            </div>
+        </x-card>
+    </div>
+
     <x-card>
         <x-slot:header>
-            <span class="font-semibold"><i class="bi bi-file-earmark-text me-2 text-rose-500"></i>Dokumen SK</span>
-        </x-slot:header>
-
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            @foreach ($dokumen as $nama)
-                <div
-                    class="flex items-center justify-between gap-3 rounded-lg border border-orange-100 bg-orange-50/70 p-3 text-sm dark:border-orange-500/20 dark:bg-orange-500/5">
-                    <span class="min-w-0 font-medium text-slate-600 dark:text-slate-300">{{ $nama }}</span>
-                    <x-button href="#" size="xs" target="_blank" class="shrink-0">
-                        <i class="bi bi-box-arrow-up-right me-1"></i> Lihat SK
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-semibold">
+                    <i class="bi bi-people-fill me-2 text-emerald-500"></i>Daftar Siswa
+                    <span
+                        class="ms-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">{{ $siswas->total() }}</span>
+                </span>
+                <div class="flex gap-2">
+                    <x-button href="{{ route('admin.siswa.sekolah', $sekolah->id) }}" variant="light" size="sm">
+                        <i class="bi bi-gear me-1"></i> Kelola Siswa
+                    </x-button>
+                    <x-button href="{{ route('admin.siswa.create', ['sekolah_id' => $sekolah->id]) }}" size="sm">
+                        <i class="bi bi-plus-lg me-1"></i> Tambah
                     </x-button>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        </x-slot:header>
+
+        <x-table striped hover bordered class="text-sm">
+            <x-slot:head>
+                <tr>
+                    <x-table.heading class="text-center">No</x-table.heading>
+                    <x-table.heading class="text-center">NIK</x-table.heading>
+                    <x-table.heading class="text-center">NISN</x-table.heading>
+                    <x-table.heading class="min-w-48 text-center">Nama Siswa</x-table.heading>
+                    <x-table.heading class="text-center">Kelas</x-table.heading>
+                    <x-table.heading class="text-center">L/P</x-table.heading>
+                    <x-table.heading class="text-center">Status Pelajar</x-table.heading>
+                    <x-table.heading class="min-w-24 text-center">Aksi</x-table.heading>
+                </tr>
+            </x-slot:head>
+
+            @forelse ($siswas as $siswa)
+                <x-table.row>
+                    <x-table.cell class="text-center">{{ $siswas->firstItem() + $loop->index }}</x-table.cell>
+                    <x-table.cell class="whitespace-nowrap">{{ $siswa->nik }}</x-table.cell>
+                    <x-table.cell class="whitespace-nowrap">{{ $siswa->nisn }}</x-table.cell>
+                    <x-table.cell
+                        class="font-medium text-indigo-700 dark:text-indigo-300">{{ $siswa->nama_siswa }}</x-table.cell>
+                    <x-table.cell class="text-center">{{ $siswa->kelas }}</x-table.cell>
+                    <x-table.cell
+                        class="text-center font-semibold {{ $siswa->jenis_kelamin === 'L' ? 'text-sky-600 dark:text-sky-300' : 'text-rose-500 dark:text-rose-300' }}">{{ $siswa->jenis_kelamin }}</x-table.cell>
+                    <x-table.cell class="text-center">
+                        <x-badge :variant="$siswa->status_pelajar === 'Aktif' ? 'success' : 'secondary'" pill>{{ $siswa->status_pelajar }}</x-badge>
+                    </x-table.cell>
+                    <x-table.cell class="text-center whitespace-nowrap">
+                        <div class="inline-flex items-center gap-1">
+                            <a href="{{ route('admin.siswa.show', $siswa) }}" title="Detail"
+                                class="rounded border border-sky-200 bg-sky-50 px-2 py-1 text-sky-600 hover:bg-sky-100 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <a href="{{ route('admin.siswa.edit', $siswa) }}" title="Edit"
+                                class="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-amber-600 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                        </div>
+                    </x-table.cell>
+                </x-table.row>
+            @empty
+                <x-table.empty colspan="8" />
+            @endforelse
+        </x-table>
+
+        <x-pagination :paginator="$siswas" class="mt-4" />
     </x-card>
 
-    {{-- ===== Daftar pegawai sekolah ===== --}}
+    {{-- ===== Data pegawai ===== --}}
+    <div class="flex items-center gap-2 pt-2">
+        <span class="h-5 w-1 rounded-full bg-violet-500"></span>
+        <h3 class="font-semibold">Data Pegawai</h3>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <x-card>
+            <x-slot:header>
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-person-workspace {{ $ikonKartu }} text-emerald-600 dark:text-emerald-400"></i>
+                    Status
+                    Guru/TU</span>
+            </x-slot:header>
+            <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <canvas id="grafikJabatan"></canvas>
+            </div>
+        </x-card>
+
+        <x-card>
+            <x-slot:header>
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-award {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Status
+                    Golongan</span>
+            </x-slot:header>
+            <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <canvas id="grafikGolongan"></canvas>
+            </div>
+        </x-card>
+
+        <x-card class="md:col-span-2 xl:col-span-1">
+            <x-slot:header>
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-patch-check {{ $ikonKartu }} text-rose-600 dark:text-rose-400"></i> Status
+                    Kepegawaian</span>
+            </x-slot:header>
+            <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <canvas id="grafikStatus"></canvas>
+            </div>
+        </x-card>
+    </div>
+
     <x-card>
         <x-slot:header>
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -229,7 +457,7 @@
 
         <x-table striped hover bordered class="text-sm">
             <x-slot:head>
-                <tr class="bg-emerald-50 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-100">
+                <tr>
                     <x-table.heading class="text-center">No</x-table.heading>
                     <x-table.heading class="text-center">NIP</x-table.heading>
                     <x-table.heading class="min-w-48 text-center">Nama</x-table.heading>
@@ -279,71 +507,75 @@
         <x-pagination :paginator="$pegawais" class="mt-4" />
     </x-card>
 
-    {{-- ===== Daftar siswa yang bersekolah di sini ===== --}}
-    <x-card>
-        <x-slot:header>
-            <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="font-semibold">
-                    <i class="bi bi-people-fill me-2 text-emerald-500"></i>Daftar Siswa
-                    <span
-                        class="ms-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">{{ $siswas->total() }}</span>
-                </span>
-                <div class="flex gap-2">
-                    <x-button href="{{ route('admin.siswa.sekolah', $sekolah->id) }}" variant="light" size="sm">
-                        <i class="bi bi-gear me-1"></i> Kelola Siswa
-                    </x-button>
-                    <x-button href="{{ route('admin.siswa.create', ['sekolah_id' => $sekolah->id]) }}" size="sm">
-                        <i class="bi bi-plus-lg me-1"></i> Tambah
-                    </x-button>
-                </div>
-            </div>
-        </x-slot:header>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#d1d5db' : '#4b5563';
 
-        <x-table striped hover bordered class="text-sm">
-            <x-slot:head>
-                <tr class="bg-emerald-50 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-100">
-                    <x-table.heading class="text-center">No</x-table.heading>
-                    <x-table.heading class="text-center">NIK</x-table.heading>
-                    <x-table.heading class="text-center">NISN</x-table.heading>
-                    <x-table.heading class="min-w-48 text-center">Nama Siswa</x-table.heading>
-                    <x-table.heading class="text-center">Kelas</x-table.heading>
-                    <x-table.heading class="text-center">L/P</x-table.heading>
-                    <x-table.heading class="text-center">Status Pelajar</x-table.heading>
-                    <x-table.heading class="min-w-24 text-center">Aksi</x-table.heading>
-                </tr>
-            </x-slot:head>
+        const palet = ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'];
 
-            @forelse ($siswas as $siswa)
-                <x-table.row>
-                    <x-table.cell class="text-center">{{ $siswas->firstItem() + $loop->index }}</x-table.cell>
-                    <x-table.cell class="whitespace-nowrap">{{ $siswa->nik }}</x-table.cell>
-                    <x-table.cell class="whitespace-nowrap">{{ $siswa->nisn }}</x-table.cell>
-                    <x-table.cell
-                        class="font-medium text-indigo-700 dark:text-indigo-300">{{ $siswa->nama_siswa }}</x-table.cell>
-                    <x-table.cell class="text-center">{{ $siswa->kelas }}</x-table.cell>
-                    <x-table.cell
-                        class="text-center font-semibold {{ $siswa->jenis_kelamin === 'L' ? 'text-sky-600 dark:text-sky-300' : 'text-rose-500 dark:text-rose-300' }}">{{ $siswa->jenis_kelamin }}</x-table.cell>
-                    <x-table.cell class="text-center">
-                        <x-badge :variant="$siswa->status_pelajar === 'Aktif' ? 'success' : 'secondary'" pill>{{ $siswa->status_pelajar }}</x-badge>
-                    </x-table.cell>
-                    <x-table.cell class="text-center whitespace-nowrap">
-                        <div class="inline-flex items-center gap-1">
-                            <a href="{{ route('admin.siswa.show', $siswa) }}" title="Detail"
-                                class="rounded border border-sky-200 bg-sky-50 px-2 py-1 text-sky-600 hover:bg-sky-100 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20">
-                                <i class="bi bi-eye-fill"></i>
-                            </a>
-                            <a href="{{ route('admin.siswa.edit', $siswa) }}" title="Edit"
-                                class="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-amber-600 hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20">
-                                <i class="bi bi-pencil-fill"></i>
-                            </a>
-                        </div>
-                    </x-table.cell>
-                </x-table.row>
-            @empty
-                <x-table.empty colspan="8" />
-            @endforelse
-        </x-table>
+        // Plugin: angka di tiap irisan + total di tengah donat
+        const angka = (judul) => ({
+            id: 'angka',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const data = chart.data.datasets[0].data;
+                const gelap = document.documentElement.classList.contains('dark');
 
-        <x-pagination :paginator="$siswas" class="mt-4" />
-    </x-card>
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '700 12px sans-serif';
+                chart.getDatasetMeta(0).data.forEach((irisan, i) => {
+                    if (!data[i] || irisan.circumference < 0.3) return; // irisan terlalu kecil: lewati
+                    const p = irisan.tooltipPosition();
+                    ctx.fillText(data[i], p.x, p.y);
+                });
+
+                const a = chart.chartArea;
+                const x = (a.left + a.right) / 2;
+                const y = (a.top + a.bottom) / 2;
+                ctx.fillStyle = gelap ? '#f1f5f9' : '#1e293b';
+                ctx.font = '700 24px sans-serif';
+                ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 7);
+                ctx.fillStyle = gelap ? '#94a3b8' : '#64748b';
+                ctx.font = '400 11px sans-serif';
+                ctx.fillText(judul, x, y + 14);
+                ctx.restore();
+            },
+        });
+
+        // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
+        const donat = (id, data, judul, warnaLabel = {}) => new Chart(document.getElementById(id), {
+            type: 'doughnut',
+            data: {
+                labels: Object.entries(data).map(([k, v]) => `${k} (${v})`),
+                datasets: [{
+                    data: Object.values(data),
+                    backgroundColor: Object.keys(data).map((k, i) => warnaLabel[k] ?? palet[i % palet
+                        .length]),
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+            },
+            plugins: [angka(judul)],
+        });
+
+        donat('grafikJk', @json($grafikJk), 'Siswa', {
+            'Laki-laki': '#3b82f6',
+            'Perempuan': '#f43f5e'
+        });
+        donat('grafikKelas', @json($grafikKelas), 'Siswa');
+        donat('grafikJabatan', @json($grafikJabatan), 'Pegawai');
+        donat('grafikGolongan', @json($grafikGolongan), 'Pegawai');
+        donat('grafikStatus', @json($grafikStatus), 'Pegawai');
+    </script>
 @endsection

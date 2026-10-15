@@ -61,6 +61,58 @@
 
         <x-card>
             <x-slot:header>
+                <span class="font-semibold"><i class="bi bi-bullseye me-2 text-violet-600 dark:text-violet-400"></i>Visi &
+                    Misi</span>
+            </x-slot:header>
+
+            <div class="grid grid-cols-1 gap-4">
+                <x-form.textarea name="visi" label="Visi"
+                    rows="2">{{ old('visi', $sekolah->visi) }}</x-form.textarea>
+                <x-form.textarea name="misi" label="Misi (satu poin per baris)" rows="5"
+                    placeholder="Contoh:&#10;Menyelenggarakan pembelajaran yang aktif&#10;Menumbuhkan karakter disiplin">{{ old('misi', $sekolah->misi) }}</x-form.textarea>
+            </div>
+        </x-card>
+
+        <x-card>
+            <x-slot:header>
+                <span class="font-semibold"><i class="bi bi-trophy me-2 text-amber-500"></i>Prestasi Sekolah</span>
+            </x-slot:header>
+
+            @php
+                // Baris prestasi: dari input sebelumnya (jika validasi gagal), data tersimpan, atau satu baris kosong
+                $barisPrestasi = old('nama_prestasi')
+                    ? array_map(null, old('jenis_prestasi', []), old('nama_prestasi'))
+                    : ($sekolah->prestasis->map(fn($p) => [$p->jenis, $p->prestasi])->all() ?: [[null, null]]);
+                $kelasInput =
+                    'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 dark:border-gray-600 dark:bg-gray-800';
+            @endphp
+
+            <div id="daftarPrestasi" class="flex flex-col gap-2">
+                @foreach ($barisPrestasi as [$jenis, $nama])
+                    <div data-prestasi
+                        class="grid grid-cols-1 gap-2 rounded-lg border border-gray-200 p-2 dark:border-gray-700 sm:grid-cols-[10rem_1fr_auto] sm:border-0 sm:p-0">
+                        <select name="jenis_prestasi[]" class="{{ $kelasInput }}" aria-label="Jenis prestasi">
+                            <option value="Akademik" @selected($jenis !== 'Non-Akademik')>Akademik</option>
+                            <option value="Non-Akademik" @selected($jenis === 'Non-Akademik')>Non-Akademik</option>
+                        </select>
+                        <input type="text" name="nama_prestasi[]" value="{{ $nama }}" maxlength="255"
+                            placeholder="Contoh: Juara 1 Olimpiade Sains Tingkat Kota" class="{{ $kelasInput }}"
+                            aria-label="Nama prestasi">
+                        <button type="button" onclick="hapusPrestasi(this)" title="Hapus baris"
+                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-500 hover:bg-rose-50 hover:text-rose-600 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-rose-500/10 sm:w-auto">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+
+            <x-button type="button" variant="light" size="sm" class="mt-3" onclick="tambahPrestasi()">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Prestasi
+            </x-button>
+        </x-card>
+
+        <x-card>
+            <x-slot:header>
                 <span class="font-semibold"><i
                         class="bi bi-geo-alt me-2 text-emerald-600 dark:text-emerald-400"></i>Alamat</span>
             </x-slot:header>
@@ -117,4 +169,20 @@
             </x-button>
         </div>
     </form>
+
+    <script>
+        function tambahPrestasi() {
+            const wadah = document.getElementById('daftarPrestasi');
+            const baris = wadah.firstElementChild.cloneNode(true);
+            baris.querySelector('input').value = '';
+            wadah.appendChild(baris);
+            baris.querySelector('input').focus();
+        }
+
+        function hapusPrestasi(tombol) {
+            const wadah = document.getElementById('daftarPrestasi');
+            if (wadah.children.length > 1) tombol.closest('[data-prestasi]').remove();
+            else tombol.closest('[data-prestasi]').querySelector('input').value = '';
+        }
+    </script>
 @endsection

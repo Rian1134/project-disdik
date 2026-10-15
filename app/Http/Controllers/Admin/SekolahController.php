@@ -65,7 +65,8 @@ class SekolahController extends Controller
      */
     public function store(Request $request)
     {
-        Sekolah::create($this->validated($request));
+        $sekolah = Sekolah::create($this->validated($request));
+        $this->simpanPrestasi($sekolah, $request);
 
         return redirect()->route('admin.sekolah.index')->with('success', 'Data sekolah berhasil ditambahkan.');
     }
@@ -83,16 +84,37 @@ class SekolahController extends Controller
         $pegawais = Pegawai::where('sekolah_id', $sekolah->id)
             ->orderByDesc('jabatan')
             ->orderBy('nama')
-            ->paginate(10, ['*'], 'pegawai_page')
+            ->paginate(5, ['*'], 'pegawai_page')
             ->withQueryString();
 
         $siswas = $sekolah->siswas()
             ->orderBy('kelas')
             ->orderBy('nama_siswa')
-            ->paginate(15, ['*'], 'siswa_page')
+            ->paginate(5, ['*'], 'siswa_page')
             ->withQueryString();
 
-        return view('admin.sekolah.show', compact('sekolah', 'guru', 'tu', 'pegawais', 'siswas'));
+        $prestasis = $sekolah->prestasis()->orderBy('id')->get();
+
+        // Data grafik: [label => jumlah]
+        $grafikJk = $sekolah->siswas()
+            ->selectRaw("if(jenis_kelamin = 'L', 'Laki-laki', 'Perempuan') as label, count(*) as total")
+            ->groupBy('label')->pluck('total', 'label');
+        $grafikKelas = $sekolah->siswas()
+            ->selectRaw("concat('Kelas ', substring_index(kelas, ' ', 1)) as label, count(*) as total")
+            ->groupBy('label')->orderBy('label')->pluck('total', 'label');
+
+        $grafikJabatan = $sekolah->pegawais()
+            ->selectRaw('jabatan as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
+        $grafikGolongan = $sekolah->pegawais()
+            ->selectRaw("coalesce(nullif(golongan, ''), 'Tanpa golongan') as label, count(*) as total")
+            ->groupBy('label')->pluck('total', 'label');
+        $grafikStatus = $sekolah->pegawais()
+            ->selectRaw('status_kepegawaian as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
+
+        return view('admin.sekolah.show', compact(
+            'sekolah', 'guru', 'tu', 'pegawais', 'siswas', 'prestasis',
+            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus'
+        ));
     }
 
     /**
@@ -111,6 +133,7 @@ class SekolahController extends Controller
     public function update(Request $request, Sekolah $sekolah)
     {
         $sekolah->update($this->validated($request, $sekolah));
+        $this->simpanPrestasi($sekolah, $request);
 
         return redirect()->route('admin.sekolah.index')->with('success', 'Data sekolah berhasil diperbarui.');
     }
@@ -123,6 +146,28 @@ class SekolahController extends Controller
         $sekolah->delete();
 
         return redirect()->route('admin.sekolah.index')->with('success', 'Data sekolah berhasil dihapus.');
+    }
+
+    /**
+     * Prestasi dikirim sebagai baris berulang (jenis_prestasi[] & nama_prestasi[]);
+     * daftar lama diganti dengan yang baru, baris kosong dilewati.
+     */
+    private function simpanPrestasi(Sekolah $sekolah, Request $request): void
+    {
+        $sekolah->prestasis()->delete();
+
+        foreach ((array) $request->input('nama_prestasi') as $i => $nama) {
+            $nama = trim((string) $nama);
+
+            if ($nama === '') {
+                continue;
+            }
+
+            $sekolah->prestasis()->create([
+                'jenis' => $request->input("jenis_prestasi.$i") === 'Non-Akademik' ? 'Non-Akademik' : 'Akademik',
+                'prestasi' => mb_substr($nama, 0, 255),
+            ]);
+        }
     }
 
     /**
@@ -141,6 +186,8 @@ class SekolahController extends Controller
             'tanggal_sk_pendirian' => ['required', 'string'],
             'tanggal_sk_izin_oprasional' => ['required', 'string'],
             'implementasi_kurikulum' => ['required', 'string'],
+            'visi' => ['nullable', 'string'],
+            'misi' => ['nullable', 'string'],
 
             'alamat' => ['required', 'string'],
             'rt_rw' => ['required', 'string'],
