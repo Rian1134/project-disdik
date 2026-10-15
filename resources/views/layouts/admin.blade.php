@@ -7,7 +7,7 @@
     <title>
         @hasSection('title')
             @yield('title') -
-        @endif SIMADIK-SMP
+        @endif SIMANDIK-SMP
     </title>
     <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -172,10 +172,10 @@
                         <span class="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100 truncate">
                             <span
                                 class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white p-0.5 ring-1 ring-gray-200 dark:ring-gray-700">
-                                <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo SIMADIK-SMP"
+                                <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo SIMANDIK-SMP"
                                     class="h-full w-full object-contain">
                             </span>
-                            <span class="truncate text-sm sm:text-base">SIMADIK-SMP</span>
+                            <span class="truncate text-sm sm:text-base">SIMANDIK-SMP</span>
                         </span>
                     </div>
                 </x-slot:brand>
@@ -234,7 +234,7 @@
 
             <footer
                 class="border-t border-gray-200 px-3 py-4 text-center text-xs text-gray-400 dark:border-gray-800 dark:text-gray-600 sm:px-4 lg:px-6">
-                &copy; {{ date('Y') }} <span class="font-medium text-blue-600">SIMADIK-SMP</span>
+                &copy; {{ date('Y') }} <span class="font-medium text-blue-600">SIMANDIK-SMP</span>
             </footer>
         </div>
     </div>

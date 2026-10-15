@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'SIMADIK-SMP - Sistem Informasi Manajemen Akademik & Pendidikan')</title>
-    <meta name="description" content="SIMADIK-SMP - Sistem Informasi Manajemen Akademik & Pendidikan">
+    <title>@yield('title', 'SIMANDIK-SMP - Sistem Informasi Peserta Didik & Pendidik')</title>
+    <meta name="description" content="SIMANDIK-SMP - Sistem Informasi Peserta Didik & Pendidik">
     <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     {{-- Bootstrap Icons (hanya font ikon, bukan Bootstrap CSS). Hapus baris ini jika sudah di-import di app.css --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -25,7 +25,7 @@
                         class="h-full w-full object-contain">
                 </span>
                 <span class="flex flex-col leading-tight">
-                    <span class="text-lg font-extrabold text-blue-600">SIMADIK-SMP</span>
+                    <span class="text-lg font-extrabold text-blue-600">SIMANDIK-SMP</span>
                     <span class="hidden text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:block">
                         Disdikbud Kabupaten Lahat
                     </span>
@@ -38,8 +38,6 @@
                 class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Beranda</a>
             <a href="{{ route('home') }}#statistik"
                 class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Statistik</a>
-            <a href="{{ route('home') }}#fitur"
-                class="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-gray-700">Fitur</a>
         </x-slot:menu>
 
         <x-slot:actions>
@@ -61,10 +59,10 @@
                         <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
                             class="h-full w-full object-contain">
                     </span>
-                    <span class="text-xl font-extrabold text-white">SIMADIK-SMP</span>
+                    <span class="text-xl font-extrabold text-white">SIMANDIK-SMP</span>
                 </a>
                 <p class="mt-4 text-sm text-blue-200">
-                    Sistem Informasi Manajemen Akademik &amp; Pendidikan.
+                    Sistem Informasi Peserta Didik &amp; Pendidik.
                 </p>
                 <p class="mt-1 text-sm text-blue-200">
                     Dinas Pendidikan dan Kebudayaan Kabupaten Lahat
@@ -90,7 +88,7 @@
         </div>
 
         <div class="border-t border-white/10 py-4 text-center text-xs text-blue-300">
-            &copy; {{ date('Y') }} SIMADIK-SMP. Seluruh hak cipta dilindungi.
+            &copy; {{ date('Y') }} SIMANDIK-SMP. Seluruh hak cipta dilindungi.
         </div>
     </footer>
 
