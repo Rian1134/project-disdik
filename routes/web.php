@@ -7,13 +7,14 @@ use App\Http\Controllers\Admin\SekolahController as AdminSekolahController;
 use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\User\PegawaiController as UserPegawaiController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\SekolahController as UserSekolahController;
 use App\Http\Controllers\User\SiswaController as UserSiswaController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('login'));
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.store');

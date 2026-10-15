@@ -41,7 +41,7 @@
             @endif
 
             <div class="min-w-0">
-                <h1 class="break-words text-xl font-semibold text-gray-800 dark:text-gray-100">{{ $user->name }}</h1>
+                <h1 class="wrap-break-word text-xl font-semibold text-gray-800 dark:text-gray-100">{{ $user->name }}</h1>
                 @if ($role)
                     <div class="mt-2"><x-badge variant="success" pill>{{ $role }}</x-badge></div>
                 @endif
@@ -57,7 +57,7 @@
                     </span>
                     <div class="min-w-0">
                         <dt class="text-xs text-gray-500 dark:text-gray-400">{{ $label }}</dt>
-                        <dd class="break-words font-medium">{{ $nilai }}</dd>
+                        <dd class="wrap-break-word font-medium">{{ $nilai }}</dd>
                     </div>
                 </div>
             @endforeach
