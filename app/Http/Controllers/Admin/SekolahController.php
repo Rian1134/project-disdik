@@ -12,6 +12,9 @@ use Illuminate\Validation\Rule;
 
 class SekolahController extends Controller
 {
+    /** Nilai kolom jabatan yang dihitung sebagai guru (Tenaga Pendidik). "Guru" dipakai di data seeder. */
+    private const JABATAN_GURU = ['Tenaga Pendidik', 'Guru'];
+
     /**
      * Display a listing of the resource.
      */
@@ -22,7 +25,7 @@ class SekolahController extends Controller
             ->addSelect([
                 'guru_count' => Pegawai::selectRaw('count(*)')
                     ->whereColumn('sekolah_id', 'sekolahs.id')
-                    ->where('jabatan', 'Tenaga Pendidik'),
+                    ->whereIn('jabatan', self::JABATAN_GURU),
                 'tu_count' => Pegawai::selectRaw('count(*)')
                     ->whereColumn('sekolah_id', 'sekolahs.id')
                     ->where('jabatan', 'Tenaga Kependidikan'),
@@ -34,7 +37,7 @@ class SekolahController extends Controller
         $total = [
             'sekolah' => $sekolahs->total(),
             'siswa' => Siswa::count(),
-            'guru' => Pegawai::where('jabatan', 'Tenaga Pendidik')->count(),
+            'guru' => Pegawai::whereIn('jabatan', self::JABATAN_GURU)->count(),
             'tu' => Pegawai::where('jabatan', 'Tenaga Kependidikan')->count(),
         ];
 
@@ -74,7 +77,7 @@ class SekolahController extends Controller
     {
         $sekolah->loadCount('siswas');
 
-        $guru = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Pendidik')->count();
+        $guru = Pegawai::where('sekolah_id', $sekolah->id)->whereIn('jabatan', self::JABATAN_GURU)->count();
         $tu = Pegawai::where('sekolah_id', $sekolah->id)->where('jabatan', 'Tenaga Kependidikan')->count();
 
         $pegawais = Pegawai::where('sekolah_id', $sekolah->id)

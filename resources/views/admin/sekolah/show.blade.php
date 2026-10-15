@@ -91,39 +91,42 @@
     ]" />
 
     {{-- ===== Header sekolah ===== --}}
-    <x-card>
-        <div class="flex flex-col gap-4 border-l-4 border-indigo-500 pl-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex min-w-0 items-center gap-3">
-                <x-avatar :name="$sekolah->nama_sekolah" size="lg" rounded="md" />
-                <div class="min-w-0">
-                    <h2 class="truncate text-lg font-bold text-indigo-700 dark:text-indigo-300">{{ $sekolah->nama_sekolah }}
-                    </h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">NPSN {{ $sekolah->npsn }} &middot; NSS
-                        {{ $sekolah->nss }}</p>
-                    <div class="mt-1 flex flex-wrap gap-1">
-                        <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
-                        <x-badge variant="success"
-                            pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
-                        </x-badge>
-                    </div>
+    <div
+        class="rounded-xl border border-gray-200 bg-linear-to-r from-emerald-50 via-white to-sky-50 p-4 dark:border-gray-800 dark:from-emerald-500/10 dark:via-gray-900 dark:to-sky-500/10 sm:p-6">
+        <div class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
+            <x-avatar :name="$sekolah->nama_sekolah" size="lg" rounded="md" />
+            <div class="min-w-0 flex-1">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 sm:text-xl">{{ $sekolah->nama_sekolah }}
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">NPSN {{ $sekolah->npsn }} &middot; NSS
+                    {{ $sekolah->nss }}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <i class="bi bi-geo-alt me-1 text-rose-500"></i>
+                    {{ $sekolah->kecamatan }}, {{ $sekolah->kabupaten }}, {{ $sekolah->provinsi }}
+                </p>
+                <div class="mt-2 flex flex-wrap justify-center gap-1.5 sm:justify-start">
+                    <x-badge :variant="$sekolah->status_sekolah === 'Negeri' ? 'primary' : 'warning'" pill>{{ $sekolah->status_sekolah }}</x-badge>
+                    <x-badge :variant="$sekolah->akreditasi === '-' ? 'secondary' : 'success'"
+                        pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <x-button href="{{ route('admin.sekolah.index') }}" variant="light"
-                    class="flex-1 sm:flex-none">Kembali</x-button>
+            <div class="flex w-full gap-2 sm:w-auto">
+                <x-button href="{{ route('admin.sekolah.index') }}" variant="light" class="flex-1 sm:flex-none">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                </x-button>
                 <x-button href="{{ route('admin.sekolah.edit', $sekolah) }}" class="flex-1 sm:flex-none">
-                    <i class="bi bi-pencil-fill me-1"></i> Edit
+                    <i class="bi bi-pencil-fill me-1"></i> Edit Profil
                 </x-button>
             </div>
         </div>
-    </x-card>
+    </div>
 
     {{-- ===== Ringkasan jumlah ===== --}}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <x-card>
             <div class="flex items-center gap-3">
                 <span
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-100 text-lg text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-300">
+                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-lg text-white shadow-sm">
                     <i class="bi bi-people"></i>
                 </span>
                 <div class="min-w-0">
@@ -135,7 +138,7 @@
         <x-card>
             <div class="flex items-center gap-3">
                 <span
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-100 text-lg text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-300">
+                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-lg text-white shadow-sm">
                     <i class="bi bi-person-workspace"></i>
                 </span>
                 <div class="min-w-0">
@@ -147,7 +150,7 @@
         <x-card>
             <div class="flex items-center gap-3">
                 <span
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-amber-200 bg-amber-100 text-lg text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-300">
+                    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-lg text-white shadow-sm">
                     <i class="bi bi-person-badge"></i>
                 </span>
                 <div class="min-w-0">
@@ -171,7 +174,8 @@
                     @foreach ($k['baris'] as [$label, $nilai])
                         <div class="flex justify-between gap-4 py-2">
                             <dt class="shrink-0 text-slate-500 dark:text-slate-400">{{ $label }}</dt>
-                            <dd class="min-w-0 wrap-break-word text-right font-medium">{{ filled($nilai) ? $nilai : '-' }}
+                            <dd class="min-w-0 wrap-break-word text-right font-medium text-gray-800 dark:text-gray-100">
+                                {{ filled($nilai) ? $nilai : '-' }}
                             </dd>
                         </div>
                     @endforeach
@@ -189,7 +193,7 @@
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             @foreach ($dokumen as $nama)
                 <div
-                    class="flex items-center justify-between gap-3 rounded-lg border border-rose-100 bg-rose-50/60 p-3 text-sm dark:border-rose-500/20 dark:bg-rose-500/5">
+                    class="flex items-center justify-between gap-3 rounded-lg border border-orange-100 bg-orange-50/70 p-3 text-sm dark:border-orange-500/20 dark:bg-orange-500/5">
                     <span class="min-w-0 font-medium text-slate-600 dark:text-slate-300">{{ $nama }}</span>
                     <x-button href="#" size="xs" target="_blank" class="shrink-0">
                         <i class="bi bi-box-arrow-up-right me-1"></i> Lihat SK
@@ -225,7 +229,7 @@
 
         <x-table striped hover bordered class="text-sm">
             <x-slot:head>
-                <tr class="bg-indigo-50 text-indigo-900 dark:bg-indigo-500/20 dark:text-indigo-100">
+                <tr class="bg-emerald-50 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-100">
                     <x-table.heading class="text-center">No</x-table.heading>
                     <x-table.heading class="text-center">NIP</x-table.heading>
                     <x-table.heading class="min-w-48 text-center">Nama</x-table.heading>
@@ -297,7 +301,7 @@
 
         <x-table striped hover bordered class="text-sm">
             <x-slot:head>
-                <tr class="bg-indigo-50 text-indigo-900 dark:bg-indigo-500/20 dark:text-indigo-100">
+                <tr class="bg-emerald-50 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-100">
                     <x-table.heading class="text-center">No</x-table.heading>
                     <x-table.heading class="text-center">NIK</x-table.heading>
                     <x-table.heading class="text-center">NISN</x-table.heading>
