@@ -34,6 +34,9 @@ class Sekolah extends Model
         'sumber_listrik',
         'daya_listrik',
         'sumber_air',
+
+        'visi',
+        'misi',
     ];
 
     public function user()
@@ -49,5 +52,10 @@ class Sekolah extends Model
     public function pegawais()
     {
         return $this->hasMany(Pegawai::class);
+    }
+
+    public function listPrestasis()
+    {
+        return $this->hasMany(ListPrestasi::class);
     }
 }

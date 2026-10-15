@@ -44,6 +44,9 @@ return new class extends Migration
             $table->integer('daya_listrik')->nullable();
             $table->string('sumber_air')->nullable();
 
+            $table->string('visi')->nullable();
+            $table->string('misi')->nullable();
+
             $table->timestamps();
         });
     }

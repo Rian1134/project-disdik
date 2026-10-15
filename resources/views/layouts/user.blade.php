@@ -100,10 +100,10 @@
 
                 // [pola route aktif, route tujuan, nama menu, ikon]
                 $menu = [
-                    ['user.sekolah.*', 'user.sekolah.index', 'Data Sekolah', 'bi-building'],
+                    ['user.sekolah.*', 'user.sekolah.index', 'Profil Sekolah', 'bi-building'],
                     ['user.siswa.*', 'user.siswa.index', 'Data Siswa', 'bi-people'],
                     ['user.pegawai.*', 'user.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
-                    ['user.profile.*', 'user.profile.index', 'Profil Saya', 'bi-person-circle'],
+                    ['user.profile.*', 'user.profile.index', 'Profil Akun', 'bi-person-circle'],
                 ];
             @endphp
 
