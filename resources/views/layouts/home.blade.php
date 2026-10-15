@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'SIMADIK - Sistem Informasi Manajemen Akademik & Pendidikan')</title>
-    <meta name="description" content="SIMADIK - Sistem Informasi Manajemen Akademik & Pendidikan">
+    <title>@yield('title', 'SIMADIK-SMP - Sistem Informasi Manajemen Akademik & Pendidikan')</title>
+    <meta name="description" content="SIMADIK-SMP - Sistem Informasi Manajemen Akademik & Pendidikan">
     <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     {{-- Bootstrap Icons (hanya font ikon, bukan Bootstrap CSS). Hapus baris ini jika sudah di-import di app.css --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -25,7 +25,7 @@
                         class="h-full w-full object-contain">
                 </span>
                 <span class="flex flex-col leading-tight">
-                    <span class="text-lg font-extrabold text-blue-600">SIMADIK</span>
+                    <span class="text-lg font-extrabold text-blue-600">SIMADIK-SMP</span>
                     <span class="hidden text-[11px] font-medium text-gray-500 dark:text-gray-400 sm:block">
                         Disdikbud Kabupaten Lahat
                     </span>
@@ -61,7 +61,7 @@
                         <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
                             class="h-full w-full object-contain">
                     </span>
-                    <span class="text-xl font-extrabold text-white">SIMADIK</span>
+                    <span class="text-xl font-extrabold text-white">SIMADIK-SMP</span>
                 </a>
                 <p class="mt-4 text-sm text-blue-200">
                     Sistem Informasi Manajemen Akademik &amp; Pendidikan.
@@ -90,7 +90,7 @@
         </div>
 
         <div class="border-t border-white/10 py-4 text-center text-xs text-blue-300">
-            &copy; {{ date('Y') }} SIMADIK. Seluruh hak cipta dilindungi.
+            &copy; {{ date('Y') }} SIMADIK-SMP. Seluruh hak cipta dilindungi.
         </div>
     </footer>
 
