@@ -54,7 +54,7 @@ class Sekolah extends Model
         return $this->hasMany(Pegawai::class);
     }
 
-    public function listPrestasis()
+    public function prestasis()
     {
         return $this->hasMany(ListPrestasi::class);
     }

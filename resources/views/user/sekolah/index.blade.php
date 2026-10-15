@@ -1,6 +1,6 @@
 @extends('layouts.user')
 
-@section('title', 'Data Sekolah')
+@section('title', 'Profil Sekolah')
 
 @section('content')
     @if ($sekolah)
@@ -10,6 +10,9 @@
 
             // Logo user yang sedang login dipakai sebagai logo sekolah (null jika belum upload)
             $logoSekolah = Auth::user()?->logo ? asset('storage/uploads/logo/' . Auth::user()->logo) : null;
+
+            // Misi diisi satu poin per baris
+            $daftarMisi = array_filter(array_map('trim', explode("\n", (string) $sekolah->misi)));
 
             $identitas = [
                 ['Nama Sekolah', $sekolah->nama_sekolah],
@@ -47,165 +50,275 @@
             $dokumen = ['SK Pendirian Sekolah', 'SK Izin Operasional', 'SK Akreditasi Sekolah'];
 
             $stat = [
-                ['bi-people', 'Jumlah Siswa', $sekolah->siswas_count ?? 0],
-                ['bi-bounding-box', 'Luas Tanah', $isi($sekolah->laus_tanah, ' m²')],
-                ['bi-building', 'Luas Bangunan', $isi($sekolah->laus_bangunan, ' m²')],
-                ['bi-lightning-charge', 'Daya Listrik', $isi($sekolah->daya_listrik, ' VA')],
+                [
+                    'bi-people',
+                    'Jumlah Siswa',
+                    $sekolah->siswas_count ?? 0,
+                    'border-sky-200 bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10',
+                    'bg-sky-500',
+                ],
+                [
+                    'bi-person-badge',
+                    'Jumlah Pegawai',
+                    $pegawais->count(),
+                    'border-violet-200 bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10',
+                    'bg-violet-500',
+                ],
+                [
+                    'bi-trophy',
+                    'Prestasi',
+                    $prestasis->count(),
+                    'border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10',
+                    'bg-amber-500',
+                ],
+                [
+                    'bi-bounding-box',
+                    'Luas Tanah',
+                    $isi($sekolah->laus_tanah, ' m²'),
+                    'border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10',
+                    'bg-emerald-500',
+                ],
             ];
 
             $judulKartu = 'font-semibold';
-            $ikonKartu = 'me-1 text-emerald-600 dark:text-emerald-400';
+            $ikonKartu = 'me-1';
+            $barisDl = 'flex justify-between gap-4 py-2';
+            $nilaiDl = 'min-w-0 break-words text-right font-medium';
 
-            $thTabel = 'px-3 py-2 font-medium';
+            $thTabel = 'whitespace-nowrap px-3 py-2 font-medium';
             $tdTabel = 'px-3 py-2';
         @endphp
 
-        {{-- ===== Ringkasan sekolah ===== --}}
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 sm:p-5">
-            <div class="flex flex-wrap items-start justify-between gap-4">
-                <div class="flex min-w-0 items-center gap-4">
-                    @if ($logoSekolah)
-                        <img src="{{ $logoSekolah }}" alt="Logo {{ $sekolah->nama_sekolah }}" loading="lazy"
-                            class="h-16 w-16 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-white dark:ring-emerald-400/40 dark:ring-offset-gray-900 sm:h-20 sm:w-20">
-                    @else
-                        <span
-                            class="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 text-3xl text-white shadow-md ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-white dark:ring-emerald-400/40 dark:ring-offset-gray-900 sm:h-20 sm:w-20 sm:text-4xl">
-                            <i class="bi bi-building"></i>
-                        </span>
-                    @endif
-                    <div class="min-w-0">
-                        <h2 class="truncate text-lg font-semibold text-gray-800 dark:text-gray-100">
-                            {{ $sekolah->nama_sekolah }}
-                        </h2>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            NPSN {{ $sekolah->npsn }} &middot; NSS {{ $sekolah->nss }}
-                        </p>
-                        <div class="mt-2 flex flex-wrap gap-1.5">
-                            <x-badge :variant="$sekolah->akreditasi === '-' ? 'secondary' : 'success'"
-                                pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
-                            <x-badge variant="secondary" pill>{{ $sekolah->status_sekolah }}</x-badge>
-                        </div>
+        {{-- ===== Header profil: logo + identitas singkat + statistik ===== --}}
+        <div
+            class="rounded-xl border border-gray-200 bg-linear-to-r from-emerald-50 via-white to-sky-50 p-4 dark:border-gray-800 dark:from-emerald-500/10 dark:via-gray-900 dark:to-sky-500/10 sm:p-6">
+            <div class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
+                @if ($logoSekolah)
+                    <img src="{{ $logoSekolah }}" alt="Logo {{ $sekolah->nama_sekolah }}" loading="lazy"
+                        class="h-24 w-24 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-white dark:ring-offset-gray-900">
+                @else
+                    <span
+                        class="inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-500 text-4xl text-white shadow-md">
+                        <i class="bi bi-building"></i>
+                    </span>
+                @endif
+
+                <div class="min-w-0 flex-1">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 sm:text-xl">
+                        {{ $sekolah->nama_sekolah }}</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        NPSN {{ $sekolah->npsn }} &middot; NSS {{ $sekolah->nss }}
+                    </p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <i class="bi bi-geo-alt me-1 text-rose-500"></i>
+                        {{ $sekolah->kecamatan }}, {{ $sekolah->kabupaten }}, {{ $sekolah->provinsi }}
+                    </p>
+                    <div class="mt-2 flex flex-wrap justify-center gap-1.5 sm:justify-start">
+                        <x-badge :variant="$sekolah->akreditasi === '-' ? 'secondary' : 'success'"
+                            pill>{{ $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : 'Akreditasi ' . $sekolah->akreditasi }}</x-badge>
+                        <x-badge variant="secondary" pill>{{ $sekolah->status_sekolah }}</x-badge>
                     </div>
                 </div>
 
-                <x-button href="{{ route('user.sekolah.edit', $sekolah) }}" size="sm">
-                    <i class="bi bi-pencil-fill me-1"></i> Edit
+                <x-button href="{{ route('user.sekolah.edit', $sekolah) }}" size="sm" class="shrink-0">
+                    <i class="bi bi-pencil-fill me-1"></i> Edit Profil
                 </x-button>
             </div>
 
             <div class="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                @foreach ($stat as [$ikon, $label, $nilai])
-                    <div class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+                @foreach ($stat as [$ikon, $label, $nilai, $kotak, $warnaIkon])
+                    <div class="flex min-w-0 items-center gap-3 rounded-lg border p-3 {{ $kotak }}">
                         <span
-                            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+                            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm {{ $warnaIkon }}">
                             <i class="bi {{ $ikon }}"></i>
                         </span>
                         <div class="min-w-0">
                             <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ $label }}</p>
-                            <p class="truncate text-sm font-semibold">{{ $nilai }}</p>
+                            <p class="truncate text-base font-semibold">{{ $nilai }}</p>
                         </div>
                     </div>
                 @endforeach
             </div>
         </div>
 
-        {{-- ===== Detail ===== --}}
+        {{-- ===== Konten utama: kiri (visi-misi, identitas, prestasi) | kanan (alamat, sarana, dokumen) ===== --}}
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <x-card>
-                <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-card-text {{ $ikonKartu }}"></i> Identitas
-                        Sekolah</span>
-                </x-slot:header>
-                <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    @foreach ($identitas as [$label, $nilai])
-                        <div class="flex justify-between gap-4 py-2">
-                            <dt class="text-gray-500 dark:text-gray-400">{{ $label }}</dt>
-                            <dd class="text-right font-medium">{{ $nilai }}</dd>
-                        </div>
-                    @endforeach
-                </dl>
-            </x-card>
+            <div class="flex min-w-0 flex-col gap-4 lg:col-span-2">
 
-            <x-card>
-                <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-geo-alt {{ $ikonKartu }}"></i> Alamat</span>
-                </x-slot:header>
-                <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    @foreach ($alamat as [$label, $nilai])
-                        <div class="flex justify-between gap-4 py-2">
-                            <dt class="text-gray-500 dark:text-gray-400">{{ $label }}</dt>
-                            <dd class="text-right font-medium">{{ $nilai }}</dd>
+                {{-- Visi & Misi --}}
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-bullseye {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i> Visi &
+                            Misi</span>
+                    </x-slot:header>
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div>
+                            <h4 class="mb-2 text-sm font-semibold text-violet-700 dark:text-violet-300">Visi</h4>
+                            @if (filled($sekolah->visi))
+                                <p class="border-l-2 border-violet-500 ps-3 text-sm leading-relaxed italic">
+                                    {{ $sekolah->visi }}</p>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Belum diisi.</p>
+                            @endif
                         </div>
-                    @endforeach
-                </dl>
-            </x-card>
+                        <div>
+                            <h4 class="mb-2 text-sm font-semibold text-violet-700 dark:text-violet-300">Misi</h4>
+                            @if ($daftarMisi)
+                                <ol
+                                    class="list-decimal space-y-1.5 wrap-break-word ps-5 text-sm leading-relaxed marker:font-semibold marker:text-violet-600">
+                                    @foreach ($daftarMisi as $misi)
+                                        <li>{{ $misi }}</li>
+                                    @endforeach
+                                </ol>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Belum diisi.</p>
+                            @endif
+                        </div>
+                    </div>
+                </x-card>
 
-            <x-card>
-                <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-lightning-charge {{ $ikonKartu }}"></i> Sarana
-                        Pendukung</span>
-                </x-slot:header>
-                <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    @foreach ($sarana as [$label, $nilai])
-                        <div class="flex justify-between gap-4 py-2">
-                            <dt class="text-gray-500 dark:text-gray-400">{{ $label }}</dt>
-                            <dd class="text-right font-medium">{{ $nilai }}</dd>
-                        </div>
-                    @endforeach
-                </dl>
-            </x-card>
+                {{-- Identitas --}}
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-card-text {{ $ikonKartu }} text-emerald-600 dark:text-emerald-400"></i>
+                            Identitas
+                            Sekolah</span>
+                    </x-slot:header>
+                    <dl class="grid grid-cols-1 gap-x-8 text-sm sm:grid-cols-2">
+                        @foreach ($identitas as [$label, $nilai])
+                            <div class="{{ $barisDl }} border-b border-gray-200 dark:border-gray-700">
+                                <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                                <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                </x-card>
+
+                {{-- Prestasi --}}
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-trophy {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Prestasi
+                            Sekolah</span>
+                    </x-slot:header>
+                    <ul class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                        @forelse ($prestasis as $prestasi)
+                            <li class="flex items-center justify-between gap-3 py-2.5">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span
+                                        class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+                                        <i class="bi bi-award"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="wrap-break-word font-medium">{{ $prestasi->prestasi }}</p>
+                                        <x-badge :variant="$prestasi->jenis === 'Akademik' ? 'success' : 'secondary'" pill>
+                                            {{ $prestasi->jenis }}</x-badge>
+                                    </div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="py-6 text-center text-gray-500 dark:text-gray-400">Belum ada prestasi. Isi lewat Edit
+                                Profil.</li>
+                        @endforelse
+                    </ul>
+                </x-card>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-1 content-start gap-4 md:grid-cols-2 lg:grid-cols-1">
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-geo-alt {{ $ikonKartu }} text-rose-600 dark:text-rose-400"></i>
+                            Alamat</span>
+                    </x-slot:header>
+                    <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                        @foreach ($alamat as [$label, $nilai])
+                            <div class="{{ $barisDl }}">
+                                <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                                <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                </x-card>
+
+                <x-card>
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-lightning-charge {{ $ikonKartu }} text-sky-600 dark:text-sky-400"></i>
+                            Sarana Pendukung</span>
+                    </x-slot:header>
+                    <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                        @foreach ($sarana as [$label, $nilai])
+                            <div class="{{ $barisDl }}">
+                                <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ $label }}</dt>
+                                <dd class="{{ $nilaiDl }}">{{ $nilai }}</dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                </x-card>
+
+                <x-card class="md:col-span-2 lg:col-span-1">
+                    <x-slot:header>
+                        <span class="{{ $judulKartu }}"><i
+                                class="bi bi-file-earmark-text {{ $ikonKartu }} text-orange-600 dark:text-orange-400"></i>
+                            Dokumen SK</span>
+                    </x-slot:header>
+                    <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
+                        @foreach ($dokumen as $nama)
+                            <div class="flex items-center justify-between gap-3 py-2.5">
+                                <dt class="flex min-w-0 items-center gap-2 text-gray-600 dark:text-gray-300">
+                                    <i class="bi bi-file-earmark-pdf shrink-0 text-base text-rose-500"></i>
+                                    <span class="truncate">{{ $nama }}</span>
+                                </dt>
+                                <dd>
+                                    <x-button href="#" size="xs" target="_blank">Lihat</x-button>
+                                </dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                </x-card>
+            </div>
         </div>
 
-        {{-- ===== Dokumen SK ===== --}}
-        <x-card>
-            <x-slot:header>
-                <span class="{{ $judulKartu }}"><i class="bi bi-file-earmark-text {{ $ikonKartu }}"></i> Dokumen
-                    SK</span>
-            </x-slot:header>
-            <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                @foreach ($dokumen as $nama)
-                    <div class="flex items-center justify-between gap-4 py-2.5">
-                        <dt class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                            <i class="bi bi-file-earmark-pdf text-base text-rose-500"></i>
-                            {{ $nama }}
-                        </dt>
-                        <dd>
-                            <x-button href="#" size="xs" target="_blank">
-                                <i class="bi bi-box-arrow-up-right me-1"></i> Lihat SK
-                            </x-button>
-                        </dd>
-                    </div>
-                @endforeach
-            </dl>
-        </x-card>
+        {{-- ===== Data siswa ===== --}}
+        <div class="flex items-center gap-2 pt-2">
+            <span class="h-5 w-1 rounded-full bg-sky-500"></span>
+            <h3 class="font-semibold">Data Siswa</h3>
+        </div>
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <x-card>
                 <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-gender-ambiguous {{ $ikonKartu }}"></i> Rasio
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-gender-ambiguous {{ $ikonKartu }} text-sky-600 dark:text-sky-400"></i> Rasio
                         Jenis Kelamin</span>
                 </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
+                <div class="mx-auto h-56 max-w-xs sm:h-64">
                     <canvas id="grafikJk"></canvas>
                 </div>
             </x-card>
 
             <x-card>
                 <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-mortarboard {{ $ikonKartu }}"></i> Siswa per
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-mortarboard {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i> Siswa
+                        per
                         Kelas</span>
                 </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
+                <div class="mx-auto h-56 max-w-xs sm:h-64">
                     <canvas id="grafikKelas"></canvas>
                 </div>
             </x-card>
         </div>
 
-        {{-- ===== Daftar siswa ===== --}}
         <x-card>
             <x-slot:header>
-                <div class="flex items-center justify-between gap-2">
-                    <span class="{{ $judulKartu }}"><i class="bi bi-people {{ $ikonKartu }}"></i> Daftar Siswa</span>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-people {{ $ikonKartu }} text-sky-600 dark:text-sky-400"></i> Daftar
+                        Siswa</span>
                     <x-button href="{{ route('user.siswa.index') }}" size="xs">
                         Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                     </x-button>
@@ -239,49 +352,60 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="mt-3 flex flex-col items-center justify-between gap-3 sm:flex-row">
                 <p id="infoSiswa" class="text-sm text-gray-500 dark:text-gray-400"></p>
                 <div id="pagerSiswa" class="flex flex-wrap items-center gap-1"></div>
             </div>
         </x-card>
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {{-- ===== Data pegawai ===== --}}
+        <div class="flex items-center gap-2 pt-2">
+            <span class="h-5 w-1 rounded-full bg-violet-500"></span>
+            <h3 class="font-semibold">Data Pegawai</h3>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             <x-card>
                 <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-person-workspace {{ $ikonKartu }}"></i> Status
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-person-workspace {{ $ikonKartu }} text-emerald-600 dark:text-emerald-400"></i>
+                        Status
                         Guru/TU</span>
                 </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
+                <div class="mx-auto h-56 max-w-xs sm:h-64">
                     <canvas id="grafikJabatan"></canvas>
                 </div>
             </x-card>
 
             <x-card>
                 <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-award {{ $ikonKartu }}"></i> Status
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-award {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Status
                         Golongan</span>
                 </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
+                <div class="mx-auto h-56 max-w-xs sm:h-64">
                     <canvas id="grafikGolongan"></canvas>
                 </div>
             </x-card>
 
-            <x-card>
+            <x-card class="md:col-span-2 xl:col-span-1">
                 <x-slot:header>
-                    <span class="{{ $judulKartu }}"><i class="bi bi-patch-check {{ $ikonKartu }}"></i> Status
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-patch-check {{ $ikonKartu }} text-rose-600 dark:text-rose-400"></i> Status
                         Kepegawaian</span>
                 </x-slot:header>
-                <div class="mx-auto h-64 max-w-xs">
+                <div class="mx-auto h-56 max-w-xs sm:h-64">
                     <canvas id="grafikStatus"></canvas>
                 </div>
             </x-card>
         </div>
 
-        {{-- ===== Daftar pegawai ===== --}}
         <x-card>
             <x-slot:header>
-                <div class="flex items-center justify-between gap-2">
-                    <span class="{{ $judulKartu }}"><i class="bi bi-person-badge {{ $ikonKartu }}"></i> Daftar
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-person-badge {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i>
+                        Daftar
                         Pegawai</span>
                     <x-button href="{{ route('user.pegawai.index') }}" size="xs">
                         Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
@@ -316,7 +440,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="mt-3 flex flex-col items-center justify-between gap-3 sm:flex-row">
                 <p id="infoPegawai" class="text-sm text-gray-500 dark:text-gray-400"></p>
                 <div id="pagerPegawai" class="flex flex-wrap items-center gap-1"></div>
             </div>
@@ -453,10 +577,10 @@
                     <i class="bi bi-building-add"></i>
                 </span>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Anda belum memiliki data sekolah.
+                    Anda belum memiliki profil sekolah.
                 </p>
                 <x-button href="{{ route('user.sekolah.create') }}">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Data Sekolah
+                    <i class="bi bi-plus-lg me-1"></i> Tambah Profil Sekolah
                 </x-button>
             </div>
         </x-card>

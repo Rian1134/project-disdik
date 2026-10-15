@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 class SekolahController extends Controller
 {
     /**
-     * Tampilkan data sekolah milik user yang login.
+     * Tampilkan profil sekolah milik user yang login.
      */
     public function index()
     {
@@ -19,6 +19,7 @@ class SekolahController extends Controller
 
         $siswas = $sekolah?->siswas()->orderBy('nama_siswa')->get();
         $pegawais = $sekolah?->pegawais()->orderBy('nama')->get();
+        $prestasis = $sekolah?->prestasis()->orderBy('id')->get();
 
         $grafikJk = $sekolah?->siswas()
             ->selectRaw("if(jenis_kelamin = 'L', 'Laki-laki', 'Perempuan') as label, count(*) as total")
@@ -36,13 +37,13 @@ class SekolahController extends Controller
             ->selectRaw('status_kepegawaian as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
 
         return view('user.sekolah.index', compact(
-            'sekolah', 'siswas', 'pegawais',
+            'sekolah', 'siswas', 'pegawais', 'prestasis',
             'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus'
         ));
     }
 
     /**
-     * Form tambah data sekolah (satu akun hanya boleh punya satu sekolah).
+     * Form tambah profil sekolah (satu akun hanya boleh punya satu sekolah).
      */
     public function create()
     {
@@ -54,21 +55,22 @@ class SekolahController extends Controller
     }
 
     /**
-     * Simpan data sekolah baru, otomatis terhubung ke akun yang login.
+     * Simpan profil sekolah baru, otomatis terhubung ke akun yang login.
      */
     public function store(Request $request)
     {
         if ($this->sudahPunyaSekolah()) {
-            return redirect()->route('user.sekolah.index')->with('error', 'Akun Anda sudah memiliki data sekolah.');
+            return redirect()->route('user.sekolah.index')->with('error', 'Akun Anda sudah memiliki profil sekolah.');
         }
 
-        Sekolah::create($this->validated($request) + ['user_id' => Auth::id()]);
+        $sekolah = Sekolah::create($this->validated($request) + ['user_id' => Auth::id()]);
+        $this->simpanPrestasi($sekolah, $request);
 
-        return redirect()->route('user.sekolah.index')->with('success', 'Data sekolah berhasil ditambahkan.');
+        return redirect()->route('user.sekolah.index')->with('success', 'Profil sekolah berhasil ditambahkan.');
     }
 
     /**
-     * Form edit data sekolah (hanya sekolah milik sendiri).
+     * Form edit profil sekolah (hanya sekolah milik sendiri).
      */
     public function edit(Sekolah $sekolah)
     {
@@ -78,15 +80,16 @@ class SekolahController extends Controller
     }
 
     /**
-     * Simpan perubahan data sekolah.
+     * Simpan perubahan profil sekolah.
      */
     public function update(Request $request, Sekolah $sekolah)
     {
         $this->pastikanMilikSendiri($sekolah);
 
         $sekolah->update($this->validated($request, $sekolah));
+        $this->simpanPrestasi($sekolah, $request);
 
-        return redirect()->route('user.sekolah.index')->with('success', 'Data sekolah berhasil diperbarui.');
+        return redirect()->route('user.sekolah.index')->with('success', 'Profil sekolah berhasil diperbarui.');
     }
 
     /**
@@ -95,6 +98,28 @@ class SekolahController extends Controller
     private function pastikanMilikSendiri(Sekolah $sekolah): void
     {
         abort_unless($sekolah->user_id === Auth::id(), 403);
+    }
+
+    /**
+     * Prestasi dikirim sebagai baris berulang (jenis_prestasi[] & nama_prestasi[]);
+     * daftar lama diganti dengan yang baru, baris kosong dilewati.
+     */
+    private function simpanPrestasi(Sekolah $sekolah, Request $request): void
+    {
+        $sekolah->prestasis()->delete();
+
+        foreach ((array) $request->input('nama_prestasi') as $i => $nama) {
+            $nama = trim((string) $nama);
+
+            if ($nama === '') {
+                continue;
+            }
+
+            $sekolah->prestasis()->create([
+                'jenis' => $request->input("jenis_prestasi.$i") === 'Non-Akademik' ? 'Non-Akademik' : 'Akademik',
+                'prestasi' => mb_substr($nama, 0, 255),
+            ]);
+        }
     }
 
     private function sudahPunyaSekolah(): bool
@@ -117,6 +142,8 @@ class SekolahController extends Controller
             'tanggal_sk_pendirian' => ['required', 'string'],
             'tanggal_sk_izin_oprasional' => ['required', 'string'],
             'implementasi_kurikulum' => ['required', 'string'],
+            'visi' => ['nullable', 'string'],
+            'misi' => ['nullable', 'string'],
 
             'alamat' => ['required', 'string'],
             'rt_rw' => ['required', 'string'],
