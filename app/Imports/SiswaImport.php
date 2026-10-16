@@ -13,18 +13,16 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 
 /**
- * Import Template_Data_Siswa_web.xlsx (sheet "Data Siswa", data mulai baris ke-3).
+ * Import template-siswa.xlsx (sheet "Data Siswa", data mulai baris ke-3).
  * Semua baris divalidasi dulu; kalau ada yang salah, tidak ada data yang tersimpan.
  *
  * Hanya sheet PERTAMA yang dibaca; sheet lain (mis. "Petunjuk") diabaikan.
  */
-class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
+class SiswaImport implements ToCollection, WithMultipleSheets, WithStartRow
 {
     use MembacaTanggal;
 
-    public function __construct(private int $sekolahId)
-    {
-    }
+    public function __construct(private int $sekolahId) {}
 
     /**
      * Hanya sheet pertama yang diproses oleh class ini.
@@ -67,7 +65,7 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
                 'nik' => $v(1),
                 'nisn' => $v(2),
                 'nama_siswa' => $v(3),
-                'kelas' => $v(4),
+                'kelas' => strtoupper($v(4)),
                 'jenis_kelamin' => strtoupper($v(5)),
                 'tempat_lahir' => trim($tempat),
                 'tanggal_lahir' => $this->tanggal($tanggal),
@@ -88,8 +86,9 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
 
             if ($validator->fails()) {
                 foreach ($validator->errors()->all() as $pesan) {
-                    $error[] = 'Baris ' . ($i + $this->startRow()) . ': ' . $pesan;
+                    $error[] = 'Baris '.($i + $this->startRow()).': '.$pesan;
                 }
+
                 continue;
             }
 
@@ -103,7 +102,7 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
         if ($error) {
             $tampil = array_slice($error, 0, 10);
             if (count($error) > 10) {
-                $tampil[] = 'Dan ' . (count($error) - 10) . ' kesalahan lainnya.';
+                $tampil[] = 'Dan '.(count($error) - 10).' kesalahan lainnya.';
             }
             throw ValidationException::withMessages(['file' => $tampil]);
         }
@@ -124,7 +123,7 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
             'nik' => ['required', 'string', 'max:20'],
             'nisn' => ['required', 'string', 'max:20'],
             'nama_siswa' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:50'],
+            'kelas' => ['required', Rule::in(Siswa::KELAS)],
             'jenis_kelamin' => ['required', Rule::in(['L', 'P'])],
             'tempat_lahir' => ['required', 'string', 'max:255'],
             'tanggal_lahir' => ['required', 'date'],
@@ -132,8 +131,8 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
             'status_tempat_tinggal' => ['required', Rule::in(Siswa::STATUS_TEMPAT_TINGGAL)],
             'nama_ayah' => ['required', 'string', 'max:255'],
             'nama_ibu' => ['required', 'string', 'max:255'],
-            'pekerjaan_ayah' => ['required', Rule::in(Siswa::PEKERJAAN)],
-            'pekerjaan_ibu' => ['required', Rule::in(Siswa::PEKERJAAN)],
+            'pekerjaan_ayah' => ['required', Rule::in(Siswa::PEKERJAAN_AYAH)],
+            'pekerjaan_ibu' => ['required', Rule::in(Siswa::PEKERJAAN_IBU)],
             'kisaran_penghasilan_ayah' => ['required', Rule::in(Siswa::PENGHASILAN)],
             'kisaran_penghasilan_ibu' => ['required', Rule::in(Siswa::PENGHASILAN)],
             'jumlah_saudara' => ['required', 'integer', 'min:0'],
@@ -178,3 +177,4 @@ class SiswaImport implements ToCollection, WithStartRow, WithMultipleSheets
         ];
     }
 }
+    

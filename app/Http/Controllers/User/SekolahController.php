@@ -26,7 +26,7 @@ class SekolahController extends Controller
             ->groupBy('label')->pluck('total', 'label');
         $grafikKelas = $sekolah?->siswas()
             ->selectRaw("concat('Kelas ', substring_index(kelas, ' ', 1)) as label, count(*) as total")
-            ->groupBy('label')->orderBy('label')->pluck('total', 'label');
+            ->groupBy('label')->orderByRaw("field(label, 'Kelas VII', 'Kelas VIII', 'Kelas IX')")->pluck('total', 'label');
 
         $grafikJabatan = $sekolah?->pegawais()
             ->selectRaw('jabatan as label, count(*) as total')->groupBy('label')->pluck('total', 'label');

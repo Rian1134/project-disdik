@@ -43,7 +43,7 @@
                     ['TMT di Sekolah Ini', $pegawai->terhitung_mulai_tanggal?->translatedFormat('d F Y')],
                     ['Jabatan', $pegawai->jabatan],
                     ['Tugas', $pegawai->tugas],
-                    ['Mata Pelajaran', $pegawai->mata_pelajaran],
+                    ...$pegawai->tugas === 'Guru Mapel' ? [['Mata Pelajaran', $pegawai->mata_pelajaran]] : [],
                     ['Status Kepegawaian', $pegawai->status_kepegawaian],
                 ],
             ],
@@ -78,6 +78,9 @@
                 <div class="mt-2 flex flex-wrap justify-center gap-1.5 sm:justify-start">
                     <x-badge variant="success" pill>{{ $pegawai->jabatan }}</x-badge>
                     <x-badge variant="secondary" pill>{{ $pegawai->status_kepegawaian }}</x-badge>
+                    @if (filled($pegawai->mata_pelajaran))
+                        <x-badge variant="secondary" pill>{{ $pegawai->mata_pelajaran }}</x-badge>
+                    @endif
                 </div>
             </div>
 

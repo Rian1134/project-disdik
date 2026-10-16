@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        // Kategori tab filter: tingkat dari nama kelas ("7 A" -> "7", "VII A" -> "VII")
+        // Kategori tab filter: tingkat dari nama kelas ("VII" -> "VII", "VII A" -> "VII", data lama "7 A" -> "7")
         $tingkat = function ($kelas) {
             $kelas = trim((string) $kelas);
 
@@ -145,8 +145,11 @@
                 hitung[k] = (hitung[k] || 0) + 1;
             });
 
+            // Urutan tab: kelas romawi dulu (VII, VIII, IX), sisanya menyusul
+            const urutKelas = ['VII', 'VIII', 'IX'];
+            const posisi = k => (urutKelas.includes(k) ? urutKelas.indexOf(k) : urutKelas.length);
             const daftarKategori = Object.keys(hitung)
-                .sort((a, b) => a.localeCompare(b, 'id', {
+                .sort((a, b) => posisi(a) - posisi(b) || a.localeCompare(b, 'id', {
                     numeric: true
                 }));
 

@@ -28,7 +28,7 @@ class SiswaController extends Controller
                 fn ($q) => $q->where('sekolah_id', $sekolah->id),
                 fn ($q) => $q->whereRaw('1 = 0')
             )
-            ->orderBy('kelas')
+            ->orderByRaw("field(kelas, 'VII', 'VIII', 'IX')")
             ->orderBy('nama_siswa')
             ->get();
 
@@ -220,8 +220,10 @@ class SiswaController extends Controller
     {
         return [
             'jenis_kelamin' => ['L' => 'Laki-laki', 'P' => 'Perempuan'],
+            'kelas' => array_combine(Siswa::KELAS, Siswa::KELAS),
             'status_tempat_tinggal' => array_combine(Siswa::STATUS_TEMPAT_TINGGAL, Siswa::STATUS_TEMPAT_TINGGAL),
-            'pekerjaan' => array_combine(Siswa::PEKERJAAN, Siswa::PEKERJAAN),
+            'pekerjaan_ayah' => array_combine(Siswa::PEKERJAAN_AYAH, Siswa::PEKERJAAN_AYAH),
+            'pekerjaan_ibu' => array_combine(Siswa::PEKERJAAN_IBU, Siswa::PEKERJAAN_IBU),
             'penghasilan' => array_combine(Siswa::PENGHASILAN, Siswa::PENGHASILAN),
             'bantuan' => array_combine(Siswa::BANTUAN, Siswa::BANTUAN),
             'status_pelajar' => array_combine(Siswa::STATUS_PELAJAR, Siswa::STATUS_PELAJAR),

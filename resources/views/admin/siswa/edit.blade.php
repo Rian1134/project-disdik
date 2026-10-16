@@ -21,7 +21,8 @@
                 <x-form.input name="nama_siswa" label="Nama Siswa" :value="old('nama_siswa', $siswa->nama_siswa)" required />
                 <x-form.input name="nik" label="NIK" :value="old('nik', $siswa->nik)" required />
                 <x-form.input name="nisn" label="NISN" :value="old('nisn', $siswa->nisn)" required />
-                <x-form.input name="kelas" label="Kelas" helper="Contoh: VII A" :value="old('kelas', $siswa->kelas)" required />
+                <x-form.select name="kelas" label="Kelas" placeholder="Pilih kelas" :options="$opsi['kelas']" :value="old('kelas', $siswa->kelas)"
+                    required />
                 <x-form.select name="jenis_kelamin" label="Jenis Kelamin" placeholder="Pilih jenis kelamin"
                     :options="$opsi['jenis_kelamin']" :value="old('jenis_kelamin', $siswa->jenis_kelamin)" required />
                 <x-form.input name="tempat_lahir" label="Tempat Lahir" :value="old('tempat_lahir', $siswa->tempat_lahir)" required />
@@ -40,9 +41,9 @@
 
                 <x-form.input name="nama_ayah" label="Nama Ayah" :value="old('nama_ayah', $siswa->nama_ayah)" required />
                 <x-form.input name="nama_ibu" label="Nama Ibu" :value="old('nama_ibu', $siswa->nama_ibu)" required />
-                <x-form.select name="pekerjaan_ayah" label="Pekerjaan Ayah" placeholder="Pilih pekerjaan" :options="$opsi['pekerjaan']"
+                <x-form.select name="pekerjaan_ayah" label="Pekerjaan Ayah" placeholder="Pilih pekerjaan" :options="$opsi['pekerjaan_ayah']"
                     :value="old('pekerjaan_ayah', $siswa->pekerjaan_ayah)" required />
-                <x-form.select name="pekerjaan_ibu" label="Pekerjaan Ibu" placeholder="Pilih pekerjaan" :options="$opsi['pekerjaan']"
+                <x-form.select name="pekerjaan_ibu" label="Pekerjaan Ibu" placeholder="Pilih pekerjaan" :options="$opsi['pekerjaan_ibu']"
                     :value="old('pekerjaan_ibu', $siswa->pekerjaan_ibu)" required />
                 <x-form.select name="kisaran_penghasilan_ayah" label="Kisaran Penghasilan Ayah"
                     placeholder="Pilih penghasilan" :options="$opsi['penghasilan']" :value="old('kisaran_penghasilan_ayah', $siswa->kisaran_penghasilan_ayah)" required />
@@ -50,7 +51,8 @@
                     placeholder="Pilih penghasilan" :options="$opsi['penghasilan']" :value="old('kisaran_penghasilan_ibu', $siswa->kisaran_penghasilan_ibu)" required />
 
                 <h3 class="mt-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300 md:col-span-2">
-                    <i class="bi bi-info-circle-fill"></i>Lainnya</h3>
+                    <i class="bi bi-info-circle-fill"></i>Lainnya
+                </h3>
 
                 <x-form.input name="jumlah_saudara" label="Jumlah Saudara Kandung" type="number" :value="old('jumlah_saudara', $siswa->jumlah_saudara)"
                     required />

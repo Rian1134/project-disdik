@@ -17,8 +17,8 @@ class SiswaController extends Controller
      */
     public function index()
     {
-        // Kelas disimpan sebagai angka: 7, 8, 9 (boleh diikuti rombel, mis. "7A" atau "7 A").
-        // Angka romawi (VII, VIII, IX) tetap dikenali supaya data lama tidak hilang.
+        // Kelas disimpan sebagai angka romawi: VII, VIII, IX (boleh diikuti rombel, mis. "VII A").
+        // Angka arab (7, 8, 9) tetap dikenali supaya data lama tidak hilang.
         $vii = "siswas.kelas regexp '^(7|VII([^I]|$))'";
         $viii = "siswas.kelas regexp '^(8|VIII)'";
         $ix = "siswas.kelas regexp '^(9|IX)'";
@@ -55,7 +55,11 @@ class SiswaController extends Controller
      */
     public function sekolah(Sekolah $sekolah)
     {
-        $siswas = $sekolah->siswas()->orderBy('kelas')->orderBy('nama_siswa')->get();
+        $siswas = $sekolah->siswas()
+            ->orderByRaw("field(substring_index(kelas, ' ', 1), 'VII', 'VIII', 'IX')")
+            ->orderBy('kelas')
+            ->orderBy('nama_siswa')
+            ->get();
 
         return view('admin.siswa.sekolah', compact('sekolah', 'siswas'));
     }
@@ -89,7 +93,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Import banyak siswa dari file Excel (template Template_Data_Siswa_web.xlsx).
+     * Import banyak siswa dari file Excel (template-siswa.xlsx).
      */
     public function import(Request $request)
     {
@@ -175,8 +179,10 @@ class SiswaController extends Controller
     {
         return [
             'jenis_kelamin' => ['L' => 'Laki-laki', 'P' => 'Perempuan'],
+            'kelas' => array_combine(Siswa::KELAS, Siswa::KELAS),
             'status_tempat_tinggal' => array_combine(Siswa::STATUS_TEMPAT_TINGGAL, Siswa::STATUS_TEMPAT_TINGGAL),
-            'pekerjaan' => array_combine(Siswa::PEKERJAAN, Siswa::PEKERJAAN),
+            'pekerjaan_ayah' => array_combine(Siswa::PEKERJAAN_AYAH, Siswa::PEKERJAAN_AYAH),
+            'pekerjaan_ibu' => array_combine(Siswa::PEKERJAAN_IBU, Siswa::PEKERJAAN_IBU),
             'penghasilan' => array_combine(Siswa::PENGHASILAN, Siswa::PENGHASILAN),
             'bantuan' => array_combine(Siswa::BANTUAN, Siswa::BANTUAN),
             'status_pelajar' => array_combine(Siswa::STATUS_PELAJAR, Siswa::STATUS_PELAJAR),

@@ -86,7 +86,8 @@
                         <x-form.input name="nama_siswa" label="Nama Siswa" :value="old('nama_siswa')" required />
                         <x-form.input name="nik" label="NIK" :value="old('nik')" required />
                         <x-form.input name="nisn" label="NISN" :value="old('nisn')" required />
-                        <x-form.input name="kelas" label="Kelas" helper="Contoh: 7 A" :value="old('kelas')" required />
+                        <x-form.select name="kelas" label="Kelas" placeholder="Pilih kelas" :options="$opsi['kelas']"
+                    :value="old('kelas')" required />
                         <x-form.select name="jenis_kelamin" label="Jenis Kelamin" placeholder="Pilih jenis kelamin"
                             :options="$opsi['jenis_kelamin']" :value="old('jenis_kelamin')" required />
                         <x-form.input name="tempat_lahir" label="Tempat Lahir" :value="old('tempat_lahir')" required />
@@ -106,9 +107,9 @@
                         <x-form.input name="nama_ayah" label="Nama Ayah" :value="old('nama_ayah')" required />
                         <x-form.input name="nama_ibu" label="Nama Ibu" :value="old('nama_ibu')" required />
                         <x-form.select name="pekerjaan_ayah" label="Pekerjaan Ayah" placeholder="Pilih pekerjaan"
-                            :options="$opsi['pekerjaan']" :value="old('pekerjaan_ayah')" required />
+                            :options="$opsi['pekerjaan_ayah']" :value="old('pekerjaan_ayah')" required />
                         <x-form.select name="pekerjaan_ibu" label="Pekerjaan Ibu" placeholder="Pilih pekerjaan"
-                            :options="$opsi['pekerjaan']" :value="old('pekerjaan_ibu')" required />
+                            :options="$opsi['pekerjaan_ibu']" :value="old('pekerjaan_ibu')" required />
                         <x-form.select name="kisaran_penghasilan_ayah" label="Kisaran Penghasilan Ayah"
                             placeholder="Pilih penghasilan" :options="$opsi['penghasilan']" :value="old('kisaran_penghasilan_ayah')" required />
                         <x-form.select name="kisaran_penghasilan_ibu" label="Kisaran Penghasilan Ibu"

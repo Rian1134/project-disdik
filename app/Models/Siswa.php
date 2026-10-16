@@ -20,7 +20,14 @@ class Siswa extends Model
     // Pilihan dropdown (sama dengan dropdown di template Excel)
     public const STATUS_TEMPAT_TINGGAL = ['Rumah sendiri', 'Rumah orang tua', 'Wali', 'Kost', 'Kontrak', 'Asrama', 'Lainnya'];
 
-    public const PEKERJAAN = ['PNS', 'TNI', 'Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Buruh', 'Nelayan', 'Pedagang', 'Tidak bekerja', 'Lainnya'];
+    public const KELAS = ['VII', 'VIII', 'IX'];
+
+    public const PEKERJAAN_AYAH = ['PNS', 'TNI', 'Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Buruh', 'Nelayan', 'Pedagang', 'Tidak bekerja', 'Lainnya'];
+
+    public const PEKERJAAN_IBU = ['PNS', 'TNI', 'Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Buruh', 'Nelayan', 'Pedagang', 'Ibu Rumah Tangga', 'Lainnya'];
+
+    // Daftar lama; dipertahankan agar kode lain yang masih memakainya tidak error (setara daftar ayah)
+    public const PEKERJAAN = self::PEKERJAAN_AYAH;
 
     public const PENGHASILAN = ['Rp 0', '< Rp1 juta', 'Rp1–3 juta', 'Rp3–5 juta', 'Rp5–10 juta', '> Rp10 juta'];
 
