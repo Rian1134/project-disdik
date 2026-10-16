@@ -46,7 +46,7 @@
                     <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
                         class="h-full w-full object-contain">
                 </span>
-                <span class="text-xl font-extrabold tracking-wide">SIMADIK</span>
+                <span class="text-xl font-extrabold tracking-wide">SIMANDIK</span>
             </a>
 
             <div class="max-w-md">
@@ -55,7 +55,7 @@
                     <i class="bi bi-building"></i> Disdikbud Kabupaten Lahat
                 </span>
                 <h2 class="mt-4 text-3xl font-bold leading-tight drop-shadow">
-                    Sistem Informasi Manajemen Akademik &amp; Pendidikan
+                    Sistem Informasi Manajemen Peserta Didik &amp; Pendidik
                 </h2>
                 <p class="mt-3 text-blue-100">
                     Kelola data sekolah, siswa, dan pegawai dalam satu aplikasi yang sederhana dan terintegrasi.
@@ -151,7 +151,7 @@
                             <i class="bi bi-arrow-left"></i> Kembali ke beranda
                         </a>
                         <p class="mt-3 text-xs text-gray-400 dark:text-gray-600 lg:hidden">
-                            &copy; {{ date('Y') }} SIMADIK
+                            &copy; {{ date('Y') }} SIMANDIK
                         </p>
                     </div>
                 </div>

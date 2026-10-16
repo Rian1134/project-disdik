@@ -5,13 +5,26 @@
 @section('content')
     <div class="space-y-6">
 
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Upload Ijazah</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Pilih tahun, klik tombol Upload, lalu unggah file di halaman yang terbuka.
-            </p>
-        </div>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Upload Ijazah</h1>
 
+        {{-- Panduan upload --}}
+        <x-card>
+            <x-slot:header>
+                <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <i class="bi bi-info-circle"></i>
+                    Cara Upload Ijazah
+                </div>
+            </x-slot:header>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                <ol class="list-decimal mx-4">
+                    <li> Pilih file yang ingin diupload.</li>
+                    <li> Klik tombol "Upload".</li>
+                </ol>
+            </p>
+        </x-card>
+
+        {{-- Daftar link per tahun --}}
         @forelse ($links as $l)
             <x-card>
                 <div class="flex items-center justify-between gap-4">
@@ -27,9 +40,11 @@
                     </div>
 
                     @if (\Illuminate\Support\Str::startsWith($l->url, 'https://'))
-                        <x-button href="{{ $l->url }}" target="_blank" rel="noopener noreferrer" variant="primary">
-                            <i class="bi bi-box-arrow-up-right me-1"></i> Upload
-                        </x-button>
+                        <a href="{{ $l->url }}" target="_blank" rel="noopener noreferrer" class="inline-flex">
+                            <x-button type="button" variant="primary">
+                                <i class="bi bi-cloud-arrow-up me-1"></i> Upload
+                            </x-button>
+                        </a>
                     @else
                         <x-badge variant="danger">Link tidak valid</x-badge>
                     @endif

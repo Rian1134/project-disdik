@@ -9,6 +9,8 @@
             'block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500';
         $labelClass = 'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
         $cardClass = 'rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900';
+        $eyeClass =
+            'absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200';
     @endphp
 
     <div class="flex items-center justify-between">
@@ -115,8 +117,14 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-2">
                             <label for="current_password" class="{{ $labelClass }}">Password saat ini</label>
-                            <input type="password" id="current_password" name="current_password"
-                                autocomplete="current-password" class="{{ $inputClass }}">
+                            <div class="relative">
+                                <input type="password" id="current_password" name="current_password"
+                                    autocomplete="current-password" class="{{ $inputClass }} pr-10">
+                                <button type="button" data-toggle-password="current_password" class="{{ $eyeClass }}"
+                                    aria-label="Tampilkan password" title="Tampilkan password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                             @error('current_password')
                                 <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
                             @enderror
@@ -124,8 +132,14 @@
 
                         <div>
                             <label for="password" class="{{ $labelClass }}">Password baru</label>
-                            <input type="password" id="password" name="password" autocomplete="new-password"
-                                class="{{ $inputClass }}">
+                            <div class="relative">
+                                <input type="password" id="password" name="password" autocomplete="new-password"
+                                    class="{{ $inputClass }} pr-10">
+                                <button type="button" data-toggle-password="password" class="{{ $eyeClass }}"
+                                    aria-label="Tampilkan password" title="Tampilkan password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                             <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Minimal 8 karakter.</p>
                             @error('password')
                                 <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
@@ -135,8 +149,15 @@
                         <div>
                             <label for="password_confirmation" class="{{ $labelClass }}">Konfirmasi password
                                 baru</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation"
-                                autocomplete="new-password" class="{{ $inputClass }}">
+                            <div class="relative">
+                                <input type="password" id="password_confirmation" name="password_confirmation"
+                                    autocomplete="new-password" class="{{ $inputClass }} pr-10">
+                                <button type="button" data-toggle-password="password_confirmation"
+                                    class="{{ $eyeClass }}" aria-label="Tampilkan password"
+                                    title="Tampilkan password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -185,6 +206,25 @@
             preview.classList.remove('hidden');
             fallback.classList.add('hidden');
             fallback.classList.remove('flex');
+        });
+
+        // Tampilkan / sembunyikan password
+        document.querySelectorAll('[data-toggle-password]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var input = document.getElementById(this.dataset.togglePassword);
+                if (!input) return;
+
+                var tampil = input.type === 'password';
+                input.type = tampil ? 'text' : 'password';
+
+                var ikon = this.querySelector('i');
+                ikon.classList.toggle('bi-eye', !tampil);
+                ikon.classList.toggle('bi-eye-slash', tampil);
+
+                var teks = tampil ? 'Sembunyikan password' : 'Tampilkan password';
+                this.setAttribute('aria-label', teks);
+                this.title = teks;
+            });
         });
     </script>
 @endpush
