@@ -103,6 +103,7 @@
                     ['admin.pegawai.*', 'admin.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
                     ['admin.users.*', 'admin.users.index', 'Users', 'bi-person-gear'],
                     ['admin.persetujuan-*', 'admin.persetujuan-siswa.index', 'Persetujuan', 'bi-clipboard-check'],
+                    ['admin.link-ijazah.*', 'admin.link-ijazah.index', 'Link Ijazah', 'bi-link-45deg'], // baru
                 ];
             @endphp
 

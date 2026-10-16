@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->year('tahun');
             $table->string('url');
+            
             $table->timestamps();
         });
     }

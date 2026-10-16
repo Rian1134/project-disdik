@@ -103,7 +103,7 @@
                     ['user.sekolah.*', 'user.sekolah.index', 'Profil Sekolah', 'bi-building'],
                     ['user.siswa.*', 'user.siswa.index', 'Data Siswa', 'bi-people'],
                     ['user.pegawai.*', 'user.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
-                    ['user.profile.*', 'user.profile.index', 'Profil Akun', 'bi-person-circle'],
+                    ['user.link-ijazah.*', 'user.link-ijazah.index', 'Upload Ijazah', 'bi-cloud-upload'],
                 ];
             @endphp
 

@@ -8,59 +8,29 @@ use Illuminate\Http\Request;
 
 class LinkIjazahController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $links = LinkIjazah::latest()->paginate(20);
+
+        return view('admin.link-ijazah.index', compact('links'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'tahun' => ['required', 'integer', 'digits:4'],
+            'url' => ['required', 'string', 'max:255'],
+        ]);
+
+        LinkIjazah::create($data);
+
+        return back()->with('success', 'Link berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(LinkIjazah $linkIjazah)
+    public function destroy(LinkIjazah $link_ijazah)
     {
-        //
-    }
+        $link_ijazah->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(LinkIjazah $linkIjazah)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, LinkIjazah $linkIjazah)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(LinkIjazah $linkIjazah)
-    {
-        //
+        return back()->with('success', 'Link berhasil dihapus.');
     }
 }

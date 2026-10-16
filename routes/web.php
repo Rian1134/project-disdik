@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\LinkIjazahController as AdminLinkIjazahController;
 use App\Http\Controllers\Admin\PegawaiController as AdminPegawaiController;
 use App\Http\Controllers\Admin\PersetujuanPegawaiController;
 use App\Http\Controllers\Admin\PersetujuanSiswaController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\SiswaController as AdminSiswaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\User\LinkIjazahController as UserLinkIjazahController;
 use App\Http\Controllers\User\PegawaiController as UserPegawaiController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\SekolahController as UserSekolahController;
@@ -23,6 +25,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('sekolah', AdminSekolahController::class);
 
     Route::resource('users', UserController::class);
+
+    Route::resource('link-ijazah', AdminLinkIjazahController::class);
 
     Route::resource('siswa', AdminSiswaController::class);
     Route::post('siswa/import', [AdminSiswaController::class, 'import'])->name('siswa.import');
@@ -63,6 +67,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {
     Route::resource('sekolah', UserSekolahController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
+    Route::get('link-ijazah', [UserLinkIjazahController::class, 'index'])
+        ->name('link-ijazah.index');
     Route::post('siswa/import', [UserSiswaController::class, 'import'])->name('siswa.import');
     Route::get('siswa/template', [UserSiswaController::class, 'download'])->name('siswa.download');
     Route::resource('siswa', UserSiswaController::class);

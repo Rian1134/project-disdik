@@ -74,7 +74,6 @@
                 <ul class="mt-3 space-y-2 text-sm text-blue-200">
                     <li><a href="{{ route('home') }}#beranda" class="hover:text-white">Beranda</a></li>
                     <li><a href="{{ route('home') }}#statistik" class="hover:text-white">Statistik</a></li>
-                    <li><a href="{{ route('home') }}#fitur" class="hover:text-white">Fitur</a></li>
                     <li><a href="{{ route('login') }}" class="hover:text-white">Masuk</a></li>
                 </ul>
             </div>

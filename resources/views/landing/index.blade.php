@@ -37,14 +37,14 @@
 
             <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
                 <x-button href="{{ route('login') }}" size="lg" class="w-full sm:w-auto">Masuk ke Aplikasi</x-button>
-                <x-button href="#grafik" variant="light" size="lg" class="w-full sm:w-auto">Lihat
-                    Grafik</x-button>
+                <x-button href="#statistik" variant="light" size="lg" class="w-full sm:w-auto">Lihat
+                    Statistik</x-button>
             </div>
         </div>
     </section>
 
     {{-- Statistik: kartu menimpa bagian bawah hero --}}
-    <section id="statistik" class="relative z-10 mx-auto -mt-20 max-w-6xl scroll-mt-4 px-4 pb-14 sm:-mt-24 sm:pb-20">
+    <section class="relative z-10 mx-auto -mt-20 max-w-6xl scroll-mt-4 px-4 pb-14 sm:-mt-24 sm:pb-20">
         @php
             $items = [
                 [
@@ -96,7 +96,7 @@
     </section>
 
     {{-- Grafik ringkasan --}}
-    <section id="grafik" class="scroll-mt-20 bg-white py-14 dark:bg-gray-800 sm:py-20">
+    <section id="statistik" class="scroll-mt-20 bg-white py-14 dark:bg-gray-800 sm:py-20">
         @php
             // [id canvas, judul, ikon, data, satuan, warna khusus per label, jenis grafik, ubin ikon]
             $grafiks = [

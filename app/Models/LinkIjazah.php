@@ -8,6 +8,6 @@ class LinkIjazah extends Model
 {
     protected $fillable = [
         'tahun',
-        'ulr',
+        'url',
     ];
 }
