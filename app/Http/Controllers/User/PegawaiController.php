@@ -9,6 +9,7 @@ use App\Models\Sekolah;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PegawaiController extends Controller
@@ -54,7 +55,7 @@ class PegawaiController extends Controller
     {
         $sekolah = $this->sekolahSaya();
 
-        $data = $request->validate(PegawaiImport::rules(), [], PegawaiImport::labels());
+        $data = $this->validasi($request);
 
         Pegawai::create($data + [
             'sekolah_id' => $sekolah->id,
@@ -122,7 +123,7 @@ class PegawaiController extends Controller
     {
         $this->pastikanMilikSendiri($pegawai);
 
-        $pegawai->update($request->validate(PegawaiImport::rules(), [], PegawaiImport::labels()));
+        $pegawai->update($this->validasi($request));
 
         return redirect()->route('user.pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
     }
@@ -191,6 +192,28 @@ class PegawaiController extends Controller
     }
 
     /**
+     * Validasi form manual: aturan import + golongan & mata pelajaran berupa pilihan.
+     * Mata pelajaran wajib untuk tugas Guru Mapel dan dikosongkan untuk tugas lain.
+     */
+    private function validasi(Request $request): array
+    {
+        $data = $request->validate(
+            array_merge(PegawaiImport::rules(), [
+                'golongan' => ['nullable', Rule::in(Pegawai::GOLONGAN)],
+                'mata_pelajaran' => ['nullable', 'required_if:tugas,Guru Mapel', Rule::in(Pegawai::MATA_PELAJARAN)],
+            ]),
+            [],
+            PegawaiImport::labels() + ['golongan' => 'Golongan', 'mata_pelajaran' => 'Mata Pelajaran']
+        );
+
+        if (($data['tugas'] ?? null) !== 'Guru Mapel') {
+            $data['mata_pelajaran'] = null;
+        }
+
+        return $data;
+    }
+
+    /**
      * Pilihan dropdown untuk form (value => label).
      */
     private function opsi(): array
@@ -198,8 +221,10 @@ class PegawaiController extends Controller
         return [
             'jenis_kelamin' => ['L' => 'Laki-laki', 'P' => 'Perempuan'],
             'agama' => array_combine(Pegawai::AGAMA, Pegawai::AGAMA),
+            'golongan' => array_combine(Pegawai::GOLONGAN, Pegawai::GOLONGAN),
             'jabatan' => array_combine(Pegawai::JABATAN, Pegawai::JABATAN),
             'tugas' => array_combine(Pegawai::TUGAS, Pegawai::TUGAS),
+            'mata_pelajaran' => array_combine(Pegawai::MATA_PELAJARAN, Pegawai::MATA_PELAJARAN),
             'status_kepegawaian' => array_combine(Pegawai::STATUS_KEPEGAWAIAN, Pegawai::STATUS_KEPEGAWAIAN),
             'pendidikan' => array_combine(Pegawai::PENDIDIKAN, Pegawai::PENDIDIKAN),
         ];

@@ -36,9 +36,17 @@ class SekolahController extends Controller
         $grafikStatus = $sekolah?->pegawais()
             ->selectRaw('status_kepegawaian as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
 
+        // Jumlah guru per mata pelajaran (hanya tugas Guru Mapel), terbanyak di atas
+        $grafikMapel = $sekolah?->pegawais()
+            ->where('tugas', 'Guru Mapel')
+            ->whereNotNull('mata_pelajaran')
+            ->where('mata_pelajaran', '!=', '')
+            ->selectRaw('mata_pelajaran as label, count(*) as total')
+            ->groupBy('label')->orderByDesc('total')->orderBy('label')->pluck('total', 'label');
+
         return view('user.sekolah.index', compact(
             'sekolah', 'siswas', 'pegawais', 'prestasis',
-            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus'
+            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus', 'grafikMapel'
         ));
     }
 

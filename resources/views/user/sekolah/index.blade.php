@@ -383,7 +383,7 @@
                             class="bi bi-award {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Status
                         Golongan</span>
                 </x-slot:header>
-                <div class="mx-auto h-56 max-w-xs sm:h-64">
+                <div class="relative h-56 sm:h-64">
                     <canvas id="grafikGolongan"></canvas>
                 </div>
             </x-card>
@@ -399,6 +399,20 @@
                 </div>
             </x-card>
         </div>
+
+        <x-card>
+            <x-slot:header>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="{{ $judulKartu }}"><i
+                            class="bi bi-journal-bookmark {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i>
+                        Guru per Mata Pelajaran</span>
+                    <x-badge variant="secondary" pill>{{ $grafikMapel->sum() }} guru mapel</x-badge>
+                </div>
+            </x-slot:header>
+            <div class="relative h-64">
+                <canvas id="grafikMapel"></canvas>
+            </div>
+        </x-card>
 
         <x-card>
             <x-slot:header>
@@ -449,17 +463,41 @@
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
         <script>
-            Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#d1d5db' : '#4b5563';
+            const gelap = () => document.documentElement.classList.contains('dark');
 
-            const palet = ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'];
+            Chart.defaults.font.family = 'inherit';
+            Chart.defaults.font.size = 12;
+            Chart.defaults.color = gelap() ? '#cbd5e1' : '#475569';
+            Chart.defaults.animation.duration = 900;
+            Chart.defaults.animation.easing = 'easeOutQuart';
 
-            // Plugin: angka di tiap irisan + total di tengah donat
+            // Palet: emerald, sky, amber, rose, violet, teal, pink, indigo, lime, slate
+            const palet = ['#10b981', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#14b8a6', '#ec4899', '#6366f1',
+                '#84cc16', '#64748b'
+            ];
+
+            const tooltipDasar = () => ({
+                backgroundColor: gelap() ? '#0f172a' : '#1e293b',
+                titleColor: '#fff',
+                bodyColor: '#e2e8f0',
+                padding: 10,
+                cornerRadius: 10,
+                boxPadding: 4,
+                usePointStyle: true,
+            });
+
+            const kosong = (el, ikon, teks) => {
+                el.parentElement.innerHTML =
+                    '<div class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400">' +
+                    '<i class="bi ' + ikon + ' me-2 text-lg"></i>' + teks + '</div>';
+            };
+
+            // Plugin donat: angka di tiap irisan + total di tengah
             const angka = (judul) => ({
                 id: 'angka',
                 afterDatasetsDraw(chart) {
                     const ctx = chart.ctx;
                     const data = chart.data.datasets[0].data;
-                    const gelap = document.documentElement.classList.contains('dark');
 
                     ctx.save();
                     ctx.textAlign = 'center';
@@ -476,38 +514,204 @@
                     const a = chart.chartArea;
                     const x = (a.left + a.right) / 2;
                     const y = (a.top + a.bottom) / 2;
-                    ctx.fillStyle = gelap ? '#f1f5f9' : '#1e293b';
-                    ctx.font = '700 24px sans-serif';
-                    ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 7);
-                    ctx.fillStyle = gelap ? '#94a3b8' : '#64748b';
-                    ctx.font = '400 11px sans-serif';
+                    ctx.fillStyle = gelap() ? '#f1f5f9' : '#1e293b';
+                    ctx.font = '800 28px sans-serif';
+                    ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 8);
+                    ctx.fillStyle = gelap() ? '#94a3b8' : '#64748b';
+                    ctx.font = '500 11px sans-serif';
                     ctx.fillText(judul, x, y + 14);
                     ctx.restore();
                 },
             });
 
-            // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
-            const donat = (id, data, judul, warnaLabel = {}) => new Chart(document.getElementById(id), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.entries(data).map(([k, v]) => `${k} (${v})`),
-                    datasets: [{
-                        data: Object.values(data),
-                        backgroundColor: Object.keys(data).map((k, i) => warnaLabel[k] ?? palet[i % palet
-                            .length]),
-                    }],
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
+            // Plugin batang: angka di ujung tiap batang
+            const nilaiBatang = (mendatar) => ({
+                id: 'nilaiBatang',
+                afterDatasetsDraw(chart) {
+                    const ctx = chart.ctx;
+                    const data = chart.data.datasets[0].data;
+
+                    ctx.save();
+                    ctx.fillStyle = gelap() ? '#f1f5f9' : '#1e293b';
+                    ctx.font = '700 12px sans-serif';
+                    chart.getDatasetMeta(0).data.forEach((batang, i) => {
+                        if (mendatar) {
+                            ctx.textAlign = 'left';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(data[i], batang.x + 8, batang.y);
+                        } else {
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillText(data[i], batang.x, batang.y - 6);
                         }
-                    },
+                    });
+                    ctx.restore();
                 },
-                plugins: [angka(judul)],
             });
+
+            // Donat: irisan membulat, jarak antar irisan, membesar saat disorot, tooltip dengan persen.
+            // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
+            const donat = (id, data, judul, warnaLabel = {}) => {
+                const el = document.getElementById(id);
+                const label = Object.keys(data);
+                const nilai = Object.values(data);
+                const total = nilai.reduce((jumlah, n) => jumlah + n, 0);
+
+                if (!total) return kosong(el, 'bi-pie-chart', 'Belum ada data');
+
+                return new Chart(el, {
+                    type: 'doughnut',
+                    data: {
+                        labels: label.map((k, i) => `${k} (${nilai[i]})`),
+                        datasets: [{
+                            data: nilai,
+                            backgroundColor: label.map((k, i) => warnaLabel[k] ?? palet[i % palet.length]),
+                            borderWidth: 0,
+                            borderRadius: 8,
+                            spacing: 4,
+                            hoverOffset: 10,
+                        }],
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        cutout: '68%',
+                        layout: {
+                            padding: 8
+                        },
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 8,
+                                    padding: 14
+                                },
+                            },
+                            tooltip: {
+                                ...tooltipDasar(),
+                                callbacks: {
+                                    label: (c) =>
+                                        ` ${label[c.dataIndex]}: ${c.parsed} (${Math.round(c.parsed / total * 100)}%)`,
+                                },
+                            },
+                        },
+                    },
+                    plugins: [angka(judul)],
+                });
+            };
+
+            // Batang: gradien warna, ujung membulat, angka di ujung batang.
+            // mendatar = true cocok untuk label panjang (misalnya mata pelajaran).
+            const batang = (id, data, {
+                mendatar = false,
+                warna = 0,
+                satuan = 'pegawai'
+            } = {}) => {
+                const el = document.getElementById(id);
+                const label = Object.keys(data);
+                const nilai = Object.values(data);
+
+                if (!nilai.reduce((jumlah, n) => jumlah + n, 0)) {
+                    return kosong(el, 'bi-bar-chart', 'Belum ada data');
+                }
+
+                // Grafik mendatar menyesuaikan tinggi dengan banyaknya batang
+                if (mendatar) {
+                    el.parentElement.style.height = Math.max(240, label.length * 38 + 40) + 'px';
+                }
+
+                const gradien = (c) => {
+                    const warnaDasar = palet[(warna + c.dataIndex) % palet.length];
+                    const area = c.chart.chartArea;
+                    if (!area) return warnaDasar;
+                    const g = mendatar ?
+                        c.chart.ctx.createLinearGradient(area.left, 0, area.right, 0) :
+                        c.chart.ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                    g.addColorStop(0, warnaDasar + '66');
+                    g.addColorStop(1, warnaDasar);
+                    return g;
+                };
+
+                const garis = gelap() ? 'rgba(148,163,184,.15)' : 'rgba(100,116,139,.15)';
+                const sumbuNilai = {
+                    beginAtZero: true,
+                    grace: '12%',
+                    ticks: {
+                        precision: 0
+                    },
+                    grid: {
+                        color: garis
+                    },
+                    border: {
+                        display: false
+                    },
+                };
+                const sumbuLabel = {
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        display: false
+                    },
+                    ticks: {
+                        // label panjang dipotong; nama lengkap tampil di tooltip
+                        callback(nilaiTik) {
+                            const teks = this.getLabelForValue(nilaiTik);
+                            return teks.length > 24 ? teks.slice(0, 23) + '…' : teks;
+                        },
+                    },
+                };
+
+                return new Chart(el, {
+                    type: 'bar',
+                    data: {
+                        labels: label,
+                        datasets: [{
+                            data: nilai,
+                            backgroundColor: gradien,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            maxBarThickness: mendatar ? 26 : 44,
+                            categoryPercentage: 0.8,
+                        }],
+                    },
+                    options: {
+                        indexAxis: mendatar ? 'y' : 'x',
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: mendatar ? {
+                                right: 28
+                            } : {
+                                top: 22
+                            }
+                        },
+                        scales: mendatar ? {
+                            x: sumbuNilai,
+                            y: sumbuLabel
+                        } : {
+                            x: sumbuLabel,
+                            y: sumbuNilai
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                ...tooltipDasar(),
+                                callbacks: {
+                                    label: (c) => ` ${c.parsed[mendatar ? 'x' : 'y']} ${satuan}`,
+                                },
+                            },
+                        },
+                    },
+                    plugins: [nilaiBatang(mendatar)],
+                });
+            };
 
             donat('grafikJk', @json($grafikJk), 'Siswa', {
                 'Laki-laki': '#3b82f6',
@@ -515,8 +719,15 @@
             });
             donat('grafikKelas', @json($grafikKelas), 'Siswa');
             donat('grafikJabatan', @json($grafikJabatan), 'Pegawai');
-            donat('grafikGolongan', @json($grafikGolongan), 'Pegawai');
+            batang('grafikGolongan', @json($grafikGolongan), {
+                warna: 2
+            });
             donat('grafikStatus', @json($grafikStatus), 'Pegawai');
+            batang('grafikMapel', @json($grafikMapel), {
+                mendatar: true,
+                warna: 4,
+                satuan: 'guru'
+            });
 
             // Paginasi di browser: tampilkan 5 baris per halaman.
             function paginasi(idIsi, idInfo, idPager, nama, perHalaman = 5) {

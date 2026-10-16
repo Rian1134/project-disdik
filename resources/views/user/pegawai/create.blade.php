@@ -86,7 +86,7 @@
 
                         <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama')" required />
                         <x-form.input name="nik" label="NIK" :value="old('nik')" required />
-                        <x-form.input name="nip" label="NIP/NIPPPK/NIPPPKPW" helper="Kosongkan jika tidak ada."
+                        <x-form.input name="nip" label="NIP/NIPPPK" helper="Kosongkan jika tidak ada."
                             :value="old('nip')" />
                         <x-form.select name="jenis_kelamin" label="Jenis Kelamin" placeholder="Pilih jenis kelamin"
                             :options="$opsi['jenis_kelamin']" :value="old('jenis_kelamin')" required />
@@ -103,8 +103,8 @@
                         <h3 class="{{ $bagian }} mt-2"><i class="bi bi-briefcase {{ $ikonBagian }}"></i> Kepegawaian
                         </h3>
 
-                        <x-form.input name="golongan" label="Golongan" helper="Contoh: III/a. Kosongkan jika tidak ada."
-                            :value="old('golongan')" />
+                        <x-form.select name="golongan" label="Golongan"
+                            placeholder="Pilih golongan (kosongkan jika tidak ada)" :options="$opsi['golongan']" :value="old('golongan')" />
                         <x-form.input name="pangkat" label="Pangkat" helper="Kosongkan jika tidak ada."
                             :value="old('pangkat')" />
                         <x-form.input name="terhitung_mulai_tanggal" label="TMT di Sekolah Ini" type="date"
@@ -113,6 +113,8 @@
                             :value="old('jabatan')" required />
                         <x-form.select name="tugas" label="Tugas" placeholder="Pilih tugas" :options="$opsi['tugas']"
                             :value="old('tugas')" required />
+                        <x-form.select name="mata_pelajaran" label="Mata Pelajaran (khusus Guru Mapel)"
+                            placeholder="Pilih mata pelajaran" :options="$opsi['mata_pelajaran']" :value="old('mata_pelajaran')" />
                         <x-form.select name="status_kepegawaian" label="Status Kepegawaian" placeholder="Pilih status"
                             :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian')" required />
 

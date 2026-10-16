@@ -30,6 +30,7 @@ return new class extends Migration
             $table->date('terhitung_mulai_tanggal');
             $table->string('jabatan');
             $table->string('tugas');
+            $table->string('mata_pelajaran')->nullable();
             $table->string('status_kepegawaian');
             $table->string('pendidikan_terakhir');
             $table->string('unit_satuan_pendidikan_terakhir');

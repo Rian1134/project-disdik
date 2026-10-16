@@ -16,17 +16,16 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
  * Import template-pegawai.xlsx (sheet "Data Pegawai").
  * - Sekolah dipilih di form upload (dikirim lewat constructor), bukan dari isi file.
  * - Header ada di baris 1, data pegawai dibaca mulai baris ke-2.
+ * - Kolom "Mata Pelajaran" ada di kolom N (setelah Tugas); template lama tanpa kolom ini tetap diterima.
  * Semua baris divalidasi dulu; kalau ada yang salah, tidak ada data yang tersimpan.
  */
-class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownSheets
+class PegawaiImport implements SkipsUnknownSheets, ToCollection, WithMultipleSheets
 {
     use MembacaTanggal;
 
     private const BARIS_DATA = 2;
 
-    public function __construct(private int $sekolahId)
-    {
-    }
+    public function __construct(private int $sekolahId) {}
 
     /**
      * Hanya baca sheet "Data Pegawai". Tanpa ini Laravel Excel ikut membaca sheet
@@ -48,6 +47,11 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
 
         $simpan = [];
         $error = [];
+
+        // Template baru punya kolom "Mata Pelajaran" di kolom N (setelah Tugas), sehingga kolom
+        // sesudahnya bergeser satu. Template lama (tanpa kolom itu) tetap dibaca seperti semula.
+        $adaMapel = strtolower($this->teks($rows[0][13] ?? null)) === 'mata pelajaran';
+        $g = $adaMapel ? 1 : 0;
 
         foreach ($rows->slice(self::BARIS_DATA - 1)->values() as $i => $row) {
             $v = fn (int $k) => $this->teks($row[$k] ?? null);
@@ -73,17 +77,24 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
                 'terhitung_mulai_tanggal' => $this->tanggal($v(10)),
                 'jabatan' => $v(11),
                 'tugas' => $v(12),
-                'status_kepegawaian' => $v(13),
-                'pendidikan_terakhir' => $v(14),
-                'unit_satuan_pendidikan_terakhir' => $v(15),
+                'mata_pelajaran' => $adaMapel ? ($v(13) ?: null) : null,
+                'status_kepegawaian' => $v(13 + $g),
+                'pendidikan_terakhir' => $v(14 + $g),
+                'unit_satuan_pendidikan_terakhir' => $v(15 + $g),
             ];
+
+            // Mata pelajaran hanya berlaku untuk tugas Guru Mapel
+            if ($data['tugas'] !== 'Guru Mapel') {
+                $data['mata_pelajaran'] = null;
+            }
 
             $validator = Validator::make($data, self::rules(), self::pesan(), self::labels());
 
             if ($validator->fails()) {
                 foreach ($validator->errors()->all() as $pesan) {
-                    $error[] = 'Baris ' . ($i + self::BARIS_DATA) . ': ' . $pesan;
+                    $error[] = 'Baris '.($i + self::BARIS_DATA).': '.$pesan;
                 }
+
                 continue;
             }
 
@@ -97,7 +108,7 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
         if ($error) {
             $tampil = array_slice($error, 0, 10);
             if (count($error) > 10) {
-                $tampil[] = 'Dan ' . (count($error) - 10) . ' kesalahan lainnya.';
+                $tampil[] = 'Dan '.(count($error) - 10).' kesalahan lainnya.';
             }
             throw ValidationException::withMessages(['file' => $tampil]);
         }
@@ -152,6 +163,7 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
             'status_kepegawaian' => ['required', Rule::in(Pegawai::STATUS_KEPEGAWAIAN)],
             'pendidikan_terakhir' => ['required', Rule::in(Pegawai::PENDIDIKAN)],
             'unit_satuan_pendidikan_terakhir' => ['required', 'string', 'max:255'],
+            'mata_pelajaran' => ['nullable', 'required_if:tugas,Guru Mapel', Rule::in(Pegawai::MATA_PELAJARAN)],
         ];
     }
 
@@ -174,6 +186,7 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
             'status_kepegawaian' => 'Status Kepegawaian',
             'pendidikan_terakhir' => 'Pendidikan Terakhir',
             'unit_satuan_pendidikan_terakhir' => 'Unit Satuan Pendidikan Terakhir',
+            'mata_pelajaran' => 'Mata Pelajaran',
         ];
     }
 
@@ -181,6 +194,7 @@ class PegawaiImport implements ToCollection, WithMultipleSheets, SkipsUnknownShe
     {
         return [
             'required' => ':attribute wajib diisi.',
+            'mata_pelajaran.required_if' => 'Mata Pelajaran wajib diisi untuk tugas Guru Mapel.',
             'in' => ':attribute tidak sesuai pilihan di template.',
             'max' => ':attribute terlalu panjang.',
             'tanggal_lahir.required' => 'Tempat, Tanggal Lahir harus diisi, contoh: Lahat, 12 Mei 1985.',
