@@ -24,10 +24,6 @@
             <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Data Sekolah</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">Daftar sekolah beserta jumlah guru, TU, dan siswa</p>
         </div>
-        <a href="{{ route('admin.sekolah.create') }}"
-            class="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">
-            <i class="bi bi-plus-lg"></i> Tambah Sekolah
-        </a>
     </div>
 
     {{-- Kartu statistik --}}

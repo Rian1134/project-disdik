@@ -22,7 +22,8 @@ Route::post('login', [AuthController::class, 'login'])->name('login.store');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('sekolah', AdminSekolahController::class);
+
+    Route::resource('sekolah', AdminSekolahController::class)->only(['index','edit', 'update', 'destroy']);
 
     Route::resource('users', UserController::class);
 
