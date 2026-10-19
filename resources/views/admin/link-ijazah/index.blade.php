@@ -25,7 +25,9 @@
 
         <x-card>
             <x-slot:header>Lihat di Synology</x-slot:header>
-            <x-button href='{{ url('https://gofile.me/7Hsao/nEhyuHEB0') }}' variant="primary"><i class="bi bi-eye"></i> Lihat hasil upload</x-button>
+            <x-button href="https://gofile.me/7Hsao/nEhyuHEB0" variant="primary">
+                <i class="bi bi-eye"></i> Lihat hasil upload
+            </x-button>
         </x-card>
 
         {{-- Daftar link --}}
