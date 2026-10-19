@@ -1,0 +1,32 @@
+---
+deployment:
+  tasks:
+    # Ganti USERNAME dengan username cPanel kamu,
+    # dan "laravel_app" dengan nama folder project di server.
+    - export DEPLOYPATH=/home/simsarpr/project-sarana/
+
+    # Salin seluruh isi repo ke folder deploy
+    - /bin/cp -R ./* $DEPLOYPATH
+    - /bin/cp -R ./.env $DEPLOYPATH 2>/dev/null || true
+
+    # Install dependency Composer (mode production)
+    # - cd $DEPLOYPATH && php ~/composer.phar install --no-dev --optimize-autoloader
+
+    # Jalankan migration database
+    - cd $DEPLOYPATH && php artisan migrate --force
+
+    # Bersihkan cache lama sebelum cache ulang
+    - cd $DEPLOYPATH && php artisan config:clear
+    - cd $DEPLOYPATH && php artisan view:clear
+    - cd $DEPLOYPATH && php artisan cache:clear
+
+    # Cache config, route, & view untuk performa production
+    - cd $DEPLOYPATH && php artisan config:cache
+    - cd $DEPLOYPATH && php artisan route:cache
+    - cd $DEPLOYPATH && php artisan view:cache
+
+    # Set permission folder storage & cache
+    - chmod -R 775 $DEPLOYPATH/storage $DEPLOYPATH/bootstrap/cache
+
+    # Buat symbolic link storage (php artisan storage:link) jika belum ada
+    - cd $DEPLOYPATH && php artisan storage:link || true

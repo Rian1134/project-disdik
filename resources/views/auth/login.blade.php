@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIMADIK</title>
+    <title>Login - SIMANDIK</title>
     <link rel="icon" type="image/webp" href="{{ asset('assets/img/icon-web.webp') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
@@ -62,7 +62,7 @@
                 </p>
             </div>
 
-            <p class="text-xs text-blue-200">&copy; {{ date('Y') }} SIMADIK. Seluruh hak cipta dilindungi.</p>
+            <p class="text-xs text-blue-200">&copy; {{ date('Y') }} SIMANDIK. Seluruh hak cipta dilindungi.</p>
         </section>
 
         {{-- ===== Sisi form ===== --}}
@@ -88,7 +88,7 @@
                         <img src="{{ asset('assets/img/icon-web.webp') }}" alt="Logo Tut Wuri Handayani"
                             class="h-full w-full object-contain">
                     </span>
-                    <h1 class="mt-3 text-2xl font-extrabold tracking-wide drop-shadow">SIMADIK</h1>
+                    <h1 class="mt-3 text-2xl font-extrabold tracking-wide drop-shadow">SIMANDIK</h1>
                     <p class="mx-auto mt-1 max-w-xs text-xs text-blue-100 sm:text-sm">
                         Sistem Informasi Manajemen Akademik &amp; Pendidikan
                     </p>
