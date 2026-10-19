@@ -12,7 +12,7 @@ class ProfileController extends Controller
 {
     private const UKURAN = 400; // sisi logo (px), hasil persegi
 
-    private const FOLDER = 'uploads/logo'; // relatif terhadap folder public
+    private const FOLDER = 'storage/uploads/logo'; // relatif terhadap folder public
 
     /**
      * Halaman profil (hanya tampilan).
