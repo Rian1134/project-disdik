@@ -37,20 +37,23 @@
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="flex flex-col gap-2">
                             <span class="text-sm font-medium">SK Pendirian Sekolah</span>
-                            <x-button href="#" variant="light" size="sm" target="_blank">
+                            <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/fX2sL669t') }}"
+                                variant="light" size="sm" target="_blank">
                                 <i class="bi bi-upload me-1 text-indigo-600 dark:text-indigo-400"></i> Upload SK Pendirian
                             </x-button>
                         </div>
                         <div class="flex flex-col gap-2">
                             <span class="text-sm font-medium">SK Izin Operasional</span>
-                            <x-button href="#" variant="light" size="sm" target="_blank">
+                            <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/9hwARFvH5') }}"
+                                variant="light" size="sm" target="_blank">
                                 <i class="bi bi-upload me-1 text-indigo-600 dark:text-indigo-400"></i> Upload SK Izin
                                 Operasional
                             </x-button>
                         </div>
                         <div class="flex flex-col gap-2">
                             <span class="text-sm font-medium">SK Akreditasi Sekolah</span>
-                            <x-button href="#" variant="light" size="sm" target="_blank">
+                            <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg') }}"
+                                variant="light" size="sm" target="_blank">
                                 <i class="bi bi-upload me-1 text-indigo-600 dark:text-indigo-400"></i> Upload SK Akreditasi
                             </x-button>
                         </div>
@@ -163,7 +166,8 @@
         </x-card>
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <x-button href="{{ route('admin.sekolah.index') }}" variant="light" class="w-full sm:w-auto">Batal</x-button>
+            <x-button href="{{ route('admin.sekolah.index') }}" variant="light"
+                class="w-full sm:w-auto">Batal</x-button>
             <x-button type="submit" class="w-full sm:w-auto">
                 <i class="bi bi-check-lg me-1"></i> Simpan
             </x-button>

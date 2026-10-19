@@ -12,8 +12,8 @@
 
         $identitas = [
             ['Nama Sekolah', $sekolah->nama_sekolah],
-            ['Nomor Statistik Sekolah', $sekolah->nss],
-            ['Nomor Pokok Sekolah Nasional', $sekolah->npsn],
+            ['NSS', $sekolah->nss],
+            ['NPSN', $sekolah->npsn],
             ['Nama Kepala Sekolah', $sekolah->nama_kepala_sekolah],
             ['Status Akreditasi', $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : $sekolah->akreditasi],
             ['Status Kepemilikan', $sekolah->status_sekolah],
@@ -43,7 +43,11 @@
             ['Sumber Air', $isi($sekolah->sumber_air)],
         ];
 
-        $dokumen = ['SK Pendirian Sekolah', 'SK Izin Operasional', 'SK Akreditasi Sekolah'];
+        $dokumen = [
+                'SK Pendirian Sekolah' => 'https://gofile.me/7Hsao/Nidxu2cSq',
+                'SK Izin Operasional' => 'https://gofile.me/7Hsao/2kcagbEMI',
+                'SK Akreditasi Sekolah' => 'https://gofile.me/7Hsao/Nidxu2cSq',
+            ];
 
         $stat = [
             [
@@ -276,14 +280,14 @@
                         Dokumen SK</span>
                 </x-slot:header>
                 <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    @foreach ($dokumen as $nama)
+                    @foreach ($dokumen as $nama => $link)
                         <div class="flex items-center justify-between gap-3 py-2.5">
                             <dt class="flex min-w-0 items-center gap-2 text-gray-600 dark:text-gray-300">
                                 <i class="bi bi-file-earmark-pdf shrink-0 text-base text-rose-500"></i>
                                 <span class="truncate">{{ $nama }}</span>
                             </dt>
                             <dd>
-                                <x-button href="#" size="xs" target="_blank">Lihat</x-button>
+                                <x-button href="{{ $link }}" size="xs" target="_blank">Lihat</x-button>
                             </dd>
                         </div>
                     @endforeach
@@ -329,7 +333,7 @@
                 <span class="font-semibold">
                     <i class="bi bi-people-fill me-2 text-emerald-500"></i>Daftar Siswa
                     <span
-                        class="ms-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">{{ $siswas->total() }}</span>
+                        class="ms-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">{{ $siswas->count() }}</span>
                 </span>
                 <div class="flex gap-2">
                     <x-button href="{{ route('admin.siswa.sekolah', $sekolah->id) }}" variant="light" size="sm">
@@ -342,6 +346,7 @@
             </div>
         </x-slot:header>
 
+        <div id="isiSiswa" class="overflow-x-auto">
         <x-table striped hover bordered class="text-sm">
             <x-slot:head>
                 <tr>
@@ -358,7 +363,7 @@
 
             @forelse ($siswas as $siswa)
                 <x-table.row>
-                    <x-table.cell class="text-center">{{ $siswas->firstItem() + $loop->index }}</x-table.cell>
+                    <x-table.cell class="text-center">{{ $loop->iteration }}</x-table.cell>
                     <x-table.cell class="whitespace-nowrap">{{ $siswa->nik }}</x-table.cell>
                     <x-table.cell class="whitespace-nowrap">{{ $siswa->nisn }}</x-table.cell>
                     <x-table.cell
@@ -386,8 +391,12 @@
                 <x-table.empty colspan="8" />
             @endforelse
         </x-table>
+        </div>
 
-        <x-pagination :paginator="$siswas" class="mt-4" />
+        <div class="mt-3 flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p id="infoSiswa" class="text-sm text-gray-500 dark:text-gray-400"></p>
+            <div id="pagerSiswa" class="flex flex-wrap items-center gap-1"></div>
+        </div>
     </x-card>
 
     {{-- ===== Data pegawai ===== --}}
@@ -415,7 +424,7 @@
                         class="bi bi-award {{ $ikonKartu }} text-amber-600 dark:text-amber-400"></i> Status
                     Golongan</span>
             </x-slot:header>
-            <div class="mx-auto h-56 max-w-xs sm:h-64">
+            <div class="relative h-56 sm:h-64">
                 <canvas id="grafikGolongan"></canvas>
             </div>
         </x-card>
@@ -431,6 +440,20 @@
             </div>
         </x-card>
     </div>
+
+    <x-card>
+        <x-slot:header>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="{{ $judulKartu }}"><i
+                        class="bi bi-journal-bookmark {{ $ikonKartu }} text-violet-600 dark:text-violet-400"></i>
+                    Guru per Mata Pelajaran</span>
+                <x-badge variant="secondary" pill>{{ $grafikMapel->sum() }} guru mapel</x-badge>
+            </div>
+        </x-slot:header>
+        <div class="relative h-64">
+            <canvas id="grafikMapel"></canvas>
+        </div>
+    </x-card>
 
     <x-card>
         <x-slot:header>
@@ -455,6 +478,7 @@
             </div>
         </x-slot:header>
 
+        <div id="isiPegawai" class="overflow-x-auto">
         <x-table striped hover bordered class="text-sm">
             <x-slot:head>
                 <tr>
@@ -471,7 +495,7 @@
 
             @forelse ($pegawais as $pegawai)
                 <x-table.row>
-                    <x-table.cell class="text-center">{{ $pegawais->firstItem() + $loop->index }}</x-table.cell>
+                    <x-table.cell class="text-center">{{ $loop->iteration }}</x-table.cell>
                     <x-table.cell class="whitespace-nowrap">{{ $pegawai->nip ?: '-' }}</x-table.cell>
                     <x-table.cell
                         class="font-medium text-indigo-700 dark:text-indigo-300">{{ $pegawai->nama }}</x-table.cell>
@@ -503,23 +527,51 @@
                 <x-table.empty colspan="8" />
             @endforelse
         </x-table>
+        </div>
 
-        <x-pagination :paginator="$pegawais" class="mt-4" />
+        <div class="mt-3 flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p id="infoPegawai" class="text-sm text-gray-500 dark:text-gray-400"></p>
+            <div id="pagerPegawai" class="flex flex-wrap items-center gap-1"></div>
+        </div>
     </x-card>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        Chart.defaults.color = document.documentElement.classList.contains('dark') ? '#d1d5db' : '#4b5563';
+        const gelap = () => document.documentElement.classList.contains('dark');
 
-        const palet = ['#059669', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#64748b'];
+        Chart.defaults.font.family = 'inherit';
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = gelap() ? '#cbd5e1' : '#475569';
+        Chart.defaults.animation.duration = 900;
+        Chart.defaults.animation.easing = 'easeOutQuart';
 
-        // Plugin: angka di tiap irisan + total di tengah donat
+        // Palet: emerald, sky, amber, rose, violet, teal, pink, indigo, lime, slate
+        const palet = ['#10b981', '#0ea5e9', '#f59e0b', '#f43f5e', '#8b5cf6', '#14b8a6', '#ec4899', '#6366f1',
+            '#84cc16', '#64748b'
+        ];
+
+        const tooltipDasar = () => ({
+            backgroundColor: gelap() ? '#0f172a' : '#1e293b',
+            titleColor: '#fff',
+            bodyColor: '#e2e8f0',
+            padding: 10,
+            cornerRadius: 10,
+            boxPadding: 4,
+            usePointStyle: true,
+        });
+
+        const kosong = (el, ikon, teks) => {
+            el.parentElement.innerHTML =
+                '<div class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400">' +
+                '<i class="bi ' + ikon + ' me-2 text-lg"></i>' + teks + '</div>';
+        };
+
+        // Plugin donat: angka di tiap irisan + total di tengah
         const angka = (judul) => ({
             id: 'angka',
             afterDatasetsDraw(chart) {
                 const ctx = chart.ctx;
                 const data = chart.data.datasets[0].data;
-                const gelap = document.documentElement.classList.contains('dark');
 
                 ctx.save();
                 ctx.textAlign = 'center';
@@ -536,38 +588,204 @@
                 const a = chart.chartArea;
                 const x = (a.left + a.right) / 2;
                 const y = (a.top + a.bottom) / 2;
-                ctx.fillStyle = gelap ? '#f1f5f9' : '#1e293b';
-                ctx.font = '700 24px sans-serif';
-                ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 7);
-                ctx.fillStyle = gelap ? '#94a3b8' : '#64748b';
-                ctx.font = '400 11px sans-serif';
+                ctx.fillStyle = gelap() ? '#f1f5f9' : '#1e293b';
+                ctx.font = '800 28px sans-serif';
+                ctx.fillText(data.reduce((jumlah, n) => jumlah + n, 0), x, y - 8);
+                ctx.fillStyle = gelap() ? '#94a3b8' : '#64748b';
+                ctx.font = '500 11px sans-serif';
                 ctx.fillText(judul, x, y + 14);
                 ctx.restore();
             },
         });
 
-        // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
-        const donat = (id, data, judul, warnaLabel = {}) => new Chart(document.getElementById(id), {
-            type: 'doughnut',
-            data: {
-                labels: Object.entries(data).map(([k, v]) => `${k} (${v})`),
-                datasets: [{
-                    data: Object.values(data),
-                    backgroundColor: Object.keys(data).map((k, i) => warnaLabel[k] ?? palet[i % palet
-                        .length]),
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                cutout: '60%',
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+        // Plugin batang: angka di ujung tiap batang
+        const nilaiBatang = (mendatar) => ({
+            id: 'nilaiBatang',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const data = chart.data.datasets[0].data;
+
+                ctx.save();
+                ctx.fillStyle = gelap() ? '#f1f5f9' : '#1e293b';
+                ctx.font = '700 12px sans-serif';
+                chart.getDatasetMeta(0).data.forEach((batang, i) => {
+                    if (mendatar) {
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(data[i], batang.x + 8, batang.y);
+                    } else {
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(data[i], batang.x, batang.y - 6);
                     }
-                },
+                });
+                ctx.restore();
             },
-            plugins: [angka(judul)],
         });
+
+        // Donat: irisan membulat, jarak antar irisan, membesar saat disorot, tooltip dengan persen.
+        // warnaLabel: warna khusus per label (yang tidak disebut memakai palet)
+        const donat = (id, data, judul, warnaLabel = {}) => {
+            const el = document.getElementById(id);
+            const label = Object.keys(data);
+            const nilai = Object.values(data);
+            const total = nilai.reduce((jumlah, n) => jumlah + n, 0);
+
+            if (!total) return kosong(el, 'bi-pie-chart', 'Belum ada data');
+
+            return new Chart(el, {
+                type: 'doughnut',
+                data: {
+                    labels: label.map((k, i) => `${k} (${nilai[i]})`),
+                    datasets: [{
+                        data: nilai,
+                        backgroundColor: label.map((k, i) => warnaLabel[k] ?? palet[i % palet.length]),
+                        borderWidth: 0,
+                        borderRadius: 8,
+                        spacing: 4,
+                        hoverOffset: 10,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    layout: {
+                        padding: 8
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 8,
+                                padding: 14
+                            },
+                        },
+                        tooltip: {
+                            ...tooltipDasar(),
+                            callbacks: {
+                                label: (c) =>
+                                    ` ${label[c.dataIndex]}: ${c.parsed} (${Math.round(c.parsed / total * 100)}%)`,
+                            },
+                        },
+                    },
+                },
+                plugins: [angka(judul)],
+            });
+        };
+
+        // Batang: gradien warna, ujung membulat, angka di ujung batang.
+        // mendatar = true cocok untuk label panjang (misalnya mata pelajaran).
+        const batang = (id, data, {
+            mendatar = false,
+            warna = 0,
+            satuan = 'pegawai'
+        } = {}) => {
+            const el = document.getElementById(id);
+            const label = Object.keys(data);
+            const nilai = Object.values(data);
+
+            if (!nilai.reduce((jumlah, n) => jumlah + n, 0)) {
+                return kosong(el, 'bi-bar-chart', 'Belum ada data');
+            }
+
+            // Grafik mendatar menyesuaikan tinggi dengan banyaknya batang
+            if (mendatar) {
+                el.parentElement.style.height = Math.max(240, label.length * 38 + 40) + 'px';
+            }
+
+            const gradien = (c) => {
+                const warnaDasar = palet[(warna + c.dataIndex) % palet.length];
+                const area = c.chart.chartArea;
+                if (!area) return warnaDasar;
+                const g = mendatar ?
+                    c.chart.ctx.createLinearGradient(area.left, 0, area.right, 0) :
+                    c.chart.ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                g.addColorStop(0, warnaDasar + '66');
+                g.addColorStop(1, warnaDasar);
+                return g;
+            };
+
+            const garis = gelap() ? 'rgba(148,163,184,.15)' : 'rgba(100,116,139,.15)';
+            const sumbuNilai = {
+                beginAtZero: true,
+                grace: '12%',
+                ticks: {
+                    precision: 0
+                },
+                grid: {
+                    color: garis
+                },
+                border: {
+                    display: false
+                },
+            };
+            const sumbuLabel = {
+                grid: {
+                    display: false
+                },
+                border: {
+                    display: false
+                },
+                ticks: {
+                    // label panjang dipotong; nama lengkap tampil di tooltip
+                    callback(nilaiTik) {
+                        const teks = this.getLabelForValue(nilaiTik);
+                        return teks.length > 24 ? teks.slice(0, 23) + '…' : teks;
+                    },
+                },
+            };
+
+            return new Chart(el, {
+                type: 'bar',
+                data: {
+                    labels: label,
+                    datasets: [{
+                        data: nilai,
+                        backgroundColor: gradien,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        maxBarThickness: mendatar ? 26 : 44,
+                        categoryPercentage: 0.8,
+                    }],
+                },
+                options: {
+                    indexAxis: mendatar ? 'y' : 'x',
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: mendatar ? {
+                            right: 28
+                        } : {
+                            top: 22
+                        }
+                    },
+                    scales: mendatar ? {
+                        x: sumbuNilai,
+                        y: sumbuLabel
+                    } : {
+                        x: sumbuLabel,
+                        y: sumbuNilai
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            ...tooltipDasar(),
+                            callbacks: {
+                                label: (c) => ` ${c.parsed[mendatar ? 'x' : 'y']} ${satuan}`,
+                            },
+                        },
+                    },
+                },
+                plugins: [nilaiBatang(mendatar)],
+            });
+        };
 
         donat('grafikJk', @json($grafikJk), 'Siswa', {
             'Laki-laki': '#3b82f6',
@@ -575,7 +793,69 @@
         });
         donat('grafikKelas', @json($grafikKelas), 'Siswa');
         donat('grafikJabatan', @json($grafikJabatan), 'Pegawai');
-        donat('grafikGolongan', @json($grafikGolongan), 'Pegawai');
+        batang('grafikGolongan', @json($grafikGolongan), {
+            warna: 2
+        });
         donat('grafikStatus', @json($grafikStatus), 'Pegawai');
+        batang('grafikMapel', @json($grafikMapel), {
+            mendatar: true,
+            warna: 4,
+            satuan: 'guru'
+        });
+
+        // Paginasi di browser: tampilkan 5 baris per halaman.
+        function paginasi(idIsi, idInfo, idPager, nama, perHalaman = 5) {
+            const baris = [...document.querySelectorAll('#' + idIsi + ' tr')].filter(tr => !tr.closest('thead'));
+            const info = document.getElementById(idInfo);
+            const pager = document.getElementById(idPager);
+            const total = baris.length;
+            const jumlahHal = Math.max(1, Math.ceil(total / perHalaman));
+            let halaman = 1;
+
+            function tampil() {
+                const awal = (halaman - 1) * perHalaman;
+                baris.forEach((tr, i) => {
+                    tr.style.display = i >= awal && i < awal + perHalaman ? '' : 'none';
+                    tr.cells[0].textContent = i + 1;
+                });
+
+                info.textContent = total ?
+                    `Menampilkan ${awal + 1}–${Math.min(awal + perHalaman, total)} dari ${total} ${nama}` : '';
+
+                pager.innerHTML = '';
+                if (jumlahHal <= 1) return;
+
+                const tombol = (teks, tujuan, nonaktif, aktif) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = teks;
+                    b.disabled = !!nonaktif;
+                    b.className = 'min-w-9 rounded-md border px-2.5 py-1 text-sm transition ' +
+                        (aktif ? 'border-emerald-600 bg-emerald-600 text-white' :
+                            'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
+                        ) +
+                        (nonaktif ? ' cursor-not-allowed opacity-50' : '');
+                    if (!nonaktif) b.addEventListener('click', () => {
+                        halaman = tujuan;
+                        tampil();
+                    });
+                    pager.appendChild(b);
+                };
+
+                tombol('‹', halaman - 1, halaman === 1);
+                const mulai = Math.max(1, Math.min(halaman - 2, jumlahHal - 4));
+                for (let p = mulai; p <= Math.min(jumlahHal, mulai + 4); p++) tombol(String(p), p, false, p === halaman);
+                tombol('›', halaman + 1, halaman === jumlahHal);
+            }
+
+            tampil();
+        }
+
+        @if ($siswas->count())
+            paginasi('isiSiswa', 'infoSiswa', 'pagerSiswa', 'siswa');
+        @endif
+        @if ($pegawais->count())
+            paginasi('isiPegawai', 'infoPegawai', 'pagerPegawai', 'pegawai');
+        @endif
     </script>
 @endsection

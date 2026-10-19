@@ -15,6 +15,9 @@ class SekolahController extends Controller
     /** Nilai kolom jabatan yang dihitung sebagai guru (Tenaga Pendidik). "Guru" dipakai di data seeder. */
     private const JABATAN_GURU = ['Tenaga Pendidik', 'Guru'];
 
+    /** Kolom tabel pegawais yang berisi mata pelajaran yang diajar (bukan "tugas"). Sesuaikan jika namanya berbeda. */
+    private const KOLOM_MAPEL = 'mata_pelajaran';
+
     /**
      * Display a listing of the resource.
      */
@@ -84,14 +87,12 @@ class SekolahController extends Controller
         $pegawais = Pegawai::where('sekolah_id', $sekolah->id)
             ->orderByDesc('jabatan')
             ->orderBy('nama')
-            ->paginate(5, ['*'], 'pegawai_page')
-            ->withQueryString();
+            ->get();
 
         $siswas = $sekolah->siswas()
             ->orderBy('kelas')
             ->orderBy('nama_siswa')
-            ->paginate(5, ['*'], 'siswa_page')
-            ->withQueryString();
+            ->get();
 
         $prestasis = $sekolah->prestasis()->orderBy('id')->get();
 
@@ -110,10 +111,15 @@ class SekolahController extends Controller
             ->groupBy('label')->pluck('total', 'label');
         $grafikStatus = $sekolah->pegawais()
             ->selectRaw('status_kepegawaian as label, count(*) as total')->groupBy('label')->pluck('total', 'label');
+        $grafikMapel = $sekolah->pegawais()
+            ->whereIn('jabatan', self::JABATAN_GURU)
+            ->whereNotNull(self::KOLOM_MAPEL)->where(self::KOLOM_MAPEL, '!=', '')
+            ->selectRaw(self::KOLOM_MAPEL.' as label, count(*) as total')
+            ->groupBy('label')->orderByDesc('total')->pluck('total', 'label');
 
         return view('admin.sekolah.show', compact(
             'sekolah', 'guru', 'tu', 'pegawais', 'siswas', 'prestasis',
-            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus'
+            'grafikJk', 'grafikKelas', 'grafikJabatan', 'grafikGolongan', 'grafikStatus', 'grafikMapel'
         ));
     }
 

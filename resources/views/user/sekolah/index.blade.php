@@ -16,8 +16,8 @@
 
             $identitas = [
                 ['Nama Sekolah', $sekolah->nama_sekolah],
-                ['Nomor Statistik Sekolah', $sekolah->nss],
-                ['Nomor Pokok Sekolah Nasional', $sekolah->npsn],
+                ['NSS', $sekolah->nss],
+                ['NPSN', $sekolah->npsn],
                 ['Nama Kepala Sekolah', $sekolah->nama_kepala_sekolah],
                 ['Status Akreditasi', $sekolah->akreditasi === '-' ? 'Tidak Terakreditasi' : $sekolah->akreditasi],
                 ['Status Kepemilikan', $sekolah->status_sekolah],
@@ -47,7 +47,11 @@
                 ['Sumber Air', $isi($sekolah->sumber_air)],
             ];
 
-            $dokumen = ['SK Pendirian Sekolah', 'SK Izin Operasional', 'SK Akreditasi Sekolah'];
+            $dokumen = [
+                'SK Pendirian Sekolah' => 'https://gofile.me/7Hsao/Nidxu2cSq',
+                'SK Izin Operasional' => 'https://gofile.me/7Hsao/2kcagbEMI',
+                'SK Akreditasi Sekolah' => 'https://gofile.me/7Hsao/Nidxu2cSq',
+            ];
 
             $stat = [
                 [
@@ -266,14 +270,14 @@
                             Dokumen SK</span>
                     </x-slot:header>
                     <dl class="divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                        @foreach ($dokumen as $nama)
+                        @foreach ($dokumen as $nama => $link)
                             <div class="flex items-center justify-between gap-3 py-2.5">
                                 <dt class="flex min-w-0 items-center gap-2 text-gray-600 dark:text-gray-300">
                                     <i class="bi bi-file-earmark-pdf shrink-0 text-base text-rose-500"></i>
                                     <span class="truncate">{{ $nama }}</span>
                                 </dt>
                                 <dd>
-                                    <x-button href="#" size="xs" target="_blank">Lihat</x-button>
+                                    <x-button href="{{ $link }}" size="xs" target="_blank">Lihat</x-button>
                                 </dd>
                             </div>
                         @endforeach

@@ -121,19 +121,20 @@
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                             <div class="{{ $kotakUnggah }}">
                                 <span class="text-sm font-medium">SK Pendirian Sekolah</span>
-                                <x-button href="#" variant="light" size="sm" target="_blank">
+                                <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/fX2sL669t') }}" variant="light" size="sm" target="_blank">
                                     <i class="bi bi-upload me-1"></i> Upload SK Pendirian
                                 </x-button>
                             </div>
                             <div class="{{ $kotakUnggah }}">
                                 <span class="text-sm font-medium">SK Izin Operasional</span>
-                                <x-button href="#" variant="light" size="sm" target="_blank">
+                                <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/9hwARFvH5') }}" variant="light" size="sm" target="_blank">
                                     <i class="bi bi-upload me-1"></i> Upload SK Izin Operasional
                                 </x-button>
                             </div>
                             <div class="{{ $kotakUnggah }}">
                                 <span class="text-sm font-medium">SK Akreditasi Sekolah</span>
-                                <x-button href="#" variant="light" size="sm" target="_blank">
+                                <x-button href="{{ url('https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg') }}"
+                                    variant="light" size="sm" target="_blank">
                                     <i class="bi bi-upload me-1"></i> Upload SK Akreditasi
                                 </x-button>
                             </div>
