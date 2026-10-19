@@ -51,6 +51,33 @@ class SekolahController extends Controller
     }
 
     /**
+     * Form tambah profil sekolah (satu akun hanya boleh punya satu sekolah).
+     */
+    public function create()
+    {
+        if ($this->sudahPunyaSekolah()) {
+            return redirect()->route('user.sekolah.index');
+        }
+
+        return view('user.sekolah.create');
+    }
+
+    /**
+     * Simpan profil sekolah baru, otomatis terhubung ke akun yang login.
+     */
+    public function store(Request $request)
+    {
+        if ($this->sudahPunyaSekolah()) {
+            return redirect()->route('user.sekolah.index')->with('error', 'Akun Anda sudah memiliki profil sekolah.');
+        }
+
+        $sekolah = Sekolah::create($this->validated($request) + ['user_id' => Auth::id()]);
+        $this->simpanPrestasi($sekolah, $request);
+
+        return redirect()->route('user.sekolah.index')->with('success', 'Profil sekolah berhasil ditambahkan.');
+    }
+
+    /**
      * Form edit profil sekolah (hanya sekolah milik sendiri).
      */
     public function edit(Sekolah $sekolah)
