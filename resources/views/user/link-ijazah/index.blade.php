@@ -18,6 +18,7 @@
 
             <p class="text-sm text-gray-500 dark:text-gray-400">
                 <ol class="list-decimal mx-4">
+                    <li> Isi nama sekolah di bagian "name".</li>
                     <li> Pilih file yang ingin diupload.</li>
                     <li> Klik tombol "Upload".</li>
                 </ol>

@@ -4,13 +4,15 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
     private const UKURAN = 400; // sisi logo (px), hasil persegi
+
+    private const FOLDER = 'uploads/logo'; // relatif terhadap folder public
 
     /**
      * Halaman profil (hanya tampilan).
@@ -63,7 +65,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Upload logo: crop persegi, resize, simpan sebagai webp di storage/app/public/logo.
+     * Upload logo: crop persegi, resize, simpan sebagai webp di public/uploads/logo.
      */
     public function updateLogo(Request $request)
     {
@@ -74,11 +76,11 @@ class ProfileController extends Controller
         $user = $request->user();
         $this->hapusFile($user->logo);
 
-        $disk = Storage::disk('public');
+        $folder = public_path(self::FOLDER);
         $nama = 'logo-'.$user->id.'-'.time().'.webp';
 
-        $disk->makeDirectory('logo');
-        $this->simpanWebp($request->file('logo')->getPathname(), $disk->path('logo/'.$nama));
+        File::ensureDirectoryExists($folder);
+        $this->simpanWebp($request->file('logo')->getPathname(), $folder.DIRECTORY_SEPARATOR.$nama);
 
         $user->update(['logo' => $nama]);
 
@@ -124,7 +126,7 @@ class ProfileController extends Controller
     private function hapusFile(?string $nama): void
     {
         if ($nama) {
-            Storage::disk('public')->delete('logo/'.$nama);
+            File::delete(public_path(self::FOLDER.'/'.$nama));
         }
     }
 }
