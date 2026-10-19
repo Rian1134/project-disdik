@@ -71,7 +71,8 @@
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <h3
                             class="flex items-center gap-2 font-semibold text-indigo-700 dark:text-indigo-300 md:col-span-2">
-                            <i class="bi bi-person-vcard-fill"></i>Data Pribadi</h3>
+                            <i class="bi bi-person-vcard-fill"></i>Data Pribadi
+                        </h3>
 
                         <x-form.select name="sekolah_id" label="Sekolah" placeholder="Pilih sekolah" :options="$sekolahs"
                             :value="old('sekolah_id', request('sekolah_id'))" required />
@@ -93,7 +94,8 @@
 
                         <h3
                             class="mt-2 flex items-center gap-2 font-semibold text-amber-600 dark:text-amber-300 md:col-span-2">
-                            <i class="bi bi-briefcase-fill"></i>Kepegawaian</h3>
+                            <i class="bi bi-briefcase-fill"></i>Kepegawaian
+                        </h3>
 
                         <x-form.select name="golongan" label="Golongan"
                             placeholder="Pilih golongan (kosongkan jika tidak ada)" :options="$opsi['golongan']" :value="old('golongan')" />
@@ -112,7 +114,8 @@
 
                         <h3
                             class="mt-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300 md:col-span-2">
-                            <i class="bi bi-mortarboard-fill"></i>Pendidikan</h3>
+                            <i class="bi bi-mortarboard-fill"></i>Pendidikan
+                        </h3>
 
                         <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan"
                             :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir')" required />
@@ -128,4 +131,17 @@
             </x-tabs.pane>
         </x-tabs>
     </x-card>
+
+    <script>
+        const tugas = document.getElementById('tugas');
+        const mapel = document.getElementById('mata_pelajaran');
+
+        function aturMapel() {
+            mapel.disabled = !/guru mapel|waka|wakil kepala|bendahara|konseling|\bbk\b/i.test(tugas.value);
+            if (mapel.disabled) mapel.value = '';
+        }
+
+        tugas.addEventListener('change', aturMapel);
+        aturMapel();
+    </script>
 @endsection

@@ -33,8 +33,7 @@
 
                 <x-form.input name="nama" label="Nama Lengkap Beserta Gelar" :value="old('nama', $pegawai->nama)" required />
                 <x-form.input name="nik" label="NIK" :value="old('nik', $pegawai->nik)" required />
-                <x-form.input name="nip" label="NIP/NIPPPK" helper="Kosongkan jika tidak ada."
-                    :value="old('nip', $pegawai->nip)" />
+                <x-form.input name="nip" label="NIP/NIPPPK" helper="Kosongkan jika tidak ada." :value="old('nip', $pegawai->nip)" />
                 <x-form.select name="jenis_kelamin" label="Jenis Kelamin" placeholder="Pilih jenis kelamin"
                     :options="$opsi['jenis_kelamin']" :value="old('jenis_kelamin', $pegawai->jenis_kelamin)" required />
                 <x-form.select name="agama" label="Agama" placeholder="Pilih agama" :options="$opsi['agama']" :value="old('agama', $pegawai->agama)"
@@ -76,4 +75,17 @@
             </div>
         </form>
     </x-card>
+
+    <script>
+        const tugas = document.getElementById('tugas');
+        const mapel = document.getElementById('mata_pelajaran');
+
+        function aturMapel() {
+            mapel.disabled = !/guru mapel|waka|wakil kepala|bendahara|konseling|\bbk\b/i.test(tugas.value);
+            if (mapel.disabled) mapel.value = '';
+        }
+
+        tugas.addEventListener('change', aturMapel);
+        aturMapel();
+    </script>
 @endsection

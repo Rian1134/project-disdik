@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="mt-6 flex flex-wrap justify-between gap-2">
-                        <x-button href="{{ route('user.pegawai.download') }}" variant="light">
+                        <x-button href="{{ route('user.pegawai.download') }}" variant="download">
                             <i class="bi bi-download me-1"></i> Download Template
                         </x-button>
                         <div class="flex gap-2">
@@ -135,4 +135,17 @@
             </x-tabs.pane>
         </x-tabs>
     </x-card>
+
+    <script>
+        const tugas = document.getElementById('tugas');
+        const mapel = document.getElementById('mata_pelajaran');
+
+        function aturMapel() {
+            mapel.disabled = !/guru mapel|waka|wakil kepala|bendahara|konseling|\bbk\b/i.test(tugas.value);
+            if (mapel.disabled) mapel.value = '';
+        }
+
+        tugas.addEventListener('change', aturMapel);
+        aturMapel();
+    </script>
 @endsection

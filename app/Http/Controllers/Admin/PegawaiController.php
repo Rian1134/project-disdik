@@ -7,6 +7,7 @@ use App\Imports\PegawaiImport;
 use App\Models\Pegawai;
 use App\Models\Sekolah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -158,7 +159,8 @@ class PegawaiController extends Controller
 
     /**
      * Validasi form manual: aturan import + sekolah, golongan & mata pelajaran berupa pilihan.
-     * Mata pelajaran wajib untuk tugas Guru Mapel dan dikosongkan untuk tugas lain.
+     * Mata pelajaran wajib untuk tugas Guru Mapel, boleh diisi untuk Waka, Wakil Kepala, Bendahara, dan BK,
+     * dan dikosongkan untuk tugas lain.
      */
     private function validasi(Request $request): array
     {
@@ -171,7 +173,7 @@ class PegawaiController extends Controller
             PegawaiImport::labels() + ['golongan' => 'Golongan', 'mata_pelajaran' => 'Mata Pelajaran']
         );
 
-        if (($data['tugas'] ?? null) !== 'Guru Mapel') {
+        if (! Str::contains(Str::lower($data['tugas'] ?? ''), ['guru mapel', 'waka', 'wakil kepala', 'bendahara', 'konseling', 'bk'])) {
             $data['mata_pelajaran'] = null;
         }
 

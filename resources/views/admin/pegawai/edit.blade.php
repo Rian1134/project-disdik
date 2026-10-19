@@ -51,7 +51,8 @@
                     :options="$opsi['status_kepegawaian']" :value="old('status_kepegawaian', $pegawai->status_kepegawaian)" required />
 
                 <h3 class="mt-2 flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300 md:col-span-2">
-                    <i class="bi bi-mortarboard-fill"></i>Pendidikan</h3>
+                    <i class="bi bi-mortarboard-fill"></i>Pendidikan
+                </h3>
 
                 <x-form.select name="pendidikan_terakhir" label="Pendidikan Terakhir" placeholder="Pilih pendidikan"
                     :options="$opsi['pendidikan']" :value="old('pendidikan_terakhir', $pegawai->pendidikan_terakhir)" required />
@@ -65,4 +66,17 @@
             </div>
         </form>
     </x-card>
+
+    <script>
+        const tugas = document.getElementById('tugas');
+        const mapel = document.getElementById('mata_pelajaran');
+
+        function aturMapel() {
+            mapel.disabled = !/guru mapel|waka|wakil kepala|bendahara|konseling|\bbk\b/i.test(tugas.value);
+            if (mapel.disabled) mapel.value = '';
+        }
+
+        tugas.addEventListener('change', aturMapel);
+        aturMapel();
+    </script>
 @endsection
