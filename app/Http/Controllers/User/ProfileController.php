@@ -12,7 +12,7 @@ class ProfileController extends Controller
 {
     private const UKURAN = 400; // sisi logo (px), hasil persegi
 
-    private const FOLDER = 'storage/uploads/logo'; // relatif terhadap folder public
+    private const FOLDER = 'uploads/logo'; // relatif terhadap storage/app/public
 
     /**
      * Halaman profil (hanya tampilan).
@@ -65,7 +65,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Upload logo: crop persegi, resize, simpan sebagai webp di public/uploads/logo.
+     * Upload logo: crop persegi, resize, simpan sebagai webp di storage/app/public/uploads/logo.
      */
     public function updateLogo(Request $request)
     {
@@ -76,7 +76,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $this->hapusFile($user->logo);
 
-        $folder = public_path(self::FOLDER);
+        $folder = storage_path('app/public/'.self::FOLDER);
         $nama = 'logo-'.$user->id.'-'.time().'.webp';
 
         File::ensureDirectoryExists($folder);
@@ -126,7 +126,7 @@ class ProfileController extends Controller
     private function hapusFile(?string $nama): void
     {
         if ($nama) {
-            File::delete(public_path(self::FOLDER.'/'.$nama));
+            File::delete(storage_path('app/public/'.self::FOLDER.'/'.$nama));
         }
     }
 }

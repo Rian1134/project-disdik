@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Sekolah::class);
     }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo ? asset('storage/uploads/logo/'.$this->logo) : null;
+    }
 }

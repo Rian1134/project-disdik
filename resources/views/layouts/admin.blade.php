@@ -98,10 +98,10 @@
 
                 // [pola route aktif, route tujuan, nama menu, ikon]
                 $menu = [
+                    ['admin.users.*', 'admin.users.index', 'Users', 'bi-person-gear'],
                     ['admin.sekolah.*', 'admin.sekolah.index', 'Data Sekolah', 'bi-building'],
                     ['admin.siswa.*', 'admin.siswa.index', 'Data Siswa', 'bi-people'],
                     ['admin.pegawai.*', 'admin.pegawai.index', 'Data Pegawai', 'bi-person-badge'],
-                    ['admin.users.*', 'admin.users.index', 'Users', 'bi-person-gear'],
                     ['admin.persetujuan-*', 'admin.persetujuan-siswa.index', 'Persetujuan', 'bi-clipboard-check'],
                     ['admin.link-ijazah.*', 'admin.link-ijazah.index', 'Link Ijazah', 'bi-link-45deg'], // baru
                 ];
