@@ -72,9 +72,10 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load('roles');
-        $jumlahSekolah = Sekolah::where('user_id', $user->id)->count();
+        $sekolah = Sekolah::where('user_id', $user->id)->first();
+        $jumlahSekolah = $sekolah ? 1 : 0;
 
-        return view('admin.users.show', compact('user', 'jumlahSekolah'));
+        return view('admin.users.show', compact('user', 'jumlahSekolah', 'sekolah'));
     }
 
     /**

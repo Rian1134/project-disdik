@@ -111,33 +111,77 @@
                     </section>
 
                     {{-- ===== Dokumen SK ===== --}}
+                    @php
+                        $dokumenSk = [
+                            [
+                                'SK Pendirian Sekolah',
+                                'Surat keputusan pendirian sekolah',
+                                'Upload SK Pendirian',
+                                'https://bidangsmp.quickconnect.to/sharing/fX2sL669t',
+                                'bi-bank',
+                                'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
+                            ],
+                            [
+                                'SK Izin Operasional',
+                                'Surat izin operasional sekolah',
+                                'Upload SK Izin Operasional',
+                                'https://bidangsmp.quickconnect.to/sharing/9hwARFvH5',
+                                'bi-patch-check',
+                                'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300',
+                            ],
+                            [
+                                'SK Akreditasi Sekolah',
+                                'Surat keputusan akreditasi sekolah',
+                                'Upload SK Akreditasi',
+                                'https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg',
+                                'bi-award',
+                                'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+                            ],
+                        ];
+                    @endphp
+
                     <section class="{{ $kotakSeksi }}">
                         <h3 class="{{ $judulSeksi }}">
                             <span
                                 class="{{ $ikonSeksi }} bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300"><i
-                                    class="bi bi-file-earmark-text"></i></span> Dokumen SK
+                                    class="bi bi-file-earmark-text"></i></span>
+                            <span>Dokumen SK <span class="text-red-600">*</span></span>
+                            <x-badge variant="secondary" pill class="ms-auto"><span id="jumlahSelesai">0</span>/3
+                                dokumen</x-badge>
                         </h3>
 
+                        <x-alert type="info" class="mb-4">
+                            Upload ketiga dokumen SK terlebih dahulu sebelum menyimpan. Klik Upload, selesaikan upload
+                            di tab yang terbuka, lalu kembali ke halaman ini.
+                        </x-alert>
+
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Pendirian Sekolah</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/fX2sL669t" variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Pendirian
-                                </x-button>
-                            </div>
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Izin Operasional</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/9hwARFvH5" variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Izin Operasional
-                                </x-button>
-                            </div>
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Akreditasi Sekolah</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg"
-                                    variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Akreditasi
-                                </x-button>
-                            </div>
+                            @foreach ($dokumenSk as [$judul, $keterangan, $teksTombol, $link, $ikon, $warna])
+                                <div data-dokumen
+                                    class="flex flex-col gap-3 rounded-lg border border-dashed border-gray-300 p-4 transition dark:border-gray-600">
+                                    <div class="flex items-start gap-3">
+                                        <span
+                                            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg {{ $warna }}">
+                                            <i class="bi {{ $ikon }}"></i>
+                                        </span>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-semibold">{{ $judul }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $keterangan }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-2">
+                                        <x-badge variant="secondary" pill data-belum>Belum diupload</x-badge>
+                                        <x-badge variant="success" pill class="hidden" data-sudah>
+                                            <i class="bi bi-check-circle-fill me-1"></i> Sudah diupload
+                                        </x-badge>
+                                        <x-button href="{{ $link }}" variant="light" size="sm"
+                                            target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-upload me-1"></i> {{ $teksTombol }}
+                                        </x-button>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </section>
 
@@ -210,6 +254,18 @@
 
     @push('scripts')
         <script>
+            window.addEventListener('focus', function() {
+                if (!menunggu) return;
+                menunggu.dataset.selesai = '1';
+                menunggu.querySelector('[data-belum]').classList.add('hidden');
+                menunggu.querySelector('[data-sudah]').classList.remove('hidden');
+                menunggu.classList.remove('border-dashed', 'border-gray-300', 'dark:border-gray-600');
+                menunggu.classList.add('border-emerald-500', 'bg-emerald-50/50', 'dark:bg-emerald-500/10');
+                document.getElementById('jumlahSelesai').textContent =
+                    form.querySelectorAll('[data-dokumen][data-selesai]').length;
+                menunggu = null;
+            });
+
             function tambahPrestasi() {
                 const wadah = document.getElementById('daftarPrestasi');
                 const baris = wadah.firstElementChild.cloneNode(true);

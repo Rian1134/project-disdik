@@ -95,11 +95,11 @@
 
         {{-- ===== Header profil: logo + identitas singkat + statistik ===== --}}
         <div
-            class="rounded-xl border border-gray-200 bg-linear-to-r from-emerald-50 via-white to-sky-50 p-4 dark:border-gray-800 dark:from-emerald-500/10 dark:via-gray-900 dark:to-sky-500/10 sm:p-6">
+            class="rounded-xl border border-gray-200 dark:border-gray-800 sm:p-6">
             <div class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-start sm:text-left">
                 @if ($logoSekolah)
                     <img src="{{ $logoSekolah }}" alt="Logo {{ $sekolah->nama_sekolah }}" loading="lazy"
-                        class="h-24 w-24 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-white dark:ring-offset-gray-900">
+                        class="h-24 w-24 shrink-0 rounded-2xl bg-white object-cover shadow-md ring-2 ring-blue-500/50 ring-offset-2 ring-offset-white dark:ring-offset-gray-900">
                 @else
                     <span
                         class="inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500 to-sky-500 text-4xl text-white shadow-md">

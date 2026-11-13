@@ -120,35 +120,59 @@
                     </section>
 
                     {{-- ===== Dokumen SK ===== --}}
+                    @php
+                        $dokumenSk = [
+                            [
+                                'SK Pendirian Sekolah',
+                                'Upload SK Pendirian',
+                                'https://bidangsmp.quickconnect.to/sharing/fX2sL669t',
+                            ],
+                            [
+                                'SK Izin Operasional',
+                                'Upload SK Izin Operasional',
+                                'https://bidangsmp.quickconnect.to/sharing/9hwARFvH5',
+                            ],
+                            [
+                                'SK Akreditasi Sekolah',
+                                'Upload SK Akreditasi',
+                                'https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg',
+                            ],
+                        ];
+                    @endphp
+
                     <section class="{{ $kotakSeksi }}">
                         <h3 class="{{ $judulSeksi }}">
                             <span
                                 class="{{ $ikonSeksi }} bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300"><i
-                                    class="bi bi-file-earmark-text"></i></span> Dokumen SK
+                                    class="bi bi-file-earmark-text"></i></span>
+                            Dokumen SK <span class="text-red-600">*</span>
                         </h3>
 
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Pendirian Sekolah</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/fX2sL669t"
-                                    variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Pendirian
-                                </x-button>
-                            </div>
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Izin Operasional</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/9hwARFvH5"
-                                    variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Izin Operasional
-                                </x-button>
-                            </div>
-                            <div class="{{ $kotakUnggah }}">
-                                <span class="text-sm font-medium">SK Akreditasi Sekolah</span>
-                                <x-button href="https://bidangsmp.quickconnect.to/sharing/8OHlgLGeg"
-                                    variant="light" size="sm" target="_blank">
-                                    <i class="bi bi-upload me-1"></i> Upload SK Akreditasi
-                                </x-button>
-                            </div>
+                        <x-alert type="info" class="mb-4">
+                            Upload ketiga dokumen SK terlebih dahulu sebelum menyimpan. Klik Upload, selesaikan upload
+                            di tab yang terbuka, lalu kembali ke halaman ini.
+                        </x-alert>
+
+                        <div class="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+                            @foreach ($dokumenSk as [$judul, $teksTombol, $link])
+                                <div data-dokumen class="{{ $kotakUnggah }}">
+                                    <span class="text-sm font-medium">{{ $judul }}</span>
+
+                                    <div data-belum>
+                                        <x-button href="{{ $link }}" variant="light" size="sm" class="w-full"
+                                            target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-upload me-1"></i> {{ $teksTombol }}
+                                        </x-button>
+                                    </div>
+
+                                    <div data-sudah class="hidden">
+                                        <x-button href="{{ $link }}" variant="success" size="sm"
+                                            class="w-full" target="_blank" rel="noopener noreferrer">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Sudah diupload
+                                        </x-button>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     </section>
 
@@ -221,6 +245,37 @@
 
     @push('scripts')
         <script>
+            let menunggu = null;
+
+            // Catat dokumen mana yang tombol Upload-nya baru diklik
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('[data-dokumen] a');
+                if (link) menunggu = link.closest('[data-dokumen]');
+            });
+
+            // Saat user kembali ke halaman ini, tandai dokumen tadi sudah diupload
+            function tandaiSelesai() {
+                if (!menunggu || document.hidden) return;
+                menunggu.dataset.selesai = '1';
+                menunggu.querySelector('[data-belum]').classList.add('hidden');
+                menunggu.querySelector('[data-sudah]').classList.remove('hidden');
+                menunggu = null;
+            }
+            window.addEventListener('focus', tandaiSelesai);
+            document.addEventListener('visibilitychange', tandaiSelesai);
+
+            // Simpan hanya bisa kalau ketiga dokumen sudah ditandai
+            document.getElementById('sekolahForm').addEventListener('submit', function(e) {
+                const belum = document.querySelectorAll('[data-dokumen]:not([data-selesai])');
+                if (belum.length) {
+                    e.preventDefault();
+                    showToast({
+                        type: 'danger',
+                        message: 'Upload semua dokumen SK terlebih dahulu.'
+                    });
+                }
+            });
+
             function tambahPrestasi() {
                 const wadah = document.getElementById('daftarPrestasi');
                 const baris = wadah.firstElementChild.cloneNode(true);

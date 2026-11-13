@@ -10,7 +10,7 @@
         <div class="flex flex-col gap-4 border-l-4 border-indigo-500 pl-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex min-w-0 items-center gap-3">
                 @if ($user->logo)
-                    <img src="{{ asset('uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
+                    <img src="{{ asset('storage/uploads/logo/' . $user->logo) }}" alt="Logo {{ $user->name }}"
                         class="h-14 w-14 shrink-0 rounded-xl border border-gray-200 object-cover dark:border-gray-700">
                 @else
                     <x-avatar :name="$user->name" size="lg" rounded="md" />
@@ -86,6 +86,42 @@
         </x-card>
     </div>
 
+    {{-- ===== Sekolah ===== --}}
+    <x-card>
+        <x-slot:header>
+            <span class="font-semibold"><i
+                    class="bi bi-building me-2 text-indigo-600 dark:text-indigo-400"></i>Sekolah</span>
+            @if ($sekolah)
+                <x-badge variant="success" pill>Terdaftar</x-badge>
+            @else
+                <x-badge variant="secondary" pill>Belum ada</x-badge>
+            @endif
+        </x-slot:header>
+
+        @if ($sekolah)
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex min-w-0 items-center gap-3">
+                    <span
+                        class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-indigo-200 bg-indigo-100 text-xl text-indigo-600 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-300">
+                        <i class="bi bi-building"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="wrap-break-word font-semibold">{{ $sekolah->nama }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">NPSN: {{ $sekolah->npsn ?? '-' }}</p>
+                    </div>
+                </div>
+                <x-button href="{{ route('admin.sekolah.show', $sekolah) }}" variant="info" class="w-full sm:w-auto">
+                    <i class="bi bi-eye-fill me-1"></i> Lihat Sekolah
+                </x-button>
+            </div>
+        @else
+            <div class="flex flex-col items-center gap-2 py-4 text-center text-gray-400">
+                <i class="bi bi-building-slash text-3xl"></i>
+                <p class="text-sm">User ini belum punya sekolah.</p>
+            </div>
+        @endif
+    </x-card>
+    
     {{-- ===== Informasi akun ===== --}}
     <x-card>
         <x-slot:header>
